@@ -25,7 +25,7 @@ async def select_title(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user_id = update.effective_user.id
     name = context.user_data["name"] + os.environ.get("BOT_NAME") # this is required in the name of a stickerpack created by a bot
     title = update.message.text
-    await bot.create_new_sticker_set(user_id, name, title, stickers=[InputSticker(open("sus_cat.PNG", "rb").read(), ["😀"])], sticker_format=StickerFormat.STATIC)
+    await bot.create_new_sticker_set(user_id, name, title, stickers=[InputSticker(open("sus_cat.PNG", "rb").read(), ["😀"]), InputSticker(open("anya.png", "rb").read(), ["😀"])], sticker_format=StickerFormat.STATIC)
     await update.message.reply_text("Sticker pack created: https://t.me/addstickers/{}".format(name))
     return ConversationHandler.END
 

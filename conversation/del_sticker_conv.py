@@ -11,13 +11,21 @@ from telegram.constants import StickerFormat
 SELECTING_PACK, CONFIRM_DELETE = map(chr, range(2))
 
 async def delete_pack(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    logging.info("Delete pack by {}".format(update.effective_user.name))
+    logging.info("Delete sticker by {}".format(update.effective_user.name))
     await update.message.reply_text("Please send the sticker you wish to delete")
     return SELECTING_PACK
 
 async def select_pack(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    bot = update.get_bot()
     context.user_data["sticker"] = update.message.sticker
-    await update.message.reply_text("Confirm delete sticker? Reply with yes")
+    sticker_set = context.user_data["sticker"].set_name
+    sticker_set_info = await bot.get_sticker_set(sticker_set)
+    if len(sticker_set_info.stickers) == 1:
+        context.user_data["last"] = True
+        await update.message.reply_text("This is your last sticker. Deleting this will delete the sticker pack. Are you sure? Reply with yes")
+    else:
+        context.user_data["last"] = False
+        await update.message.reply_text("Confirm delete sticker? Reply with yes")
     return CONFIRM_DELETE
 
 async def confirm_delete(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -25,8 +33,12 @@ async def confirm_delete(update: Update, context: ContextTypes.DEFAULT_TYPE):
         bot = update.get_bot()
         sticker_set = context.user_data["sticker"].set_name
         sticker = context.user_data["sticker"].file_id
-        await bot.delete_sticker_from_set(sticker)
-        await update.message.reply_text(f"Sticker deleted from {sticker_set}")
+        if context.user_data["last"]:
+            await bot.delete_sticker_set(sticker_set)
+            await update.message.reply_text(f"{sticker_set} deleted")
+        else: 
+            await bot.delete_sticker_from_set(sticker)
+            await update.message.reply_text(f"Sticker deleted from {sticker_set}")
     else:
         await update.message.reply_text("Operation cancelled.")
     return ConversationHandler.END

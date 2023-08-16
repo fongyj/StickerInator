@@ -25,7 +25,7 @@ async def confirm_delete(update: Update, context: ContextTypes.DEFAULT_TYPE):
         bot = update.get_bot()
         sticker_set = context.user_data["sticker"].set_name
         await bot.delete_sticker_set(sticker_set)
-        await update.message.reply_text("Sticker pack deleted")
+        await update.message.reply_text(f"Sticker pack {sticker_set} deleted")
     else:
         await update.message.reply_text("Operation cancelled.")
     return ConversationHandler.END
