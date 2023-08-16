@@ -7,6 +7,7 @@ load_dotenv()
 from telegram import Update, InputSticker
 from telegram.ext import CommandHandler, ContextTypes, MessageHandler, filters, ConversationHandler
 from telegram.constants import StickerFormat
+from telegram.error import BadRequest
 
 SELECTING_PACK, CONFIRM_DELETE = map(chr, range(2))
 
@@ -21,13 +22,17 @@ async def select_pack(update: Update, context: ContextTypes.DEFAULT_TYPE):
     return CONFIRM_DELETE
 
 async def confirm_delete(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    if update.message.text.lower() == "yes":
-        bot = update.get_bot()
-        sticker_set = context.user_data["sticker"].set_name
-        await bot.delete_sticker_set(sticker_set)
-        await update.message.reply_text(f"Sticker pack {sticker_set} deleted")
-    else:
-        await update.message.reply_text("Operation cancelled.")
+    try:
+        if update.message.text.lower() == "yes":
+            bot = update.get_bot()
+            sticker_set = context.user_data["sticker"].set_name
+            await bot.delete_sticker_set(sticker_set)
+            await update.message.reply_text(f"Sticker pack {sticker_set} deleted")
+        else:
+            await update.message.reply_text("Please reply yes to confirm deletion, or do /cancel to cancel operation")
+            return CONFIRM_DELETE
+    except BadRequest as e:
+        await update.message.reply_text("No such sticker/stickerset. Cancelling operation")
     return ConversationHandler.END
 
 async def cancel(update: Update, context: ContextTypes.DEFAULT_TYPE):
