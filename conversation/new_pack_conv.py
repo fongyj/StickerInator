@@ -1,4 +1,8 @@
+from dotenv import load_dotenv
 import logging
+import os
+
+load_dotenv()
 
 from telegram import Update, InputSticker
 from telegram.ext import CommandHandler, ContextTypes, MessageHandler, filters, ConversationHandler
@@ -19,9 +23,9 @@ async def select_name(update: Update, context: ContextTypes.DEFAULT_TYPE):
 async def select_title(update: Update, context: ContextTypes.DEFAULT_TYPE):
     bot = update.get_bot()
     user_id = update.effective_user.id
-    name = context.user_data["name"] + "_by_StickerInatorBot" # this is required in the name of a stickerpack created by a bot
+    name = context.user_data["name"] + os.environ.get("BOT_NAME") # this is required in the name of a stickerpack created by a bot
     title = update.message.text
-    await bot.create_new_sticker_set(user_id, name, title, stickers=[InputSticker(open("ced.webm", "rb").read(), ["😀"])], sticker_format=StickerFormat.VIDEO)
+    await bot.create_new_sticker_set(user_id, name, title, stickers=[InputSticker(open("sus_cat.PNG", "rb").read(), ["😀"])], sticker_format=StickerFormat.STATIC)
     await update.message.reply_text("Sticker pack created: https://t.me/addstickers/{}".format(name))
     return ConversationHandler.END
 
