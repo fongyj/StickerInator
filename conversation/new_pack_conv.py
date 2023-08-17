@@ -68,6 +68,7 @@ async def select_sticker(update: Update, context: ContextTypes.DEFAULT_TYPE):
         else:
             await update.message.reply_text("Please send an image")
             return SELECTING_STICKER
+        logging.info("{}: uploaded image sticker {}".format(update.effective_user.name, file.file_path))
         processed_sticker = process_image(file.file_path)
         context.user_data["sticker"] = processed_sticker
         await update.message.reply_text("Please send a emoji for the sticker")
@@ -83,6 +84,7 @@ async def select_sticker(update: Update, context: ContextTypes.DEFAULT_TYPE):
         else:
             await update.message.reply_text("Please send a video")
             return SELECTING_STICKER
+        logging.info("{}: uploaded video sticker {}".format(update.effective_user.name, file.file_path))
         processor = VideoProcessor(file)
         context.user_data["processor"] = processor
         await processor.get_video()
@@ -95,6 +97,7 @@ async def select_sticker(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 async def select_duration(update: Update, context: ContextTypes.DEFAULT_TYPE):
     crop = update.message.text
+    logging.info("{}: selected video crop {}".format(update.effective_user.name, crop))
     duration = context.user_data["duration"]
     if crop.upper() == "OK" and duration > 3:
         await update.message.reply_text("Video duration is too long, crop video by replying with start time followed by duration\"mm:ss.SSS s.SSS\" (m for minutes, s for seconds, S for fraction of a second)")
@@ -115,11 +118,12 @@ async def select_duration(update: Update, context: ContextTypes.DEFAULT_TYPE):
 async def select_emoji(update: Update, context: ContextTypes.DEFAULT_TYPE):
     sticker = context.user_data["sticker"]
     context.user_data["stickers"].append(InputSticker(sticker, [update.message.text])) # verify the user sent an emoji?
+    logging.info("{}: selected emoji {}".format(update.effective_user.name, update.message.text))
     await update.message.reply_text("Please send another sticker OR reply with DONE when finished")
     return SELECTING_STICKER
 
-
 async def cancel(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    logging.info("{}: invalid, command cancelled {}".format(update.effective_user.name, update.message.text))
     await update.message.reply_text("Invalid, command cancelled") # implement a cancel command
     return ConversationHandler.END
 
