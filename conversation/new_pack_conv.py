@@ -5,7 +5,7 @@ from telegram.ext import CommandHandler, ContextTypes, MessageHandler, filters, 
 from telegram.constants import StickerFormat
 
 from processing.image import process_image
-from processing.video import process_video, get_duration, parse_crop
+from processing.video import VideoProcessor, parse_crop
 
 SELECTING_NAME, SELECTING_TITLE, SELECTING_TYPE, SELECTING_STICKER, SELECTING_DURATION, SELECTING_EMOJI = map(chr, range(6))
 
@@ -83,10 +83,11 @@ async def select_sticker(update: Update, context: ContextTypes.DEFAULT_TYPE):
         else:
             await update.message.reply_text("Please send a video")
             return SELECTING_STICKER
-        duration = get_duration(file.file_path)
-        context.user_data["file"] = file
-        context.user_data["duration"] = duration
-        await update.message.reply_text(f"Video duration is {duration} seconds\n"+
+        processor = VideoProcessor(file)
+        context.user_data["processor"] = processor
+        await processor.get_video()
+        context.user_data["duration"] = processor.get_duration()
+        await update.message.reply_text(f"Video duration is {processor.get_duration()} seconds\n"+
                                         "Crop video by replying with start time followed by duration \"mm:ss.SSS s.SSS\" (m for minutes, s for seconds, S for fraction of a second)\n"+
                                         "Reply with \"OK\" if no video cropping is needed\n" +
                                         "Note that maximum duration for a video sticker is 3 seconds")
@@ -97,9 +98,9 @@ async def select_duration(update: Update, context: ContextTypes.DEFAULT_TYPE):
     duration = context.user_data["duration"]
     if crop.upper() == "OK" and duration > 3:
         await update.message.reply_text("Video duration is too long, crop video by replying with start time followed by duration\"mm:ss.SSS s.SSS\" (m for minutes, s for seconds, S for fraction of a second)")
-        return select_duration
+        return SELECTING_DURATION
     elif crop.upper() == "OK":
-        context.user_data["sticker"] = process_video(context.user_data["file"].file_path)
+        context.user_data["sticker"] = context.user_data["processor"].process_video()
         await update.message.reply_text("Please send a emoji for the sticker")
         return SELECTING_EMOJI
     else:
@@ -107,7 +108,7 @@ async def select_duration(update: Update, context: ContextTypes.DEFAULT_TYPE):
         if start_min == None:
             await update.message.reply_text("Invalid start timestamp and duration, reply with start time followed by duration\"mm:ss.SSS s.SSS\" (m for minutes, s for seconds, S for fraction of a second)")
             return SELECTING_DURATION
-        context.user_data["sticker"] = process_video(context.user_data["file"].file_path, start_min, start_sec, crop_duration)
+        context.user_data["sticker"] = context.user_data["processor"].process_video(start_min, start_sec, crop_duration)
         await update.message.reply_text("Please send a emoji for the sticker")
         return SELECTING_EMOJI
 
