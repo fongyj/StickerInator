@@ -1,4 +1,8 @@
+from dotenv import load_dotenv
 import logging
+import os
+
+load_dotenv()
 
 from telegram import Update, InputSticker
 from telegram.ext import CommandHandler, ContextTypes, MessageHandler, filters, ConversationHandler

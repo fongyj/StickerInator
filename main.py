@@ -1,7 +1,13 @@
+from dotenv import load_dotenv
 import logging
+import os
+
+load_dotenv()
 
 from telegram import __version__ as TG_VER
 import conversation.new_pack_conv as new_pack
+import conversation.del_pack_conv as delete_pack
+import conversation.del_sticker_conv as delete_sticker
 import conversation.add_sticker_conv as add_sticker
 import conversation.start_command as start
 try:
@@ -27,16 +33,15 @@ logging.getLogger("httpx").setLevel(logging.WARNING)
 
 logger = logging.getLogger(__name__)
 
+handlers_list = [start.get_start_command(), new_pack.get_new_pack_conv(), add_sticker.get_add_sticker_conv(), delete_pack.delete_pack_conv(), delete_sticker.delete_sticker_conv()]
+
 def main() -> None:
     """Start the bot."""
     # Create the Application and pass it your bot's token.
-    with open("token.txt", 'r') as f:
-        token = f.readline()
+    token = os.environ.get("BOT_TOKEN")
     application = Application.builder().token(token).build()
 
-    application.add_handler(new_pack.get_new_pack_conv())
-    application.add_handler(add_sticker.get_add_sticker_conv())
-    application.add_handler(start.get_start_command())
+    application.add_handlers(handlers_list)
 
     # Run the bot until the user presses Ctrl-C
     application.run_polling(allowed_updates=Update.ALL_TYPES)
