@@ -1,18 +1,16 @@
 from dotenv import load_dotenv
 import logging
-import os
 
 load_dotenv()
 
-from telegram import Update, InputSticker
+from telegram import Update
 from telegram.ext import CommandHandler, ContextTypes, MessageHandler, filters, ConversationHandler
-from telegram.constants import StickerFormat
 from telegram.error import BadRequest
 
 SELECTING_PACK, CONFIRM_DELETE = map(chr, range(2))
 
 async def delete_pack(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    logging.info("Delete pack by {}".format(update.effective_user.name))
+    logging.info("{}: delete pack".format(update.effective_user.name))
     await update.message.reply_text("Please send a sticker from your sticker set")
     return SELECTING_PACK
 
@@ -28,6 +26,7 @@ async def confirm_delete(update: Update, context: ContextTypes.DEFAULT_TYPE):
             sticker_set = context.user_data["sticker"].set_name
             await bot.delete_sticker_set(sticker_set)
             await update.message.reply_text(f"Sticker pack {sticker_set} deleted")
+            logging.info("{}: deleted pack {}".format(update.effective_user.name, sticker_set))
         else:
             await update.message.reply_text("Please reply yes to confirm deletion, or do /cancel to cancel operation")
             return CONFIRM_DELETE
