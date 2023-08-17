@@ -2,6 +2,7 @@ import logging
 
 from telegram import __version__ as TG_VER
 import conversation.new_pack_conv as new_pack
+import conversation.add_sticker_conv as add_sticker
 
 try:
     from telegram import __version_info__
@@ -34,6 +35,7 @@ def main() -> None:
     application = Application.builder().token(token).build()
 
     application.add_handler(new_pack.get_new_pack_conv())
+    application.add_handler(add_sticker.get_add_sticker_conv())
 
     # Run the bot until the user presses Ctrl-C
     application.run_polling(allowed_updates=Update.ALL_TYPES)

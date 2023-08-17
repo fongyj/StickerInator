@@ -11,6 +11,8 @@ SELECTING_NAME, SELECTING_TITLE, SELECTING_TYPE, SELECTING_STICKER, SELECTING_DU
 
 async def new_pack(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     logging.info("{}: create sticker pack".format(update.effective_user.name))
+    context.user_data["action"] = create_pack
+    context.user_data["stickers"] = list()
     await update.message.reply_text("Please reply with sticker pack name")
     return SELECTING_NAME
 
@@ -31,11 +33,9 @@ async def select_type(update: Update, context: ContextTypes.DEFAULT_TYPE):
     pack_type = update.message.text.upper()
     if pack_type == "IMAGE":
         context.user_data["type"] = StickerFormat.STATIC
-        context.user_data["stickers"] = list()
         await update.message.reply_text("Please send image sticker")
     elif pack_type == "VIDEO":
         context.user_data["type"] = StickerFormat.VIDEO
-        context.user_data["stickers"] = list()
         await update.message.reply_text("Please send video sticker")
     else:
         await update.message.reply_text("Please reply with IMAGE or VIDEO")
@@ -45,16 +45,8 @@ async def select_type(update: Update, context: ContextTypes.DEFAULT_TYPE):
 async def select_sticker(update: Update, context: ContextTypes.DEFAULT_TYPE):
     pack_type = context.user_data["type"]
     text = update.message.text
-    bot = update.get_bot()
     if text and text.upper() == "DONE":
-        name = context.user_data["name"] + "_by_StickerInatorBot" # this is required in the name of a stickerpack created by a bot
-        await bot.create_new_sticker_set(update.effective_user.id,
-                                         name,
-                                         context.user_data["title"], 
-                                         stickers=context.user_data["stickers"], 
-                                         sticker_format=context.user_data["type"])
-        await update.message.reply_text("Sticker pack created: https://t.me/addstickers/{}".format(name))
-        logging.info("{}: created sticker pack {}".format(update.effective_user.name, name))
+        await context.user_data["action"](update, context)
         return ConversationHandler.END
     elif text:
         await update.message.reply_text("Please send another sticker OR reply with DONE when finished")
@@ -121,6 +113,17 @@ async def select_emoji(update: Update, context: ContextTypes.DEFAULT_TYPE):
     logging.info("{}: selected emoji {}".format(update.effective_user.name, update.message.text))
     await update.message.reply_text("Please send another sticker OR reply with DONE when finished")
     return SELECTING_STICKER
+
+async def create_pack(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    name = context.user_data["name"] + "_by_StickerInatorBot" # this is required in the name of a stickerpack created by a bot
+    bot = update.get_bot()
+    await bot.create_new_sticker_set(update.effective_user.id,
+                                        name,
+                                        context.user_data["title"], 
+                                        stickers=context.user_data["stickers"], 
+                                        sticker_format=context.user_data["type"])
+    await update.message.reply_text("Sticker pack created: https://t.me/addstickers/{}".format(name))
+    logging.info("{}: created sticker pack {}".format(update.effective_user.name, name))
 
 async def cancel(update: Update, context: ContextTypes.DEFAULT_TYPE):
     logging.info("{}: invalid, command cancelled {}".format(update.effective_user.name, update.message.text))
