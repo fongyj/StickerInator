@@ -1,6 +1,6 @@
 import logging
 
-from telegram import Update
+from telegram import Update, ReplyKeyboardRemove
 from telegram.ext import CommandHandler, ContextTypes, MessageHandler, filters, ConversationHandler
 from telegram.constants import StickerFormat
 
@@ -39,9 +39,12 @@ async def add_sticker(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text("Added stickers!")
     logging.info("{}: added sticker(s)".format(update.effective_user.name))
 
-async def cancel(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    logging.info("{}: invalid, command cancelled {}".format(update.effective_user.name, update.message.text))
-    await update.message.reply_text("Invalid, command cancelled") # implement a cancel command
+async def cancel(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
+    """Cancels and ends the conversation."""
+    await update.message.reply_text(
+        "Operation Cancelled", reply_markup=ReplyKeyboardRemove()
+    )
+
     return ConversationHandler.END
 
 def get_add_sticker_conv():
@@ -50,8 +53,8 @@ def get_add_sticker_conv():
         states={
             SELECTING_PACK: [MessageHandler(filters.Sticker.ALL, select_pack)],
             SELECTING_STICKER: [MessageHandler(filters.ALL, select_sticker)],
-            SELECTING_DURATION: [MessageHandler(filters.TEXT, select_duration)],
-            SELECTING_EMOJI: [MessageHandler(filters.TEXT, select_emoji)]
+            SELECTING_DURATION: [MessageHandler(filters.TEXT & ~filters.COMMAND, select_duration)],
+            SELECTING_EMOJI: [MessageHandler(filters.ALL & ~filters.COMMAND, select_emoji)]
             },
-        fallbacks=[MessageHandler(filters.ALL, cancel)]
+        fallbacks=[CommandHandler("cancel", cancel)],
     )

@@ -40,7 +40,8 @@ command_info = [
     BotCommand("addsticker", "Adds a sticker"),
     BotCommand("delsticker", "Deletes a sticker"),
     BotCommand("delpack", "Deletes a stickerpack"),
-    BotCommand("help", "Gets info on the bot")
+    BotCommand("help", "Gets info on the bot"),
+    BotCommand("cancel", "Cancels current operation"),
 ]
 
 async def post_init(application: Application) -> None:

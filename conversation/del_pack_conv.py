@@ -3,7 +3,7 @@ import logging
 
 load_dotenv()
 
-from telegram import Update
+from telegram import Update, ReplyKeyboardRemove
 from telegram.ext import CommandHandler, ContextTypes, MessageHandler, filters, ConversationHandler
 from telegram.error import BadRequest
 
@@ -34,8 +34,12 @@ async def confirm_delete(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await update.message.reply_text("No such sticker/stickerset. Cancelling operation")
     return ConversationHandler.END
 
-async def cancel(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    await update.message.reply_text("Invalid, command cancelled")
+async def cancel(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
+    """Cancels and ends the conversation."""
+    await update.message.reply_text(
+        "Operation Cancelled", reply_markup=ReplyKeyboardRemove()
+    )
+
     return ConversationHandler.END
 
 def delete_pack_conv():
@@ -43,7 +47,7 @@ def delete_pack_conv():
         entry_points=[CommandHandler("delpack", delete_pack)],
         states={
             SELECTING_PACK: [MessageHandler(filters.Sticker.ALL, select_pack)],
-            CONFIRM_DELETE: [MessageHandler(filters.TEXT, confirm_delete)],
+            CONFIRM_DELETE: [MessageHandler(filters.TEXT & ~filters.COMMAND, confirm_delete)],
             },
-        fallbacks=[MessageHandler(filters.ALL, cancel)]
+        fallbacks=[CommandHandler("cancel", cancel)],
     )

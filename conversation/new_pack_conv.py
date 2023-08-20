@@ -4,7 +4,7 @@ import os
 
 load_dotenv()
 
-from telegram import Update, InputSticker
+from telegram import Update, InputSticker, ReplyKeyboardRemove
 from telegram.ext import CommandHandler, ContextTypes, MessageHandler, filters, ConversationHandler
 from telegram.constants import StickerFormat
 
@@ -129,21 +129,24 @@ async def create_pack(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text("Sticker pack created: https://t.me/addstickers/{}".format(name))
     logging.info("{}: created sticker pack {}".format(update.effective_user.name, name))
 
-async def cancel(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    logging.info("{}: invalid, command cancelled {}".format(update.effective_user.name, update.message.text))
-    await update.message.reply_text("Invalid, command cancelled") # implement a cancel command
+async def cancel(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
+    """Cancels and ends the conversation."""
+    await update.message.reply_text(
+        "Operation Cancelled", reply_markup=ReplyKeyboardRemove()
+    )
+
     return ConversationHandler.END
 
 def get_new_pack_conv():
     return ConversationHandler(
         entry_points=[CommandHandler("newpack", new_pack)],
         states={
-            SELECTING_NAME: [MessageHandler(filters.TEXT, select_name)],
-            SELECTING_TITLE: [MessageHandler(filters.TEXT, select_title)],
-            SELECTING_TYPE: [MessageHandler(filters.TEXT, select_type)],
+            SELECTING_NAME: [MessageHandler(filters.TEXT & ~filters.COMMAND, select_name)],
+            SELECTING_TITLE: [MessageHandler(filters.TEXT & ~filters.COMMAND, select_title)],
+            SELECTING_TYPE: [MessageHandler(filters.TEXT & ~filters.COMMAND, select_type)],
             SELECTING_STICKER: [MessageHandler(filters.ALL, select_sticker)],
-            SELECTING_DURATION: [MessageHandler(filters.TEXT, select_duration)],
-            SELECTING_EMOJI: [MessageHandler(filters.TEXT, select_emoji)]
+            SELECTING_DURATION: [MessageHandler(filters.TEXT & ~filters.COMMAND, select_duration)],
+            SELECTING_EMOJI: [MessageHandler(filters.ALL & ~filters.COMMAND, select_emoji)]
             },
-        fallbacks=[MessageHandler(filters.ALL, cancel)]
+        fallbacks=[CommandHandler("cancel", cancel)],
     )
