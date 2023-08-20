@@ -6,10 +6,11 @@ WELCOME_MESSAGE = "StickerInator is made to help you with creating stickerpacks 
         "/newpack - Creates a new stickerpack\n"+\
             "/addsticker - Adds a sticker\n"+\
                 "/delsticker - Deletes a sticker\n"+\
-                    "/delpack - Deletes a stickerpack"
+                    "/delpack - Deletes a stickerpack\n"+\
+                        "/help - Gets info on the bot"
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text(WELCOME_MESSAGE)
 
 def get_start_command():
-    return CommandHandler("start", start)
+    return CommandHandler("help", start)

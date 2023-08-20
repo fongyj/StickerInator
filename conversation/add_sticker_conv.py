@@ -48,7 +48,7 @@ def get_add_sticker_conv():
     return ConversationHandler(
         entry_points=[CommandHandler("addsticker", new_sticker)],
         states={
-            SELECTING_PACK: [MessageHandler(filters.ALL, select_pack)],
+            SELECTING_PACK: [MessageHandler(filters.Sticker.ALL, select_pack)],
             SELECTING_STICKER: [MessageHandler(filters.ALL, select_sticker)],
             SELECTING_DURATION: [MessageHandler(filters.TEXT, select_duration)],
             SELECTING_EMOJI: [MessageHandler(filters.TEXT, select_emoji)]

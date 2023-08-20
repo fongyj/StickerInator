@@ -21,8 +21,8 @@ if __version_info__ < (20, 0, 0, "alpha", 1):
         f"{TG_VER} version of this example, "
         f"visit https://docs.python-telegram-bot.org/en/v{TG_VER}/examples.html"
     )
-from telegram import Update
-from telegram.ext import Application
+from telegram import Update, BotCommand
+from telegram.ext import Application, CommandHandler, ContextTypes, ConversationHandler, ApplicationHandlerStop
 
 # Enable logging
 logging.basicConfig(
@@ -35,11 +35,24 @@ logger = logging.getLogger(__name__)
 
 handlers_list = [start.get_start_command(), new_pack.get_new_pack_conv(), add_sticker.get_add_sticker_conv(), delete_pack.delete_pack_conv(), delete_sticker.delete_sticker_conv()]
 
+command_info = [
+    BotCommand("newpack", "Creates a new stickerpack"),
+    BotCommand("addsticker", "Adds a sticker"),
+    BotCommand("delsticker", "Deletes a sticker"),
+    BotCommand("delpack", "Deletes a stickerpack"),
+    BotCommand("help", "Gets info on the bot")
+]
+
+async def post_init(application: Application) -> None:
+    bot = application.bot
+    await bot.set_my_commands(commands=command_info)
+
+
 def main() -> None:
     """Start the bot."""
     # Create the Application and pass it your bot's token.
     token = os.environ.get("BOT_TOKEN")
-    application = Application.builder().token(token).build()
+    application = Application.builder().token(token).post_init(post_init).build()
 
     application.add_handlers(handlers_list)
 

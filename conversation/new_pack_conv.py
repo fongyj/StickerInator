@@ -119,7 +119,7 @@ async def select_emoji(update: Update, context: ContextTypes.DEFAULT_TYPE):
     return SELECTING_STICKER
 
 async def create_pack(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    name = context.user_data["name"] + "_by_StickerInatorBot" # this is required in the name of a stickerpack created by a bot
+    name = context.user_data["name"] + os.environ.get("BOT_NAME") # this is required in the name of a stickerpack created by a bot
     bot = update.get_bot()
     await bot.create_new_sticker_set(update.effective_user.id,
                                         name,
