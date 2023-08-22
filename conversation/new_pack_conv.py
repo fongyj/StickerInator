@@ -4,7 +4,8 @@ import os
 
 load_dotenv()
 
-from telegram import Update, InputSticker
+from warnings import filterwarnings
+from telegram import Update, InputSticker, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.error import TelegramError
 from telegram.ext import (
     CommandHandler,
@@ -12,8 +13,11 @@ from telegram.ext import (
     MessageHandler,
     filters,
     ConversationHandler,
+    CallbackQueryHandler,
+    CallbackContext,
 )
 from telegram.constants import StickerFormat
+from telegram.warnings import PTBUserWarning
 
 from processing.image import process_image
 from processing.video import VideoProcessor, parse_crop
@@ -55,8 +59,30 @@ async def new_pack(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     context.user_data["final_state"] = final_state
     context.user_data["stickers"] = list()
     context.user_data["operation"] = "create pack"
-    await update.message.reply_text(PACK_TYPE_MESSAGE)
+    keyboard = [
+        [
+            InlineKeyboardButton("IMAGE", callback_data="image"),
+            InlineKeyboardButton("VIDEO", callback_data="video"),
+        ],
+    ]
+    reply_markup = InlineKeyboardMarkup(keyboard)
+    await update.message.reply_text(
+        "Please choose a sticker type:", reply_markup=reply_markup
+    )
     return SELECTING_TYPE
+
+
+async def button_click(update: Update, context: CallbackContext):
+    query = update.callback_query
+    data = query.data
+    if data == "image":
+        context.user_data["type"] = StickerFormat.STATIC
+        await query.message.reply_text(IMAGE_STICKER_MESSAGE)
+        return SELECTING_STICKER
+    elif data == "video":
+        context.user_data["type"] = StickerFormat.VIDEO
+        await query.message.reply_text(VIDEO_STICKER_MESSAGE)
+        return SELECTING_STICKER
 
 
 async def select_type(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -65,11 +91,12 @@ async def select_type(update: Update, context: ContextTypes.DEFAULT_TYPE):
             update.effective_user.name, update.message.text.lower()
         )
     )
-    pack_type = update.message.text.lower()
-    if pack_type == "IMAGE":
+    pack_type = update.callback_query.data.lower()
+    print(pack_type)
+    if pack_type == "image":
         context.user_data["type"] = StickerFormat.STATIC
         await update.message.reply_text(IMAGE_STICKER_MESSAGE)
-    elif pack_type == "VIDEO":
+    elif pack_type == "video":
         context.user_data["type"] = StickerFormat.VIDEO
         await update.message.reply_text(VIDEO_STICKER_MESSAGE)
     else:
@@ -222,6 +249,9 @@ async def create_pack(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 
 def get_new_pack_conv():
+    filterwarnings(
+        action="ignore", message=r".*CallbackQueryHandler", category=PTBUserWarning
+    )
     return ConversationHandler(
         entry_points=[CommandHandler("newpack", new_pack)],
         states={
@@ -232,9 +262,11 @@ def get_new_pack_conv():
                 MessageHandler(filters.TEXT & ~filters.COMMAND, select_title)
             ],
             SELECTING_TYPE: [
-                MessageHandler(filters.TEXT & ~filters.COMMAND, select_type)
+                CallbackQueryHandler(button_click, pattern="^image$|^video$"),
             ],
-            SELECTING_STICKER: [MessageHandler(filters.ALL, select_sticker)],
+            SELECTING_STICKER: [
+                MessageHandler(filters.ALL & ~filters.COMMAND, select_sticker)
+            ],
             SELECTING_DURATION: [
                 MessageHandler(filters.TEXT & ~filters.COMMAND, select_duration)
             ],
