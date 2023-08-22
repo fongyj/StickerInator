@@ -91,74 +91,79 @@ async def select_sticker(update: Update, context: ContextTypes.DEFAULT_TYPE):
         return await context.user_data["final_state"](update, context)
 
     if pack_type == StickerFormat.STATIC:
-        if context.user_data["sticker_count"] >= MAX_STATIC_STICKER:
-            await update.message.reply_text(PACK_LIMIT_REACHED_MESSAGE)
-            return SELECTING_STICKER
-        elif update.message.photo:
-            file = await update.message.photo[-1].get_file()
-        elif update.message.document and update.message.document.mime_type.startswith(
-            "image"
-        ):
-            file = await update.message.document.get_file()
-        else:
-            await update.message.reply_text(IMAGE_STICKER_MESSAGE)
-            return SELECTING_STICKER
-        logging.info(
-            "{}: uploaded image sticker {}".format(
-                update.effective_user.name, file.file_path
-            )
-        )
-
-        if file.file_size > MAX_FILE_SIZE:
-            logging.info(
-                "{}: file size limit reached {}".format(
-                    update.effective_user.name, file.file_size
-                )
-            )
-            await update.message.reply_text(SIZE_LIMIT_REACHED_MESSAGE)
-            return SELECTING_STICKER
-        processed_sticker = process_image(file.file_path)
-        context.user_data["sticker"] = processed_sticker
-        context.user_data["sticker_count"] += 1
-        await update.message.reply_text(STICKER_EMOJI_MESSAGE)
-        return SELECTING_EMOJI
-
+        return await select_image_sticker(update, context)
     elif pack_type == StickerFormat.VIDEO:
-        if context.user_data["sticker_count"] >= MAX_VIDEO_STICKER:
-            await update.message.reply_text(PACK_LIMIT_REACHED_MESSAGE)
-            return SELECTING_STICKER
-        elif update.message.video:
-            file = await update.message.video.get_file()
-        elif update.message.document and update.message.document.mime_type.startswith(
-            "video"
-        ):
-            file = await update.message.document.get_file()
-        elif update.message.video_note:
-            file = await update.message.video_note.get_file()
-        else:
-            await update.message.reply_text(VIDEO_STICKER_MESSAGE)
-            return SELECTING_STICKER
+        return await select_video_sticker(update, context)
+
+
+async def select_image_sticker(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    if context.user_data["sticker_count"] >= MAX_STATIC_STICKER:
+        await update.message.reply_text(PACK_LIMIT_REACHED_MESSAGE)
+        return SELECTING_STICKER
+    elif update.message.photo:
+        file = await update.message.photo[-1].get_file()
+    elif update.message.document and update.message.document.mime_type.startswith(
+        "image"
+    ):
+        file = await update.message.document.get_file()
+    else:
+        await update.message.reply_text(IMAGE_STICKER_MESSAGE)
+        return SELECTING_STICKER
+    logging.info(
+        "{}: uploaded image sticker {}".format(
+            update.effective_user.name, file.file_path
+        )
+    )
+
+    if file.file_size > MAX_FILE_SIZE:
         logging.info(
-            "{}: uploaded video sticker {}".format(
-                update.effective_user.name, file.file_path
+            "{}: file size limit reached {}".format(
+                update.effective_user.name, file.file_size
             )
         )
-        if file.file_size > MAX_FILE_SIZE:
-            logging.info(
-                "{}: file size limit reached {}".format(
-                    update.effective_user.name, file.file_size
-                )
-            )
-            await update.message.reply_text(SIZE_LIMIT_REACHED_MESSAGE)
-            return SELECTING_STICKER
-        processor = VideoProcessor(file)
-        context.user_data["processor"] = processor
-        await processor.get_video()
-        context.user_data["duration"] = processor.get_duration()
-        await update.message.reply_text(
-            VIDEO_CROP_MESSAGE.format(processor.get_duration())
+        await update.message.reply_text(SIZE_LIMIT_REACHED_MESSAGE)
+        return SELECTING_STICKER
+    processed_sticker = process_image(file.file_path)
+    context.user_data["sticker"] = processed_sticker
+    context.user_data["sticker_count"] += 1
+    await update.message.reply_text(STICKER_EMOJI_MESSAGE)
+    return SELECTING_EMOJI
+
+
+async def select_video_sticker(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    if context.user_data["sticker_count"] >= MAX_VIDEO_STICKER:
+        await update.message.reply_text(PACK_LIMIT_REACHED_MESSAGE)
+        return SELECTING_STICKER
+    elif update.message.video:
+        file = await update.message.video.get_file()
+    elif update.message.document and update.message.document.mime_type.startswith(
+        "video"
+    ):
+        file = await update.message.document.get_file()
+    elif update.message.video_note:
+        file = await update.message.video_note.get_file()
+    else:
+        await update.message.reply_text(VIDEO_STICKER_MESSAGE)
+        return SELECTING_STICKER
+    logging.info(
+        "{}: uploaded video sticker {}".format(
+            update.effective_user.name, file.file_path
         )
-        return SELECTING_DURATION
+    )
+    if file.file_size > MAX_FILE_SIZE:
+        logging.info(
+            "{}: file size limit reached {}".format(
+                update.effective_user.name, file.file_size
+            )
+        )
+        await update.message.reply_text(SIZE_LIMIT_REACHED_MESSAGE)
+        return SELECTING_STICKER
+    processor = VideoProcessor(file)
+    context.user_data["processor"] = processor
+    await processor.get_video()
+    context.user_data["duration"] = processor.get_duration()
+    await update.message.reply_text(VIDEO_CROP_MESSAGE.format(processor.get_duration()))
+    return SELECTING_DURATION
 
 
 async def select_duration(update: Update, context: ContextTypes.DEFAULT_TYPE):

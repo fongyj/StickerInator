@@ -43,7 +43,7 @@ VIDEO_CROP_MESSAGE = (
     + 'Reply with "OK" if no video cropping is needed'
 )
 
-INVALID_VIDEO_DURATION_MESSAGE = "Invalid start timestamp and duration"
+INVALID_VIDEO_DURATION_MESSAGE = "Invalid start timestamp or duration"
 
 STICKER_EMOJI_MESSAGE = "Please send a single emoji for the sticker"
 
