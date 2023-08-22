@@ -60,7 +60,7 @@ STICKER_FROM_SET_MESSAGE = "Please send a sticker from your sticker set"
 
 INVALID_SET_MESSAGE = "Sticker set selected must be created by StickerInatorBot"
 
-ADD_SUCCESS_MESSAGE = "Added stickers\!"
+ADD_SUCCESS_MESSAGE = "Added stickers!"
 
 NEXT_STICKER_MESSAGE = "Please send another sticker OR reply with DONE when finished"
 
