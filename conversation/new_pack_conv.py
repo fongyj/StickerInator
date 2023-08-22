@@ -234,7 +234,9 @@ def get_new_pack_conv():
             SELECTING_TYPE: [
                 MessageHandler(filters.TEXT & ~filters.COMMAND, select_type)
             ],
-            SELECTING_STICKER: [MessageHandler(filters.ALL, select_sticker)],
+            SELECTING_STICKER: [
+                MessageHandler(filters.ALL & ~filters.COMMAND, select_sticker)
+            ],
             SELECTING_DURATION: [
                 MessageHandler(filters.TEXT & ~filters.COMMAND, select_duration)
             ],

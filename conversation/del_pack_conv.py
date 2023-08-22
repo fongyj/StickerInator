@@ -71,7 +71,9 @@ def delete_pack_conv():
     return ConversationHandler(
         entry_points=[CommandHandler("delpack", delete_pack)],
         states={
-            SELECTING_PACK: [MessageHandler(filters.Sticker.ALL, select_pack)],
+            SELECTING_PACK: [
+                MessageHandler(filters.Sticker.ALL & ~filters.COMMAND, select_pack)
+            ],
             CONFIRM_DELETE: [
                 MessageHandler(filters.TEXT & ~filters.COMMAND, confirm_delete)
             ],
