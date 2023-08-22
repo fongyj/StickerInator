@@ -6,6 +6,7 @@ from telegram.constants import StickerFormat
 
 from conversation.new_pack_conv import SELECTING_STICKER, SELECTING_DURATION, SELECTING_EMOJI
 from conversation.new_pack_conv import select_sticker, select_duration, select_emoji
+from conversation.messages import IMAGE_STICKER_MESSAGE, VIDEO_STICKER_MESSAGE, STICKER_FROM_SET_MESSAGE, ADD_SUCCESS_MESSAGE
 
 SELECTING_PACK = map(chr, range(7, 8))
 
@@ -13,7 +14,7 @@ async def new_sticker(update: Update, context: ContextTypes.DEFAULT_TYPE) -> Non
     logging.info("{}: add sticker".format(update.effective_user.name))
     context.user_data["action"] = add_sticker
     context.user_data["stickers"] = list()
-    await update.message.reply_text("Please send a sticker from your sticker set")
+    await update.message.reply_text(STICKER_FROM_SET_MESSAGE)
     return SELECTING_PACK
 
 async def select_pack(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -24,10 +25,10 @@ async def select_pack(update: Update, context: ContextTypes.DEFAULT_TYPE):
     context.user_data["set_name"] = set_name
     if sticker_set.is_video:
         context.user_data["type"] = StickerFormat.VIDEO 
-        await update.message.reply_text("Please send video sticker to be added")
+        await update.message.reply_text(VIDEO_STICKER_MESSAGE)
     else:
         context.user_data["type"] = StickerFormat.STATIC 
-        await update.message.reply_text("Please send image sticker to be added")
+        await update.message.reply_text(IMAGE_STICKER_MESSAGE)
     return SELECTING_STICKER
 
 async def add_sticker(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -36,7 +37,7 @@ async def add_sticker(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await bot.add_sticker_to_set(update.effective_user.id,
                                     context.user_data["set_name"],
                                     sticker=sticker)
-    await update.message.reply_text("Added stickers!")
+    await update.message.reply_text(ADD_SUCCESS_MESSAGE)
     logging.info("{}: added sticker(s)".format(update.effective_user.name))
 
 async def cancel(update: Update, context: ContextTypes.DEFAULT_TYPE):

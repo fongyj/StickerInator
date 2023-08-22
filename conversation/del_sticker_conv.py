@@ -7,11 +7,13 @@ from telegram import Update
 from telegram.ext import CommandHandler, ContextTypes, MessageHandler, filters, ConversationHandler
 from telegram.error import BadRequest
 
+from conversation.messages import DELETE_STICKER_MESSAGE, LAST_STICKER_MESSAGE, DELETE_STICKER_CONFIRMATION_MESSAGE, STICKER_NOT_FOUND_MESSAGE, SET_NOT_FOUND_MESSAGE, DELETE_PACK_SUCCESS_MESSAGE, DELETE_STICKER_SUCCESS_MESSAGE
+
 SELECTING_PACK, CONFIRM_DELETE = map(chr, range(2))
 
 async def delete_pack(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     logging.info("{}: delete sticker".format(update.effective_user.name))
-    await update.message.reply_text("Please send the sticker you wish to delete")
+    await update.message.reply_text(DELETE_STICKER_MESSAGE)
     return SELECTING_PACK
 
 async def select_pack(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -26,16 +28,16 @@ async def select_pack(update: Update, context: ContextTypes.DEFAULT_TYPE):
             if context.user_data["sticker"].file_id == sticker_info.file_id:
                 if len(sticker_set_info.stickers) == 1:
                     context.user_data["last"] = True
-                    await update.message.reply_text("This is your last sticker. Deleting this will delete the sticker pack. Are you sure? Reply with yes")
+                    await update.message.reply_text(LAST_STICKER_MESSAGE)
                 else:
                     context.user_data["last"] = False
-                    await update.message.reply_text("Confirm delete sticker? Reply with yes")
+                    await update.message.reply_text(DELETE_STICKER_CONFIRMATION_MESSAGE)
                 return CONFIRM_DELETE
 
         # If the sticker wasn't found in the set
-        await update.message.reply_text("Sticker not found in the sticker set.")
+        await update.message.reply_text(STICKER_NOT_FOUND_MESSAGE)
     except BadRequest as e:
-        await update.message.reply_text("No such sticker/stickerset. Cancelling operation")
+        await update.message.reply_text(SET_NOT_FOUND_MESSAGE)
     return ConversationHandler.END
 
 
@@ -47,16 +49,16 @@ async def confirm_delete(update: Update, context: ContextTypes.DEFAULT_TYPE):
             sticker = context.user_data["sticker"].file_id
             if context.user_data["last"]:
                 await bot.delete_sticker_set(sticker_set)
-                await update.message.reply_text(f"{sticker_set} deleted")
+                await update.message.reply_text(DELETE_PACK_SUCCESS_MESSAGE.format(sticker_set))
             else: 
                 await bot.delete_sticker_from_set(sticker)
-                await update.message.reply_text(f"Sticker deleted from {sticker_set}")
+                await update.message.reply_text(DELETE_STICKER_SUCCESS_MESSAGE.format(sticker_set))
                 logging.info("{}: deleted sticker from {}".format(update.effective_user.name, sticker_set))
         else:
-            await update.message.reply_text("Please reply yes to confirm deletion, or do /cancel to cancel operation")
+            await update.message.reply_text(DELETE_STICKER_CONFIRMATION_MESSAGE)
             return CONFIRM_DELETE
     except BadRequest as e:
-        await update.message.reply_text("No such sticker/stickerset. Cancelling operation")
+        await update.message.reply_text(SET_NOT_FOUND_MESSAGE)
     return ConversationHandler.END
 
 async def cancel(update: Update, context: ContextTypes.DEFAULT_TYPE):
