@@ -52,6 +52,7 @@ async def select_pack(update: Update, context: ContextTypes.DEFAULT_TYPE):
     bot = update.get_bot()
     sticker_set = await bot.get_sticker_set(set_name)
     context.user_data["set_name"] = set_name
+    context.user_data["sticker_count"] = len(sticker_set.stickers)
     if sticker_set.is_video:
         context.user_data["type"] = StickerFormat.VIDEO
         await update.message.reply_text(VIDEO_STICKER_MESSAGE)
@@ -67,8 +68,11 @@ async def add_sticker(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await bot.add_sticker_to_set(
             update.effective_user.id, context.user_data["set_name"], sticker=sticker
         )
-    await update.message.reply_text(ADD_SUCCESS_MESSAGE)
-    logging.info("{}: added sticker(s)".format(update.effective_user.name))
+    sticker_count = len(context.user_data["stickers"])
+    await update.message.reply_text(ADD_SUCCESS_MESSAGE.format(sticker_count))
+    logging.info(
+        "{}: added {} sticker(s)".format(update.effective_user.name, sticker_count)
+    )
     return ConversationHandler.END
 
 
@@ -76,7 +80,9 @@ def get_add_sticker_conv():
     return ConversationHandler(
         entry_points=[CommandHandler("addsticker", new_sticker)],
         states={
-            SELECTING_PACK: [MessageHandler(filters.Sticker.ALL, select_pack)],
+            SELECTING_PACK: [
+                MessageHandler(filters.Sticker.ALL & ~filters.COMMAND, select_pack)
+            ],
             SELECTING_STICKER: [
                 MessageHandler(filters.ALL & ~filters.COMMAND, select_sticker)
             ],

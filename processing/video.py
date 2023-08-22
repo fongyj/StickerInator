@@ -46,7 +46,13 @@ def parse_crop(crop: str):
         return None, None, None
     start_min = crop[:2]
     start_sec = crop[3:7]
-    crop_duration = crop[8:]
-    if int(start_min) >= 60 or float(start_sec) >= 60 or float(crop_duration) > 3:
+    crop_duration = "2.9" if crop[8:] == "3.0" else crop[8:]
+    if (
+        int(start_min) >= 60
+        or float(start_sec) >= 60
+        or float(crop_duration) > 3
+        or float(crop_duration) <= 0
+    ):
+        # check out of bounds
         return None, None, None
     return start_min, start_sec, crop_duration
