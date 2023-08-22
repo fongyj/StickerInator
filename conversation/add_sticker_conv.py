@@ -28,7 +28,7 @@ SELECTING_PACK = map(chr, range(7, 8))
 
 async def new_sticker(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     logging.info("{}: add sticker".format(update.effective_user.name))
-    context.user_data["action"] = add_sticker
+    context.user_data["final_state"] = lambda u, c: add_sticker(u, c)
     context.user_data["stickers"] = list()
     await update.message.reply_text(STICKER_FROM_SET_MESSAGE)
     return SELECTING_PACK
@@ -59,6 +59,7 @@ async def add_sticker(update: Update, context: ContextTypes.DEFAULT_TYPE):
         )
     await update.message.reply_text(ADD_SUCCESS_MESSAGE)
     logging.info("{}: added sticker(s)".format(update.effective_user.name))
+    return ConversationHandler.END
 
 
 async def cancel(update: Update, context: ContextTypes.DEFAULT_TYPE):

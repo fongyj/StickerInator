@@ -9,10 +9,6 @@ HELP_MESSAGE = (
 )
 
 # add pack/sticker
-PACK_NAME_MESSAGE = "Please reply with sticker pack name"
-
-PACK_TITLE_MESSAGE = "Please reply with sticker pack title"
-
 PACK_TYPE_MESSAGE = "Please reply with sticker pack type: IMAGE or VIDEO"
 
 WRONG_PACK_TYPE_MESSAGE = "Please reply with IMAGE or VIDEO"
@@ -49,6 +45,10 @@ VIDEO_TOO_LONG_MESSAGE = (
     'Video duration is too long, crop video by replying with start time followed by duration"mm:ss.S s.S"\n'
     + "(m for minutes, s for seconds, S for fraction of a second)"
 )
+
+PACK_TITLE_MESSAGE = "Please reply with sticker pack title"
+
+PACK_NAME_MESSAGE = "Please reply with sticker pack name"
 
 CREATE_PACK_SUCCESS_MESSAGE = "Sticker pack created: https://t.me/addstickers/{}"
 

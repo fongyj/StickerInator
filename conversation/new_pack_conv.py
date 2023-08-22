@@ -4,6 +4,7 @@ import logging
 load_dotenv()
 
 from telegram import Update, InputSticker
+from telegram.error import TelegramError
 from telegram.ext import (
     CommandHandler,
     ContextTypes,
@@ -32,41 +33,24 @@ from conversation.messages import (
 )
 
 (
-    SELECTING_NAME,
-    SELECTING_TITLE,
     SELECTING_TYPE,
     SELECTING_STICKER,
     SELECTING_DURATION,
     SELECTING_EMOJI,
+    SELECTING_NAME,
+    SELECTING_TITLE,
 ) = map(chr, range(6))
 
 
 async def new_pack(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     logging.info("{}: create sticker pack".format(update.effective_user.name))
-    context.user_data["action"] = create_pack
+
+    async def final_state(update, context):
+        await update.message.reply_text(PACK_TITLE_MESSAGE)
+        return SELECTING_TITLE
+
+    context.user_data["final_state"] = final_state
     context.user_data["stickers"] = list()
-    await update.message.reply_text(PACK_NAME_MESSAGE)
-    return SELECTING_NAME
-
-
-async def select_name(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    logging.info(
-        "{}: selected {} as sticker pack name".format(
-            update.effective_user.name, update.message.text
-        )
-    )  # verify that the pack name is valid?
-    context.user_data["name"] = update.message.text
-    await update.message.reply_text(PACK_TITLE_MESSAGE)
-    return SELECTING_TITLE
-
-
-async def select_title(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    logging.info(
-        "{}: selected {} as sticker pack title".format(
-            update.effective_user.name, update.message.text
-        )
-    )
-    context.user_data["title"] = update.message.text
     await update.message.reply_text(PACK_TYPE_MESSAGE)
     return SELECTING_TYPE
 
@@ -94,8 +78,7 @@ async def select_sticker(update: Update, context: ContextTypes.DEFAULT_TYPE):
     pack_type = context.user_data["type"]
     text = update.message.text
     if text and text.upper() == "DONE":
-        await context.user_data["action"](update, context)
-        return ConversationHandler.END
+        return await context.user_data["final_state"](update, context)
     elif text:
         await update.message.reply_text(NEXT_STICKER_MESSAGE)
         return SELECTING_STICKER
@@ -182,20 +165,53 @@ async def select_emoji(update: Update, context: ContextTypes.DEFAULT_TYPE):
     return SELECTING_STICKER
 
 
+async def select_title(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    logging.info(
+        "{}: selected {} as sticker pack title".format(
+            update.effective_user.name, update.message.text
+        )
+    )
+    context.user_data["title"] = update.message.text
+    await update.message.reply_text(PACK_NAME_MESSAGE)
+    return SELECTING_NAME
+
+
+async def select_name(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    logging.info(
+        "{}: selected {} as sticker pack name".format(
+            update.effective_user.name, update.message.text
+        )
+    )
+    context.user_data["name"] = update.message.text
+    if await create_pack(update, context):
+        return ConversationHandler.END
+
+
 async def create_pack(update: Update, context: ContextTypes.DEFAULT_TYPE):
     name = (
         context.user_data["name"] + "_by_StickerInatorBot"
     )  # this is required in the name of a stickerpack created by a bot
     bot = update.get_bot()
-    await bot.create_new_sticker_set(
-        update.effective_user.id,
-        name,
-        context.user_data["title"],
-        stickers=context.user_data["stickers"],
-        sticker_format=context.user_data["type"],
-    )
-    await update.message.reply_text(CREATE_PACK_SUCCESS_MESSAGE.format(name))
-    logging.info("{}: created sticker pack {}".format(update.effective_user.name, name))
+    try:
+        await bot.create_new_sticker_set(
+            update.effective_user.id,
+            name,
+            context.user_data["title"],
+            stickers=context.user_data["stickers"],
+            sticker_format=context.user_data["type"],
+        )
+        await update.message.reply_text(CREATE_PACK_SUCCESS_MESSAGE.format(name))
+        logging.info(
+            "{}: created sticker pack {}".format(update.effective_user.name, name)
+        )
+        return True
+    except TelegramError as te:
+        await update.message.reply_text(te.message)
+        logging.info(
+            "{}: error creating pack {}".format(update.effective_user.name, te.message)
+        )
+        await bot.send_message(update.effective_chat.id, PACK_NAME_MESSAGE)
+        return False
 
 
 async def cancel(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -214,12 +230,12 @@ def get_new_pack_conv():
     return ConversationHandler(
         entry_points=[CommandHandler("newpack", new_pack)],
         states={
-            SELECTING_NAME: [MessageHandler(filters.TEXT, select_name)],
-            SELECTING_TITLE: [MessageHandler(filters.TEXT, select_title)],
             SELECTING_TYPE: [MessageHandler(filters.TEXT, select_type)],
             SELECTING_STICKER: [MessageHandler(filters.ALL, select_sticker)],
             SELECTING_DURATION: [MessageHandler(filters.TEXT, select_duration)],
             SELECTING_EMOJI: [MessageHandler(filters.TEXT, select_emoji)],
+            SELECTING_TITLE: [MessageHandler(filters.TEXT, select_title)],
+            SELECTING_NAME: [MessageHandler(filters.TEXT, select_name)],
         },
         fallbacks=[MessageHandler(filters.ALL, cancel)],
     )
