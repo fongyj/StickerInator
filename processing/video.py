@@ -3,13 +3,13 @@ import os
 import subprocess
 import re
 
-FFMPEG_PATH = r"ffmpeg\ffmpeg.exe"  # can shift this to be a environment variable
-
 
 class VideoProcessor:
     def __init__(self, file):
         self.file = file
+        os.makedirs("temp", exist_ok=True)
         self.video_path = f"temp/{os.path.basename(file.file_path)}"
+        self.ffmpeg_path = os.environ.get("FFMPEG_PATH")
 
     async def get_video(self):
         await self.file.download_to_drive(custom_path=self.video_path)
@@ -26,9 +26,9 @@ class VideoProcessor:
             os.path.splitext(os.path.basename(self.video_path))[0] + ".webm",
         )
         if start_min:
-            command = f"{FFMPEG_PATH} -i {self.video_path} -c:v libvpx-vp9 -ss 00:{start_min}:{start_sec}00 -t 00:00:0{crop_duration}00 -crf 40 -an -vf scale={new_width}:{new_height} -v quiet -y {output_video_path}"
+            command = f"{self.ffmpeg_path} -i {self.video_path} -c:v libvpx-vp9 -ss 00:{start_min}:{start_sec}00 -t 00:00:0{crop_duration}00 -crf 40 -an -vf scale={new_width}:{new_height} -v quiet -y {output_video_path}"
         else:
-            command = f"{FFMPEG_PATH} -i {self.video_path} -c:v libvpx-vp9 -crf 40 -an -vf scale={new_width}:{new_height} -v quiet -y {output_video_path}"
+            command = f"{self.ffmpeg_path} -i {self.video_path} -c:v libvpx-vp9 -crf 40 -an -vf scale={new_width}:{new_height} -v quiet -y {output_video_path}"
         subprocess.call(command, shell=True)
         video_bytes = open(output_video_path, "rb").read()
         os.remove(output_video_path)
