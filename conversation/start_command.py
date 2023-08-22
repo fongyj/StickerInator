@@ -11,5 +11,6 @@ async def help(update: Update, context: ContextTypes.DEFAULT_TYPE):
 def get_start_command():
     return CommandHandler("start", help)
 
+
 def get_help_command():
     return CommandHandler("help", help)
