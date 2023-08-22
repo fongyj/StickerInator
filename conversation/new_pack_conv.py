@@ -62,10 +62,10 @@ async def new_pack(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
 async def select_type(update: Update, context: ContextTypes.DEFAULT_TYPE):
     logging.info(
         "{}: selected {} as sticker pack type".format(
-            update.effective_user.name, update.message.text.upper()
+            update.effective_user.name, update.message.text.lower()
         )
     )
-    pack_type = update.message.text.upper()
+    pack_type = update.message.text.lower()
     if pack_type == "IMAGE":
         context.user_data["type"] = StickerFormat.STATIC
         await update.message.reply_text(IMAGE_STICKER_MESSAGE)
@@ -81,7 +81,7 @@ async def select_type(update: Update, context: ContextTypes.DEFAULT_TYPE):
 async def select_sticker(update: Update, context: ContextTypes.DEFAULT_TYPE):
     pack_type = context.user_data["type"]
     text = update.message.text
-    if text and text.upper() == "DONE":
+    if text and text.lower() == "DONE":
         return await context.user_data["final_state"](update, context)
     elif text:
         await update.message.reply_text(NEXT_STICKER_MESSAGE)
@@ -139,10 +139,10 @@ async def select_duration(update: Update, context: ContextTypes.DEFAULT_TYPE):
     logging.info("{}: selected video crop {}".format(update.effective_user.name, crop))
     duration = context.user_data["duration"]
     bot = update.get_bot()
-    if crop.upper() == "OK" and duration > 3:
+    if crop.lower() == "OK" and duration > 3:
         await update.message.reply_text(VIDEO_TOO_LONG_MESSAGE)
         return SELECTING_DURATION
-    elif crop.upper() == "OK":
+    elif crop.lower() == "OK":
         await bot.send_message(update.effective_chat.id, VIDEO_PROCESSING_MESSAGE)
         context.user_data["sticker"] = context.user_data["processor"].process_video()
         await update.message.reply_text(STICKER_EMOJI_MESSAGE)
