@@ -23,7 +23,22 @@ if __version_info__ < (20, 0, 0, "alpha", 1):
         f"visit https://docs.python-telegram-bot.org/en/v{TG_VER}/examples.html"
     )
 from telegram import Update, BotCommand
-from telegram.ext import Application, CommandHandler, ContextTypes, ConversationHandler, ApplicationHandlerStop
+from telegram.ext import (
+    Application,
+    CommandHandler,
+    ContextTypes,
+    ConversationHandler,
+    ApplicationHandlerStop,
+)
+
+from conversation.messages import (
+    NEW_PACK_HELP,
+    ADD_STICKER_HELP,
+    DEL_STICKER_HELP,
+    DEL_PACK_HELP,
+    HELP_HELP,
+    CANCEL_HELP,
+)
 
 # Enable logging
 logging.basicConfig(
@@ -40,17 +55,19 @@ handlers_list = [
     add_sticker.get_add_sticker_conv(),
     delete_pack.delete_pack_conv(),
     delete_sticker.delete_sticker_conv(),
+    start.get_help_command(),
 ]
 
 
 command_info = [
-    BotCommand("newpack", "Creates a new stickerpack"),
-    BotCommand("addsticker", "Adds a sticker"),
-    BotCommand("delsticker", "Deletes a sticker"),
-    BotCommand("delpack", "Deletes a stickerpack"),
-    BotCommand("help", "Gets info on the bot"),
-    BotCommand("cancel", "Cancels current operation"),
+    BotCommand("newpack", NEW_PACK_HELP),
+    BotCommand("addsticker", ADD_STICKER_HELP),
+    BotCommand("delsticker", DEL_STICKER_HELP),
+    BotCommand("delpack", DEL_PACK_HELP),
+    BotCommand("help", HELP_HELP),
+    BotCommand("cancel", CANCEL_HELP),
 ]
+
 
 async def post_init(application: Application) -> None:
     bot = application.bot

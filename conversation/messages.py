@@ -1,11 +1,20 @@
 # help
+NEW_PACK_HELP = "Creates a new stickerpack"
+ADD_STICKER_HELP = "Adds a sticker"
+DEL_STICKER_HELP = "Deletes a sticker"
+DEL_PACK_HELP = "Deletes a stickerpack"
+HELP_HELP = "Gets info on the bot"
+CANCEL_HELP = "Cancels current operation"
+
 HELP_MESSAGE = (
     "StickerInator is made to help you with creating stickerpacks with images, videos and telegram bubbles!\n\n"
     + "Available commands:\n"
-    + "/newpack - Creates a new stickerpack\n"
-    + "/addsticker - Adds a sticker\n"
-    + "/delsticker - Deletes a sticker\n"
-    + "/delpack - Deletes a stickerpack"
+    + f"/newpack - {NEW_PACK_HELP}\n"
+    + f"/addsticker - {ADD_STICKER_HELP}\n"
+    + f"/delsticker - {DEL_STICKER_HELP}\n"
+    + f"/delpack - {DEL_PACK_HELP}\n"
+    + f"/help - {HELP_HELP}\n"
+    + f"/cancel - {CANCEL_HELP}"
 )
 
 # add pack/sticker
