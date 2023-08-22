@@ -1,8 +1,17 @@
 from dotenv import load_dotenv
 import logging
+import os
 
 load_dotenv()
 
+from telegram import Update, InputSticker, ReplyKeyboardRemove
+from telegram.ext import (
+    CommandHandler,
+    ContextTypes,
+    MessageHandler,
+    filters,
+    ConversationHandler,
+)
 from telegram import Update, InputSticker
 from telegram.error import TelegramError
 from telegram.ext import (
@@ -30,7 +39,7 @@ from conversation.messages import (
     INVALID_VIDEO_DURATION_MESSAGE,
     ADD_NEXT_STICKER_MESSAGE,
     CREATE_PACK_SUCCESS_MESSAGE,
-    VIDEO_PROCESSING_MESSAGE
+    VIDEO_PROCESSING_MESSAGE,
 )
 
 (
@@ -193,7 +202,7 @@ async def select_name(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 async def create_pack(update: Update, context: ContextTypes.DEFAULT_TYPE):
     name = (
-        context.user_data["name"] + "_by_StickerInatorBot"
+        context.user_data["name"] + "_by_" + os.environ.get("BOT_NAME")
     )  # this is required in the name of a stickerpack created by a bot
     bot = update.get_bot()
     try:
@@ -218,15 +227,12 @@ async def create_pack(update: Update, context: ContextTypes.DEFAULT_TYPE):
         return False
 
 
-async def cancel(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    logging.info(
-        "{}: invalid, command cancelled {}".format(
-            update.effective_user.name, update.message.text
-        )
-    )
+async def cancel(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
+    """Cancels and ends the conversation."""
     await update.message.reply_text(
-        "Invalid, command cancelled"
-    )  # implement a cancel command
+        "Operation Cancelled", reply_markup=ReplyKeyboardRemove()
+    )
+
     return ConversationHandler.END
 
 
@@ -234,12 +240,22 @@ def get_new_pack_conv():
     return ConversationHandler(
         entry_points=[CommandHandler("newpack", new_pack)],
         states={
-            SELECTING_TYPE: [MessageHandler(filters.TEXT, select_type)],
+            SELECTING_NAME: [
+                MessageHandler(filters.TEXT & ~filters.COMMAND, select_name)
+            ],
+            SELECTING_TITLE: [
+                MessageHandler(filters.TEXT & ~filters.COMMAND, select_title)
+            ],
+            SELECTING_TYPE: [
+                MessageHandler(filters.TEXT & ~filters.COMMAND, select_type)
+            ],
             SELECTING_STICKER: [MessageHandler(filters.ALL, select_sticker)],
-            SELECTING_DURATION: [MessageHandler(filters.TEXT, select_duration)],
-            SELECTING_EMOJI: [MessageHandler(filters.TEXT, select_emoji)],
-            SELECTING_TITLE: [MessageHandler(filters.TEXT, select_title)],
-            SELECTING_NAME: [MessageHandler(filters.TEXT, select_name)],
+            SELECTING_DURATION: [
+                MessageHandler(filters.TEXT & ~filters.COMMAND, select_duration)
+            ],
+            SELECTING_EMOJI: [
+                MessageHandler(filters.ALL & ~filters.COMMAND, select_emoji)
+            ],
         },
-        fallbacks=[MessageHandler(filters.ALL, cancel)],
+        fallbacks=[CommandHandler("cancel", cancel)],
     )
