@@ -1,5 +1,4 @@
-from moviepy.editor import VideoFileClip 
-import tempfile
+from moviepy.editor import VideoFileClip
 import os
 import subprocess
 import re

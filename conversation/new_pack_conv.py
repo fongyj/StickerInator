@@ -1,6 +1,5 @@
 from dotenv import load_dotenv
 import logging
-import os
 
 load_dotenv()
 

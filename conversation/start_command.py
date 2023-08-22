@@ -1,5 +1,5 @@
 from telegram import Update
-from telegram.ext import CommandHandler, ContextTypes, MessageHandler, filters, ConversationHandler
+from telegram.ext import CommandHandler, ContextTypes
 
 WELCOME_MESSAGE = "StickerInator is made to help you with creating stickerpacks with images, videos and telegram bubbles!\n\n"+\
     "Available commands:\n"+\
