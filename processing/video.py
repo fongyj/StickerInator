@@ -3,10 +3,10 @@ import os
 import subprocess
 import re
 
-FFMPEG_PATH = r"ffmpeg\ffmpeg.exe" # can shift this to be a environment variable
+FFMPEG_PATH = r"ffmpeg\ffmpeg.exe"  # can shift this to be a environment variable
+
 
 class VideoProcessor:
-
     def __init__(self, file):
         self.file = file
         self.video_path = f"temp/{os.path.basename(file.file_path)}"
@@ -21,7 +21,10 @@ class VideoProcessor:
         new_width, new_height = int(width * scale), int(height * scale)
 
         # write temp video
-        output_video_path = os.path.join(os.path.dirname(self.video_path), os.path.splitext(os.path.basename(self.video_path))[0] + ".webm")
+        output_video_path = os.path.join(
+            os.path.dirname(self.video_path),
+            os.path.splitext(os.path.basename(self.video_path))[0] + ".webm",
+        )
         if start_min:
             command = f"{FFMPEG_PATH} -i {self.video_path} -c:v libvpx-vp9 -ss 00:{start_min}:{start_sec}00 -t 00:00:0{crop_duration}00 -crf 40 -an -vf scale={new_width}:{new_height} -v quiet -y {output_video_path}"
         else:
@@ -35,6 +38,7 @@ class VideoProcessor:
 
     def get_duration(self):
         return self.video_file_clip.duration
+
 
 def parse_crop(crop: str):
     pattern = r"\d{2}:\d{2}\.\d{1} \d{1}\.\d{1}"

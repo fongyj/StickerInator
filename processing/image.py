@@ -2,6 +2,7 @@ import PIL.Image as Image
 import requests
 from io import BytesIO
 
+
 def process_image(image_url: str):
     response = requests.get(image_url)
     image = Image.open(BytesIO(response.content))

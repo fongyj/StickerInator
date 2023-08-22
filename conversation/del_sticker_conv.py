@@ -4,17 +4,33 @@ import logging
 load_dotenv()
 
 from telegram import Update
-from telegram.ext import CommandHandler, ContextTypes, MessageHandler, filters, ConversationHandler
+from telegram.ext import (
+    CommandHandler,
+    ContextTypes,
+    MessageHandler,
+    filters,
+    ConversationHandler,
+)
 from telegram.error import BadRequest
 
-from conversation.messages import DELETE_STICKER_MESSAGE, LAST_STICKER_MESSAGE, DELETE_STICKER_CONFIRMATION_MESSAGE, STICKER_NOT_FOUND_MESSAGE, SET_NOT_FOUND_MESSAGE, DELETE_PACK_SUCCESS_MESSAGE, DELETE_STICKER_SUCCESS_MESSAGE
+from conversation.messages import (
+    DELETE_STICKER_MESSAGE,
+    LAST_STICKER_MESSAGE,
+    DELETE_STICKER_CONFIRMATION_MESSAGE,
+    STICKER_NOT_FOUND_MESSAGE,
+    SET_NOT_FOUND_MESSAGE,
+    DELETE_PACK_SUCCESS_MESSAGE,
+    DELETE_STICKER_SUCCESS_MESSAGE,
+)
 
 SELECTING_PACK, CONFIRM_DELETE = map(chr, range(2))
+
 
 async def delete_pack(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     logging.info("{}: delete sticker".format(update.effective_user.name))
     await update.message.reply_text(DELETE_STICKER_MESSAGE)
     return SELECTING_PACK
+
 
 async def select_pack(update: Update, context: ContextTypes.DEFAULT_TYPE):
     try:
@@ -49,11 +65,19 @@ async def confirm_delete(update: Update, context: ContextTypes.DEFAULT_TYPE):
             sticker = context.user_data["sticker"].file_id
             if context.user_data["last"]:
                 await bot.delete_sticker_set(sticker_set)
-                await update.message.reply_text(DELETE_PACK_SUCCESS_MESSAGE.format(sticker_set))
-            else: 
+                await update.message.reply_text(
+                    DELETE_PACK_SUCCESS_MESSAGE.format(sticker_set)
+                )
+            else:
                 await bot.delete_sticker_from_set(sticker)
-                await update.message.reply_text(DELETE_STICKER_SUCCESS_MESSAGE.format(sticker_set))
-                logging.info("{}: deleted sticker from {}".format(update.effective_user.name, sticker_set))
+                await update.message.reply_text(
+                    DELETE_STICKER_SUCCESS_MESSAGE.format(sticker_set)
+                )
+                logging.info(
+                    "{}: deleted sticker from {}".format(
+                        update.effective_user.name, sticker_set
+                    )
+                )
         else:
             await update.message.reply_text(DELETE_STICKER_CONFIRMATION_MESSAGE)
             return CONFIRM_DELETE
@@ -61,9 +85,11 @@ async def confirm_delete(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await update.message.reply_text(SET_NOT_FOUND_MESSAGE)
     return ConversationHandler.END
 
+
 async def cancel(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text("Invalid, command cancelled")
     return ConversationHandler.END
+
 
 def delete_sticker_conv():
     return ConversationHandler(
@@ -71,6 +97,6 @@ def delete_sticker_conv():
         states={
             SELECTING_PACK: [MessageHandler(filters.Sticker.ALL, select_pack)],
             CONFIRM_DELETE: [MessageHandler(filters.TEXT, confirm_delete)],
-            },
-        fallbacks=[MessageHandler(filters.ALL, cancel)]
+        },
+        fallbacks=[MessageHandler(filters.ALL, cancel)],
     )
