@@ -27,8 +27,9 @@ from conversation.cancel_command import cancel
 SELECTING_PACK, CONFIRM_DELETE = map(chr, range(2))
 
 
-async def delete_pack(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+async def delete_sticker(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     logging.info("{}: delete sticker".format(update.effective_user.name))
+    context.user_data["operation"] = "delete sticker"
     await update.message.reply_text(DELETE_STICKER_MESSAGE)
     return SELECTING_PACK
 
@@ -89,7 +90,7 @@ async def confirm_delete(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 def delete_sticker_conv():
     return ConversationHandler(
-        entry_points=[CommandHandler("delsticker", delete_pack)],
+        entry_points=[CommandHandler("delsticker", delete_sticker)],
         states={
             SELECTING_PACK: [MessageHandler(filters.Sticker.ALL, select_pack)],
             CONFIRM_DELETE: [

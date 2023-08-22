@@ -33,6 +33,7 @@ async def new_sticker(update: Update, context: ContextTypes.DEFAULT_TYPE) -> Non
     logging.info("{}: add sticker".format(update.effective_user.name))
     context.user_data["final_state"] = lambda u, c: add_sticker(u, c)
     context.user_data["stickers"] = list()
+    context.user_data["operation"] = "add sticker"
     await update.message.reply_text(STICKER_FROM_SET_MESSAGE)
     return SELECTING_PACK
 

@@ -26,6 +26,7 @@ SELECTING_PACK, CONFIRM_DELETE = map(chr, range(2))
 
 async def delete_pack(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     logging.info("{}: delete pack".format(update.effective_user.name))
+    context.user_data["operation"] = "delete pack"
     await update.message.reply_text(STICKER_FROM_SET_MESSAGE)
     return SELECTING_PACK
 

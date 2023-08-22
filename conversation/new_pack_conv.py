@@ -46,7 +46,7 @@ from conversation.cancel_command import cancel
 
 
 async def new_pack(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    logging.info("{}: create sticker pack".format(update.effective_user.name))
+    logging.info("{}: create pack".format(update.effective_user.name))
 
     async def final_state(update, context):
         await update.message.reply_text(PACK_TITLE_MESSAGE)
@@ -54,6 +54,7 @@ async def new_pack(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
 
     context.user_data["final_state"] = final_state
     context.user_data["stickers"] = list()
+    context.user_data["operation"] = "create pack"
     await update.message.reply_text(PACK_TYPE_MESSAGE)
     return SELECTING_TYPE
 

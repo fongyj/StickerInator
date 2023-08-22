@@ -80,3 +80,6 @@ DELETE_STICKER_CONFIRMATION_MESSAGE = "Confirm delete sticker? Reply with YES"
 STICKER_NOT_FOUND_MESSAGE = "Sticker not found in the sticker set."
 
 DELETE_STICKER_SUCCESS_MESSAGE = "Sticker deleted from {}"
+
+# cancel
+CANCEL_MESSAGE = "Operation cancelled"
