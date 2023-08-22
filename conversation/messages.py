@@ -46,6 +46,8 @@ VIDEO_TOO_LONG_MESSAGE = (
     + "(m for minutes, s for seconds, S for fraction of a second)"
 )
 
+VIDEO_PROCESSING_MESSAGE = "Please wait, video is processing..."
+
 PACK_TITLE_MESSAGE = "Please reply with sticker pack title"
 
 PACK_NAME_MESSAGE = "Please reply with sticker pack name"

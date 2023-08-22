@@ -30,6 +30,7 @@ from conversation.messages import (
     INVALID_VIDEO_DURATION_MESSAGE,
     ADD_NEXT_STICKER_MESSAGE,
     CREATE_PACK_SUCCESS_MESSAGE,
+    VIDEO_PROCESSING_MESSAGE
 )
 
 (
@@ -134,10 +135,12 @@ async def select_duration(update: Update, context: ContextTypes.DEFAULT_TYPE):
     crop = update.message.text
     logging.info("{}: selected video crop {}".format(update.effective_user.name, crop))
     duration = context.user_data["duration"]
+    bot = update.get_bot()
     if crop.upper() == "OK" and duration > 3:
         await update.message.reply_text(VIDEO_TOO_LONG_MESSAGE)
         return SELECTING_DURATION
     elif crop.upper() == "OK":
+        await bot.send_message(update.effective_chat.id, VIDEO_PROCESSING_MESSAGE)
         context.user_data["sticker"] = context.user_data["processor"].process_video()
         await update.message.reply_text(STICKER_EMOJI_MESSAGE)
         return SELECTING_EMOJI
@@ -146,6 +149,7 @@ async def select_duration(update: Update, context: ContextTypes.DEFAULT_TYPE):
         if start_min == None:
             await update.message.reply_text(INVALID_VIDEO_DURATION_MESSAGE)
             return SELECTING_DURATION
+        await bot.send_message(update.effective_chat.id, VIDEO_PROCESSING_MESSAGE)
         context.user_data["sticker"] = context.user_data["processor"].process_video(
             start_min, start_sec, crop_duration
         )
