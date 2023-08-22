@@ -4,7 +4,7 @@ import os
 
 load_dotenv()
 
-from telegram import Update, InputSticker, ReplyKeyboardRemove
+from telegram import Update, InputSticker
 from telegram.ext import (
     CommandHandler,
     ContextTypes,
@@ -50,6 +50,7 @@ from conversation.messages import (
     SELECTING_NAME,
     SELECTING_TITLE,
 ) = map(chr, range(6))
+from conversation.cancel_command import cancel
 
 
 async def new_pack(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
@@ -225,15 +226,6 @@ async def create_pack(update: Update, context: ContextTypes.DEFAULT_TYPE):
         )
         await bot.send_message(update.effective_chat.id, PACK_NAME_MESSAGE)
         return False
-
-
-async def cancel(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
-    """Cancels and ends the conversation."""
-    await update.message.reply_text(
-        "Operation Cancelled", reply_markup=ReplyKeyboardRemove()
-    )
-
-    return ConversationHandler.END
 
 
 def get_new_pack_conv():

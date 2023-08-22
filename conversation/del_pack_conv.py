@@ -3,7 +3,7 @@ import logging
 
 load_dotenv()
 
-from telegram import Update, ReplyKeyboardRemove
+from telegram import Update
 from telegram.ext import (
     CommandHandler,
     ContextTypes,
@@ -19,6 +19,7 @@ from conversation.messages import (
     DELETE_PACK_SUCCESS_MESSAGE,
     SET_NOT_FOUND_MESSAGE,
 )
+from conversation.cancel_command import cancel
 
 SELECTING_PACK, CONFIRM_DELETE = map(chr, range(2))
 
@@ -52,15 +53,6 @@ async def confirm_delete(update: Update, context: ContextTypes.DEFAULT_TYPE):
             return CONFIRM_DELETE
     except BadRequest as e:
         await update.message.reply_text(SET_NOT_FOUND_MESSAGE)
-    return ConversationHandler.END
-
-
-async def cancel(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
-    """Cancels and ends the conversation."""
-    await update.message.reply_text(
-        "Operation Cancelled", reply_markup=ReplyKeyboardRemove()
-    )
-
     return ConversationHandler.END
 
 

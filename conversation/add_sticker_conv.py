@@ -1,6 +1,6 @@
 import logging
 
-from telegram import Update, ReplyKeyboardRemove
+from telegram import Update
 from telegram.ext import (
     CommandHandler,
     ContextTypes,
@@ -30,6 +30,7 @@ from conversation.messages import (
     STICKER_FROM_SET_MESSAGE,
     ADD_SUCCESS_MESSAGE,
 )
+from conversation.cancel_command import cancel
 
 SELECTING_PACK = map(chr, range(7, 8))
 
@@ -67,15 +68,6 @@ async def add_sticker(update: Update, context: ContextTypes.DEFAULT_TYPE):
         )
     await update.message.reply_text(ADD_SUCCESS_MESSAGE)
     logging.info("{}: added sticker(s)".format(update.effective_user.name))
-    return ConversationHandler.END
-
-
-async def cancel(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
-    """Cancels and ends the conversation."""
-    await update.message.reply_text(
-        "Operation Cancelled", reply_markup=ReplyKeyboardRemove()
-    )
-
     return ConversationHandler.END
 
 
