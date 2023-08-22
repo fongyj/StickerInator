@@ -77,7 +77,9 @@ def get_add_sticker_conv():
         entry_points=[CommandHandler("addsticker", new_sticker)],
         states={
             SELECTING_PACK: [MessageHandler(filters.Sticker.ALL, select_pack)],
-            SELECTING_STICKER: [MessageHandler(filters.ALL, select_sticker)],
+            SELECTING_STICKER: [
+                MessageHandler(filters.ALL & ~filters.COMMAND, select_sticker)
+            ],
             SELECTING_DURATION: [
                 MessageHandler(filters.TEXT & ~filters.COMMAND, select_duration)
             ],

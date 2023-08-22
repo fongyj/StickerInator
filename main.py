@@ -10,6 +10,7 @@ import conversation.del_pack_conv as delete_pack
 import conversation.del_sticker_conv as delete_sticker
 import conversation.add_sticker_conv as add_sticker
 import conversation.start_command as start
+import conversation.help_command as help
 
 try:
     from telegram import __version_info__
@@ -50,7 +51,7 @@ handlers_list = [
     add_sticker.get_add_sticker_conv(),
     delete_pack.delete_pack_conv(),
     delete_sticker.delete_sticker_conv(),
-    start.get_help_command(),
+    help.get_help_command(),
 ]
 
 

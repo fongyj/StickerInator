@@ -104,7 +104,9 @@ def delete_sticker_conv():
     return ConversationHandler(
         entry_points=[CommandHandler("delsticker", delete_sticker)],
         states={
-            SELECTING_PACK: [MessageHandler(filters.Sticker.ALL, select_pack)],
+            SELECTING_PACK: [
+                MessageHandler(filters.Sticker.ALL & ~filters.COMMAND, select_pack)
+            ],
             CONFIRM_DELETE: [
                 MessageHandler(filters.TEXT & ~filters.COMMAND, confirm_delete)
             ],
