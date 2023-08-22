@@ -11,14 +11,6 @@ from telegram.ext import (
     filters,
     ConversationHandler,
 )
-from telegram import Update
-from telegram.ext import (
-    CommandHandler,
-    ContextTypes,
-    MessageHandler,
-    filters,
-    ConversationHandler,
-)
 from telegram.error import BadRequest
 
 from conversation.messages import (

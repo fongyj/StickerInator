@@ -5,14 +5,6 @@ import os
 load_dotenv()
 
 from telegram import Update, InputSticker
-from telegram.ext import (
-    CommandHandler,
-    ContextTypes,
-    MessageHandler,
-    filters,
-    ConversationHandler,
-)
-from telegram import Update, InputSticker
 from telegram.error import TelegramError
 from telegram.ext import (
     CommandHandler,

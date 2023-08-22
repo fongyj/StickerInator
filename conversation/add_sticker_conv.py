@@ -8,22 +8,16 @@ from telegram.ext import (
     filters,
     ConversationHandler,
 )
-from telegram import Update
-from telegram.ext import (
-    CommandHandler,
-    ContextTypes,
-    MessageHandler,
-    filters,
-    ConversationHandler,
-)
 from telegram.constants import StickerFormat
 
 from conversation.new_pack_conv import (
     SELECTING_STICKER,
     SELECTING_DURATION,
     SELECTING_EMOJI,
+    select_sticker,
+    select_duration,
+    select_emoji,
 )
-from conversation.new_pack_conv import select_sticker, select_duration, select_emoji
 from conversation.messages import (
     IMAGE_STICKER_MESSAGE,
     VIDEO_STICKER_MESSAGE,
