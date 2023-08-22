@@ -1,11 +1,11 @@
 from telegram import Update
 from telegram.ext import CommandHandler, ContextTypes
 
-from conversation.messages import HELP_MESSAGE
+from conversation.messages import send_message, HELP_MESSAGE
 
 
 async def help(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    await update.message.reply_text(HELP_MESSAGE)
+    await send_message(update, HELP_MESSAGE)
 
 
 def get_start_command():

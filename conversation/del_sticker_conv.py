@@ -1,5 +1,6 @@
 from dotenv import load_dotenv
 import logging
+import os
 
 load_dotenv()
 
@@ -21,6 +22,8 @@ from conversation.messages import (
     SET_NOT_FOUND_MESSAGE,
     DELETE_PACK_SUCCESS_MESSAGE,
     DELETE_STICKER_SUCCESS_MESSAGE,
+    INVALID_SET_MESSAGE,
+    STICKER_FROM_SET_MESSAGE,
 )
 from conversation.cancel_command import cancel
 
@@ -39,6 +42,10 @@ async def select_pack(update: Update, context: ContextTypes.DEFAULT_TYPE):
         bot = update.get_bot()
         context.user_data["sticker"] = update.message.sticker
         sticker_set = context.user_data["sticker"].set_name
+        if not sticker_set.endswith("_by_" + os.environ.get("BOT_NAME")):
+            await update.message.reply_text(INVALID_SET_MESSAGE)
+            await update.message.reply_text(DELETE_STICKER_MESSAGE)
+            return SELECTING_PACK
         sticker_set_info = await bot.get_sticker_set(sticker_set)
 
         # Iterate through the stickers in the sticker set

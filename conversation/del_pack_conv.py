@@ -1,5 +1,6 @@
 from dotenv import load_dotenv
 import logging
+import os
 
 load_dotenv()
 
@@ -18,6 +19,7 @@ from conversation.messages import (
     DELETE_PACK_CONFIRMATION_MESSAGE,
     DELETE_PACK_SUCCESS_MESSAGE,
     SET_NOT_FOUND_MESSAGE,
+    INVALID_SET_MESSAGE,
 )
 from conversation.cancel_command import cancel
 
@@ -33,6 +35,11 @@ async def delete_pack(update: Update, context: ContextTypes.DEFAULT_TYPE) -> Non
 
 async def select_pack(update: Update, context: ContextTypes.DEFAULT_TYPE):
     context.user_data["sticker"] = update.message.sticker
+    sticker_set = context.user_data["sticker"].set_name
+    if not sticker_set.endswith("_by_" + os.environ.get("BOT_NAME")):
+        await update.message.reply_text(INVALID_SET_MESSAGE)
+        await update.message.reply_text(STICKER_FROM_SET_MESSAGE)
+        return SELECTING_PACK
     await update.message.reply_text(DELETE_PACK_CONFIRMATION_MESSAGE)
     return CONFIRM_DELETE
 

@@ -214,10 +214,10 @@ async def create_pack(update: Update, context: ContextTypes.DEFAULT_TYPE):
         return True
     except TelegramError as te:
         await update.message.reply_text(te.message)
+        await update.message.reply_text(PACK_NAME_MESSAGE)
         logging.info(
             "{}: error creating pack {}".format(update.effective_user.name, te.message)
         )
-        await bot.send_message(update.effective_chat.id, PACK_NAME_MESSAGE)
         return False
 
 

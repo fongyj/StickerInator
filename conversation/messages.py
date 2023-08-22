@@ -1,3 +1,15 @@
+from telegram import Update
+from telegram.constants import ParseMode
+
+
+async def send_message(update: Update, message):
+    # sends message with markdown parse mode.
+    bot = update.get_bot()
+    await bot.send_message(
+        update.effective_chat.id, message, parse_mode=ParseMode.MARKDOWN_V2
+    )
+
+
 # help
 NEW_PACK_HELP = "Creates a new stickerpack"
 ADD_STICKER_HELP = "Adds a sticker"
@@ -7,14 +19,14 @@ HELP_HELP = "Gets info on the bot"
 CANCEL_HELP = "Cancels current operation"
 
 HELP_MESSAGE = (
-    "StickerInator is made to help you with creating stickerpacks with images, videos and telegram bubbles!\n\n"
+    "*StickerInator* is made to help you with creating stickerpacks with images, videos and telegram bubbles\!\n\n"
     + "Available commands:\n"
-    + f"/newpack - {NEW_PACK_HELP}\n"
-    + f"/addsticker - {ADD_STICKER_HELP}\n"
-    + f"/delsticker - {DEL_STICKER_HELP}\n"
-    + f"/delpack - {DEL_PACK_HELP}\n"
-    + f"/help - {HELP_HELP}\n"
-    + f"/cancel - {CANCEL_HELP}"
+    + f"/newpack \- {NEW_PACK_HELP}\n"
+    + f"/addsticker \- {ADD_STICKER_HELP}\n"
+    + f"/delsticker \- {DEL_STICKER_HELP}\n"
+    + f"/delpack \- {DEL_PACK_HELP}\n"
+    + f"/help \- {HELP_HELP}\n"
+    + f"/cancel \- {CANCEL_HELP}"
 )
 
 # add pack/sticker
@@ -46,7 +58,9 @@ ADD_NEXT_STICKER_MESSAGE = (
 
 STICKER_FROM_SET_MESSAGE = "Please send a sticker from your sticker set"
 
-ADD_SUCCESS_MESSAGE = "Added stickers!"
+INVALID_SET_MESSAGE = "Sticker set selected must be created by StickerInatorBot"
+
+ADD_SUCCESS_MESSAGE = "Added stickers\!"
 
 NEXT_STICKER_MESSAGE = "Please send another sticker OR reply with DONE when finished"
 

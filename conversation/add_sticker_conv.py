@@ -9,6 +9,7 @@ from telegram.ext import (
     ConversationHandler,
 )
 from telegram.constants import StickerFormat
+import os
 
 from conversation.new_pack_conv import (
     SELECTING_STICKER,
@@ -23,6 +24,7 @@ from conversation.messages import (
     VIDEO_STICKER_MESSAGE,
     STICKER_FROM_SET_MESSAGE,
     ADD_SUCCESS_MESSAGE,
+    INVALID_SET_MESSAGE,
 )
 from conversation.cancel_command import cancel
 
@@ -43,6 +45,10 @@ async def select_pack(update: Update, context: ContextTypes.DEFAULT_TYPE):
     logging.info(
         "{}: selected sticker pack {}".format(update.effective_user.name, set_name)
     )
+    if not set_name.endswith("_by_" + os.environ.get("BOT_NAME")):
+        await update.message.reply_text(INVALID_SET_MESSAGE)
+        await update.message.reply_text(STICKER_FROM_SET_MESSAGE)
+        return SELECTING_PACK
     bot = update.get_bot()
     sticker_set = await bot.get_sticker_set(set_name)
     context.user_data["set_name"] = set_name
