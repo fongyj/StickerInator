@@ -30,7 +30,7 @@ HELP_MESSAGE = (
 )
 
 # add pack/sticker
-PACK_TYPE_MESSAGE = "Please reply with sticker pack type: IMAGE or VIDEO"
+PACK_TYPE_MESSAGE = "Please select a sticker type:"
 
 IMAGE_STICKER_MESSAGE = "Please send image sticker"
 
@@ -72,6 +72,12 @@ PACK_TITLE_MESSAGE = "Please reply with sticker pack title"
 PACK_NAME_MESSAGE = "Please reply with sticker pack name"
 
 CREATE_PACK_SUCCESS_MESSAGE = "Sticker pack created: https://t.me/addstickers/{}"
+
+STICKER_NOT_SUPPORTED = "Sticker is animated and is currently not supported. Please send another video sticker"
+
+DOWNLOAD_FAILED_IMAGE = "Failed to download sticker. Please send another image sticker"
+
+DOWNLOAD_FAILED_VIDEO = "Failed to download sticker. Please send another video sticker"
 
 # delete pack
 DELETE_PACK_CONFIRMATION_MESSAGE = "Confirm delete pack? Reply with YES"
