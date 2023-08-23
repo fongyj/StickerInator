@@ -30,17 +30,20 @@ HELP_MESSAGE = (
 )
 
 # add pack/sticker
-PACK_TYPE_MESSAGE = "Please reply with sticker pack type: IMAGE or VIDEO"
+PACK_TYPE_MESSAGE = "Please select a sticker type:"
 
 IMAGE_STICKER_MESSAGE = "Please send image sticker"
 
 VIDEO_STICKER_MESSAGE = "Please send video sticker"
 
 VIDEO_CROP_MESSAGE = (
-    "Video duration is {} seconds, maximum duration is 3 seconds\n"
-    + 'Crop video by replying with start time followed by duration "mm:ss.S s.S"\n'
-    + "(m for minutes, s for seconds, S for fraction of a second)\n\n"
-    + 'Reply with "OK" if no video cropping is needed'
+    "Video duration: <b>{} seconds</b> (Maximum duration: <b>3 seconds</b>)\n"
+    "To crop the video, reply with the start time and duration in the format: "
+    "<b>mm:ss.S s.S</b>\n"
+    "(m for minutes, s for seconds, S for fraction of a second)\n\n"
+    "For example, to crop the video starting at 5 minutes and 10.5 seconds, for a duration of 2.8 seconds, "
+    "reply with: <b>05:10.5 2.8</b>\n\n"
+    "If no video cropping is needed, simply reply with <em>OK</em>"
 )
 
 INVALID_VIDEO_DURATION_MESSAGE = "Invalid start timestamp or duration"
@@ -48,7 +51,7 @@ INVALID_VIDEO_DURATION_MESSAGE = "Invalid start timestamp or duration"
 STICKER_EMOJI_MESSAGE = "Please send a single emoji for the sticker"
 
 ADD_NEXT_STICKER_MESSAGE = (
-    "Please send another sticker OR reply with DONE when finished"
+    "Please send another sticker OR reply with ```DONE``` when finished"
 )
 
 STICKER_FROM_SET_MESSAGE = "Please send a sticker from your sticker set"
@@ -59,9 +62,11 @@ ADD_SUCCESS_MESSAGE = "Added {} sticker(s)"
 
 VIDEO_TOO_LONG_MESSAGE = "Video duration is too long"
 
-VIDEO_PROCESSING_MESSAGE = "Please wait, video is processing..."
+VIDEO_PROCESSING_MESSAGE = "Please wait, video is processing... ⏰"
 
-PACK_LIMIT_REACHED_MESSAGE = "Sticker pack limit reached, reply with DONE when finished"
+PACK_LIMIT_REACHED_MESSAGE = (
+    "Sticker pack limit reached, reply with ```DONE``` when finished"
+)
 
 SIZE_LIMIT_REACHED_MESSAGE = (
     "Sticker file size limit reached, please send a smaller sticker"
@@ -69,12 +74,22 @@ SIZE_LIMIT_REACHED_MESSAGE = (
 
 PACK_TITLE_MESSAGE = "Please reply with sticker pack title"
 
-PACK_NAME_MESSAGE = "Please reply with sticker pack name"
+PACK_NAME_MESSAGE = (
+    "Please reply with sticker pack name"
+    + "\n"
+    + "Note: Sticker pack names must be unique"
+)
 
 CREATE_PACK_SUCCESS_MESSAGE = "Sticker pack created: https://t.me/addstickers/{}"
 
+STICKER_NOT_SUPPORTED = "Sticker is animated and is currently not supported. Please send another video sticker"
+
+DOWNLOAD_FAILED_IMAGE = "Failed to download sticker. Please send another image sticker"
+
+DOWNLOAD_FAILED_VIDEO = "Failed to download sticker. Please send another video sticker"
+
 # delete pack
-DELETE_PACK_CONFIRMATION_MESSAGE = "Confirm delete pack? Reply with YES"
+DELETE_PACK_CONFIRMATION_MESSAGE = "Confirm delete pack? Reply with ```YES```"
 
 DELETE_PACK_SUCCESS_MESSAGE = "Sticker pack {} deleted"
 
@@ -83,9 +98,9 @@ SET_NOT_FOUND_MESSAGE = "No such sticker/stickerset. Cancelling operation"
 # delete sticker
 DELETE_STICKER_MESSAGE = "Please send the sticker you wish to delete"
 
-LAST_STICKER_MESSAGE = "This is your last sticker. Deleting this will delete the sticker pack. Are you sure? Reply with YES"
+LAST_STICKER_MESSAGE = "❗❗❗This is your last sticker\. Deleting this will delete the sticker pack\. Are you sure? Reply with ```YES```"
 
-DELETE_STICKER_CONFIRMATION_MESSAGE = "Confirm delete sticker? Reply with YES"
+DELETE_STICKER_CONFIRMATION_MESSAGE = "Confirm delete sticker? Reply with ```YES```"
 
 STICKER_NOT_FOUND_MESSAGE = "Sticker not found in the sticker set."
 

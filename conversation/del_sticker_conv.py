@@ -5,6 +5,7 @@ import os
 load_dotenv()
 
 from telegram import Update
+from telegram.constants import ParseMode
 from telegram.ext import (
     CommandHandler,
     ContextTypes,
@@ -57,10 +58,10 @@ async def select_pack(update: Update, context: ContextTypes.DEFAULT_TYPE):
             if context.user_data["sticker"].file_id == sticker_info.file_id:
                 if len(sticker_set_info.stickers) == 1:
                     context.user_data["last"] = True
-                    await update.message.reply_text(LAST_STICKER_MESSAGE)
+                    await update.message.reply_text(LAST_STICKER_MESSAGE, parse_mode=ParseMode.MARKDOWN_V2)
                 else:
                     context.user_data["last"] = False
-                    await update.message.reply_text(DELETE_STICKER_CONFIRMATION_MESSAGE)
+                    await update.message.reply_text(DELETE_STICKER_CONFIRMATION_MESSAGE, parse_mode=ParseMode.MARKDOWN_V2)
                 return CONFIRM_DELETE
 
         # If the sticker wasn't found in the set
@@ -92,7 +93,7 @@ async def confirm_delete(update: Update, context: ContextTypes.DEFAULT_TYPE):
                     )
                 )
         else:
-            await update.message.reply_text(DELETE_STICKER_CONFIRMATION_MESSAGE)
+            await update.message.reply_text(DELETE_STICKER_CONFIRMATION_MESSAGE, parse_mode=ParseMode.MARKDOWN_V2)
             return CONFIRM_DELETE
     except BadRequest as e:
         await update.message.reply_text(SET_NOT_FOUND_MESSAGE)
