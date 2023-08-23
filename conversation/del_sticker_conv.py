@@ -23,7 +23,6 @@ from conversation.messages import (
     DELETE_PACK_SUCCESS_MESSAGE,
     DELETE_STICKER_SUCCESS_MESSAGE,
     INVALID_SET_MESSAGE,
-    STICKER_FROM_SET_MESSAGE,
 )
 from conversation.cancel_command import cancel
 
