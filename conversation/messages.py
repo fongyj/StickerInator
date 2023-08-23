@@ -32,8 +32,6 @@ HELP_MESSAGE = (
 # add pack/sticker
 PACK_TYPE_MESSAGE = "Please reply with sticker pack type: IMAGE or VIDEO"
 
-WRONG_PACK_TYPE_MESSAGE = "Please reply with IMAGE or VIDEO"
-
 IMAGE_STICKER_MESSAGE = "Please send image sticker"
 
 VIDEO_STICKER_MESSAGE = "Please send video sticker"
@@ -45,12 +43,9 @@ VIDEO_CROP_MESSAGE = (
     + 'Reply with "OK" if no video cropping is needed'
 )
 
-INVALID_VIDEO_DURATION_MESSAGE = (
-    'Invalid start timestamp and duration, reply with start time followed by duration"mm:ss.S s.S"\n'
-    + "(m for minutes, s for seconds, S for fraction of a second)"
-)
+INVALID_VIDEO_DURATION_MESSAGE = "Invalid start timestamp or duration"
 
-STICKER_EMOJI_MESSAGE = "Please send a emoji for the sticker"
+STICKER_EMOJI_MESSAGE = "Please send a single emoji for the sticker"
 
 ADD_NEXT_STICKER_MESSAGE = (
     "Please send another sticker OR reply with DONE when finished"
@@ -60,16 +55,17 @@ STICKER_FROM_SET_MESSAGE = "Please send a sticker from your sticker set"
 
 INVALID_SET_MESSAGE = "Sticker set selected must be created by StickerInatorBot"
 
-ADD_SUCCESS_MESSAGE = "Added stickers\!"
+ADD_SUCCESS_MESSAGE = "Added {} sticker(s)"
 
-NEXT_STICKER_MESSAGE = "Please send another sticker OR reply with DONE when finished"
-
-VIDEO_TOO_LONG_MESSAGE = (
-    'Video duration is too long, crop video by replying with start time followed by duration"mm:ss.S s.S"\n'
-    + "(m for minutes, s for seconds, S for fraction of a second)"
-)
+VIDEO_TOO_LONG_MESSAGE = "Video duration is too long"
 
 VIDEO_PROCESSING_MESSAGE = "Please wait, video is processing..."
+
+PACK_LIMIT_REACHED_MESSAGE = "Sticker pack limit reached, reply with DONE when finished"
+
+SIZE_LIMIT_REACHED_MESSAGE = (
+    "Sticker file size limit reached, please send a smaller sticker"
+)
 
 PACK_TITLE_MESSAGE = "Please reply with sticker pack title"
 

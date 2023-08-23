@@ -28,14 +28,14 @@ from conversation.messages import (
     IMAGE_STICKER_MESSAGE,
     VIDEO_STICKER_MESSAGE,
     STICKER_EMOJI_MESSAGE,
-    NEXT_STICKER_MESSAGE,
     VIDEO_TOO_LONG_MESSAGE,
-    WRONG_PACK_TYPE_MESSAGE,
     VIDEO_CROP_MESSAGE,
     INVALID_VIDEO_DURATION_MESSAGE,
     ADD_NEXT_STICKER_MESSAGE,
     CREATE_PACK_SUCCESS_MESSAGE,
     VIDEO_PROCESSING_MESSAGE,
+    PACK_LIMIT_REACHED_MESSAGE,
+    SIZE_LIMIT_REACHED_MESSAGE,
 )
 
 (
@@ -47,6 +47,10 @@ from conversation.messages import (
     SELECTING_TITLE,
 ) = map(chr, range(6))
 from conversation.cancel_command import cancel
+
+MAX_STATIC_STICKER = 120
+MAX_VIDEO_STICKER = 50
+MAX_FILE_SIZE = 50000000  # 50mb
 
 
 async def new_pack(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
@@ -69,6 +73,7 @@ async def new_pack(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     await update.message.reply_text(
         "Please choose a sticker type:", reply_markup=reply_markup
     )
+    context.user_data["sticker_count"] = 0
     return SELECTING_TYPE
 
 
@@ -100,7 +105,7 @@ async def select_type(update: Update, context: ContextTypes.DEFAULT_TYPE):
         context.user_data["type"] = StickerFormat.VIDEO
         await update.message.reply_text(VIDEO_STICKER_MESSAGE)
     else:
-        await update.message.reply_text(WRONG_PACK_TYPE_MESSAGE)
+        await update.message.reply_text(PACK_TYPE_MESSAGE)
         return SELECTING_TYPE
     return SELECTING_STICKER
 
@@ -110,55 +115,81 @@ async def select_sticker(update: Update, context: ContextTypes.DEFAULT_TYPE):
     text = update.message.text
     if text and text.lower() == "done":
         return await context.user_data["final_state"](update, context)
-    elif text:
-        await update.message.reply_text(NEXT_STICKER_MESSAGE)
-        return SELECTING_STICKER
 
     if pack_type == StickerFormat.STATIC:
-        if update.message.photo:
-            file = await update.message.photo[-1].get_file()
-        elif update.message.document and update.message.document.mime_type.startswith(
-            "image"
-        ):
-            file = await update.message.document.get_file()
-        else:
-            await update.message.reply_text(IMAGE_STICKER_MESSAGE)
-            return SELECTING_STICKER
-        logging.info(
-            "{}: uploaded image sticker {}".format(
-                update.effective_user.name, file.file_path
-            )
-        )
-        processed_sticker = process_image(file.file_path)
-        context.user_data["sticker"] = processed_sticker
-        await update.message.reply_text(STICKER_EMOJI_MESSAGE)
-        return SELECTING_EMOJI
-
+        return await select_image_sticker(update, context)
     elif pack_type == StickerFormat.VIDEO:
-        if update.message.video:
-            file = await update.message.video.get_file()
-        elif update.message.document and update.message.document.mime_type.startswith(
-            "video"
-        ):
-            file = await update.message.document.get_file()
-        elif update.message.video_note:
-            file = await update.message.video_note.get_file()
-        else:
-            await update.message.reply_text(VIDEO_STICKER_MESSAGE)
-            return SELECTING_STICKER
+        return await select_video_sticker(update, context)
+
+
+async def select_image_sticker(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    if context.user_data["sticker_count"] >= MAX_STATIC_STICKER:
+        await update.message.reply_text(PACK_LIMIT_REACHED_MESSAGE)
+        return SELECTING_STICKER
+    elif update.message.photo:
+        file = await update.message.photo[-1].get_file()
+    elif update.message.document and update.message.document.mime_type.startswith(
+        "image"
+    ):
+        file = await update.message.document.get_file()
+    else:
+        await update.message.reply_text(IMAGE_STICKER_MESSAGE)
+        return SELECTING_STICKER
+    logging.info(
+        "{}: uploaded image sticker {}".format(
+            update.effective_user.name, file.file_path
+        )
+    )
+
+    if file.file_size > MAX_FILE_SIZE:
         logging.info(
-            "{}: uploaded video sticker {}".format(
-                update.effective_user.name, file.file_path
+            "{}: file size limit reached {}".format(
+                update.effective_user.name, file.file_size
             )
         )
-        processor = VideoProcessor(file)
-        context.user_data["processor"] = processor
-        await processor.get_video()
-        context.user_data["duration"] = processor.get_duration()
-        await update.message.reply_text(
-            VIDEO_CROP_MESSAGE.format(processor.get_duration())
+        await update.message.reply_text(SIZE_LIMIT_REACHED_MESSAGE)
+        return SELECTING_STICKER
+    processed_sticker = process_image(file.file_path)
+    context.user_data["sticker"] = processed_sticker
+    context.user_data["sticker_count"] += 1
+    await update.message.reply_text(STICKER_EMOJI_MESSAGE)
+    return SELECTING_EMOJI
+
+
+async def select_video_sticker(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    if context.user_data["sticker_count"] >= MAX_VIDEO_STICKER:
+        await update.message.reply_text(PACK_LIMIT_REACHED_MESSAGE)
+        return SELECTING_STICKER
+    elif update.message.video:
+        file = await update.message.video.get_file()
+    elif update.message.document and update.message.document.mime_type.startswith(
+        "video"
+    ):
+        file = await update.message.document.get_file()
+    elif update.message.video_note:
+        file = await update.message.video_note.get_file()
+    else:
+        await update.message.reply_text(VIDEO_STICKER_MESSAGE)
+        return SELECTING_STICKER
+    logging.info(
+        "{}: uploaded video sticker {}".format(
+            update.effective_user.name, file.file_path
         )
-        return SELECTING_DURATION
+    )
+    if file.file_size > MAX_FILE_SIZE:
+        logging.info(
+            "{}: file size limit reached {}".format(
+                update.effective_user.name, file.file_size
+            )
+        )
+        await update.message.reply_text(SIZE_LIMIT_REACHED_MESSAGE)
+        return SELECTING_STICKER
+    processor = VideoProcessor(file)
+    context.user_data["processor"] = processor
+    await processor.get_video()
+    context.user_data["duration"] = processor.get_duration()
+    await update.message.reply_text(VIDEO_CROP_MESSAGE.format(processor.get_duration()))
+    return SELECTING_DURATION
 
 
 async def select_duration(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -172,28 +203,32 @@ async def select_duration(update: Update, context: ContextTypes.DEFAULT_TYPE):
     elif crop.lower() == "ok":
         await bot.send_message(update.effective_chat.id, VIDEO_PROCESSING_MESSAGE)
         context.user_data["sticker"] = context.user_data["processor"].process_video()
-        await update.message.reply_text(STICKER_EMOJI_MESSAGE)
-        return SELECTING_EMOJI
     else:
         start_min, start_sec, crop_duration = parse_crop(crop)
         if start_min == None:
             await update.message.reply_text(INVALID_VIDEO_DURATION_MESSAGE)
+            await update.message.reply_text(
+                VIDEO_CROP_MESSAGE.format(context.user_data["processor"].get_duration())
+            )
             return SELECTING_DURATION
         await bot.send_message(update.effective_chat.id, VIDEO_PROCESSING_MESSAGE)
         context.user_data["sticker"] = context.user_data["processor"].process_video(
             start_min, start_sec, crop_duration
         )
-        await update.message.reply_text(STICKER_EMOJI_MESSAGE)
-        return SELECTING_EMOJI
+    context.user_data["sticker_count"] += 1
+    await update.message.reply_text(STICKER_EMOJI_MESSAGE)
+    return SELECTING_EMOJI
 
 
 async def select_emoji(update: Update, context: ContextTypes.DEFAULT_TYPE):
     sticker = context.user_data["sticker"]
-    context.user_data["stickers"].append(
-        InputSticker(sticker, [update.message.text])
-    )  # verify the user sent an emoji?
+    sticker_emoji = update.message.text
+    if not emoji.is_emoji(sticker_emoji) or not len(sticker_emoji) == 1:
+        await update.message.reply_text(STICKER_EMOJI_MESSAGE)
+        return SELECTING_EMOJI
+    context.user_data["stickers"].append(InputSticker(sticker, [sticker_emoji]))
     logging.info(
-        "{}: selected emoji {}".format(update.effective_user.name, update.message.text)
+        "{}: selected emoji {}".format(update.effective_user.name, sticker_emoji)
     )
     await update.message.reply_text(ADD_NEXT_STICKER_MESSAGE)
     return SELECTING_STICKER
@@ -217,8 +252,7 @@ async def select_name(update: Update, context: ContextTypes.DEFAULT_TYPE):
         )
     )
     context.user_data["name"] = update.message.text
-    if await create_pack(update, context):
-        return ConversationHandler.END
+    return await create_pack(update, context)
 
 
 async def create_pack(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -238,14 +272,14 @@ async def create_pack(update: Update, context: ContextTypes.DEFAULT_TYPE):
         logging.info(
             "{}: created sticker pack {}".format(update.effective_user.name, name)
         )
-        return True
+        return ConversationHandler.END
     except TelegramError as te:
         await update.message.reply_text(te.message)
         await update.message.reply_text(PACK_NAME_MESSAGE)
         logging.info(
             "{}: error creating pack {}".format(update.effective_user.name, te.message)
         )
-        return False
+        return SELECTING_NAME
 
 
 def get_new_pack_conv():
