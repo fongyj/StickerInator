@@ -178,12 +178,11 @@ async def select_duration(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await bot.send_message(update.effective_chat.id, VIDEO_PROCESSING_MESSAGE)
         context.user_data["sticker"] = context.user_data["processor"].process_video()
     else:
-        start_min, start_sec, crop_duration = parse_crop(crop)
+        duration = context.user_data["processor"].get_duration()
+        start_min, start_sec, crop_duration = parse_crop(crop, duration)
         if start_min == None:
             await update.message.reply_text(INVALID_VIDEO_DURATION_MESSAGE)
-            await update.message.reply_text(
-                VIDEO_CROP_MESSAGE.format(context.user_data["processor"].get_duration())
-            )
+            await update.message.reply_text(VIDEO_CROP_MESSAGE.format(duration))
             return SELECTING_DURATION
         await bot.send_message(update.effective_chat.id, VIDEO_PROCESSING_MESSAGE)
         context.user_data["sticker"] = context.user_data["processor"].process_video(

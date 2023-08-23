@@ -40,18 +40,20 @@ class VideoProcessor:
         return self.video_file_clip.duration
 
 
-def parse_crop(crop: str):
+def parse_crop(crop: str, duration):
     pattern = r"\d{2}:\d{2}\.\d{1} \d{1}\.\d{1}"
     if not re.match(pattern, crop):
         return None, None, None
     start_min = crop[:2]
     start_sec = crop[3:7]
     crop_duration = "2.9" if crop[8:] == "3.0" else crop[8:]
+    start_time = (int(start_min) * 60) + float(start_sec)
     if (
         int(start_min) >= 60
         or float(start_sec) >= 60
         or float(crop_duration) > 3
         or float(crop_duration) <= 0
+        or start_time >= float(duration)
     ):
         # check out of bounds
         return None, None, None
