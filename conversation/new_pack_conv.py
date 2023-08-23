@@ -9,6 +9,7 @@ load_dotenv()
 
 from warnings import filterwarnings
 from telegram import Update, InputSticker, InlineKeyboardButton, InlineKeyboardMarkup
+from telegram.constants import ParseMode
 from telegram.error import TelegramError
 from telegram.ext import (
     CommandHandler,
@@ -127,7 +128,7 @@ async def select_sticker(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 async def select_image_sticker(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if context.user_data["sticker_count"] >= MAX_STATIC_STICKER:
-        await update.message.reply_text(PACK_LIMIT_REACHED_MESSAGE)
+        await update.message.reply_text(PACK_LIMIT_REACHED_MESSAGE, parse_mode=ParseMode.MARKDOWN_V2)
         return SELECTING_STICKER
     elif update.message.sticker:
         if update.message.sticker.is_animated or update.message.sticker.is_video:
@@ -145,7 +146,7 @@ async def select_image_sticker(update: Update, context: ContextTypes.DEFAULT_TYP
 
             context.user_data["stickers"].append(InputSticker(sticker_file, [update.message.sticker.emoji]))
             context.user_data["sticker_count"] += 1
-            await update.message.reply_text(ADD_NEXT_STICKER_MESSAGE)
+            await update.message.reply_text(ADD_NEXT_STICKER_MESSAGE, parse_mode=ParseMode.MARKDOWN_V2)
             return SELECTING_STICKER
         else:
             await update.message.reply_text(DOWNLOAD_FAILED_IMAGE)
@@ -182,7 +183,7 @@ async def select_image_sticker(update: Update, context: ContextTypes.DEFAULT_TYP
 
 async def select_video_sticker(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if context.user_data["sticker_count"] >= MAX_VIDEO_STICKER:
-        await update.message.reply_text(PACK_LIMIT_REACHED_MESSAGE)
+        await update.message.reply_text(PACK_LIMIT_REACHED_MESSAGE, parse_mode=ParseMode.MARKDOWN_V2)
         return SELECTING_STICKER
     elif update.message.sticker:
         if update.message.sticker.is_animated:
@@ -202,7 +203,7 @@ async def select_video_sticker(update: Update, context: ContextTypes.DEFAULT_TYP
 
             context.user_data["stickers"].append(InputSticker(sticker_file, [update.message.sticker.emoji]))
             context.user_data["sticker_count"] += 1
-            await update.message.reply_text(ADD_NEXT_STICKER_MESSAGE)
+            await update.message.reply_text(ADD_NEXT_STICKER_MESSAGE, parse_mode=ParseMode.MARKDOWN_V2)
             return SELECTING_STICKER
         else:
             await update.message.reply_text(DOWNLOAD_FAILED_VIDEO)
@@ -235,7 +236,7 @@ async def select_video_sticker(update: Update, context: ContextTypes.DEFAULT_TYP
     context.user_data["processor"] = processor
     await processor.get_video()
     context.user_data["duration"] = processor.get_duration()
-    await update.message.reply_text(VIDEO_CROP_MESSAGE.format(processor.get_duration()))
+    await update.message.reply_text(VIDEO_CROP_MESSAGE.format(processor.get_duration()), parse_mode=ParseMode.HTML)
     return SELECTING_DURATION
 
 
@@ -277,7 +278,7 @@ async def select_emoji(update: Update, context: ContextTypes.DEFAULT_TYPE):
     logging.info(
         "{}: selected emoji {}".format(update.effective_user.name, sticker_emoji)
     )
-    await update.message.reply_text(ADD_NEXT_STICKER_MESSAGE)
+    await update.message.reply_text(ADD_NEXT_STICKER_MESSAGE, parse_mode=ParseMode.MARKDOWN_V2)
     return SELECTING_STICKER
 
 
