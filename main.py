@@ -138,7 +138,7 @@ async def post_init(application: Application) -> None:
 async def main() -> None:
     """Start the bot."""
     url = "https://stickerinator.pages.dev/"
-    admin_chat_id = 123456
+    admin_chat_id = 523348876
     port = 8000
 
     context_types = ContextTypes(context=CustomContext)
@@ -206,7 +206,6 @@ async def main() -> None:
     webserver = uvicorn.Server(
         config=uvicorn.Config(
             app=starlette_app,
-            port=port,
             use_colors=False,
             host="127.0.0.1",
         )
