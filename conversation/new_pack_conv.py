@@ -24,7 +24,7 @@ from telegram.constants import StickerFormat
 from telegram.warnings import PTBUserWarning
 
 from processing.image import process_image
-from processing.video import VideoProcessor, parse_crop
+from processing.video import VideoProcessor
 from conversation.messages import (
     PACK_NAME_MESSAGE,
     PACK_TITLE_MESSAGE,
@@ -244,9 +244,8 @@ async def select_video_sticker(update: Update, context: ContextTypes.DEFAULT_TYP
     processor = VideoProcessor(file)
     context.user_data["processor"] = processor
     await processor.get_video()
-    context.user_data["duration"] = processor.get_duration()
     await update.message.reply_text(
-        VIDEO_CROP_MESSAGE.format(processor.get_duration()), parse_mode=ParseMode.HTML
+        VIDEO_CROP_MESSAGE.format(processor.duration), parse_mode=ParseMode.HTML
     )
     return SELECTING_DURATION
 
@@ -254,7 +253,7 @@ async def select_video_sticker(update: Update, context: ContextTypes.DEFAULT_TYP
 async def select_duration(update: Update, context: ContextTypes.DEFAULT_TYPE):
     crop = update.message.text
     logging.info("{}: selected video crop {}".format(update.effective_user.name, crop))
-    duration = context.user_data["duration"]
+    duration = context.user_data["processor"].duration
     bot = update.get_bot()
     if crop.lower() == "ok" and duration > 3:
         await update.message.reply_text(VIDEO_TOO_LONG_MESSAGE)
@@ -263,8 +262,9 @@ async def select_duration(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await bot.send_message(update.effective_chat.id, VIDEO_PROCESSING_MESSAGE)
         context.user_data["sticker"] = context.user_data["processor"].process_video()
     else:
-        duration = context.user_data["processor"].get_duration()
-        start_min, start_sec, crop_duration = parse_crop(crop, duration)
+        start_min, start_sec, crop_duration = context.user_data["processor"].parse_crop(
+            crop
+        )
         if start_min == None:
             await update.message.reply_text(INVALID_VIDEO_DURATION_MESSAGE)
             await update.message.reply_text(

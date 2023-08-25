@@ -14,12 +14,17 @@ class VideoProcessor:
 
     async def get_video(self):
         await self.file.download_to_drive(custom_path=self.video_path)
-        self.video_file_clip = VideoFileClip(self.video_path)
+        video_file_clip = VideoFileClip(self.video_path)
+        self.width, self.height, self.duration = (
+            video_file_clip.w,
+            video_file_clip.h,
+            video_file_clip.duration,
+        )
+        video_file_clip.close()
 
     def process_video(self, start_min=None, start_sec=None, crop_duration=None):
-        width, height = self.video_file_clip.w, self.video_file_clip.h
-        scale = 512 / max(width, height)
-        new_width, new_height = int(width * scale), int(height * scale)
+        scale = 512 / max(self.width, self.height)
+        new_width, new_height = int(self.width * scale), int(self.height * scale)
 
         # write temp video
         output_video_path = os.path.join(
@@ -33,29 +38,24 @@ class VideoProcessor:
         subprocess.call(command, shell=True)
         video_bytes = open(output_video_path, "rb").read()
         os.remove(output_video_path)
-        self.video_file_clip.close()
         os.remove(self.video_path)
         return video_bytes
 
-    def get_duration(self):
-        return self.video_file_clip.duration
-
-
-def parse_crop(crop: str, duration):
-    pattern = r"\d{2}:\d{2}\.\d{1} \d{1}\.\d{1}"
-    if not re.match(pattern, crop):
-        return None, None, None
-    start_min = crop[:2]
-    start_sec = crop[3:7]
-    crop_duration = "2.9" if crop[8:] == "3.0" else crop[8:]
-    start_time = (int(start_min) * 60) + float(start_sec)
-    if (
-        int(start_min) >= 60
-        or float(start_sec) >= 60
-        or float(crop_duration) > 3
-        or float(crop_duration) <= 0
-        or start_time >= float(duration)
-    ):
-        # check out of bounds
-        return None, None, None
-    return start_min, start_sec, crop_duration
+    def parse_crop(self, crop: str):
+        pattern = r"\d{2}:\d{2}\.\d{1} \d{1}\.\d{1}"
+        if not re.match(pattern, crop):
+            return None, None, None
+        start_min = crop[:2]
+        start_sec = crop[3:7]
+        crop_duration = "2.9" if crop[8:] == "3.0" else crop[8:]
+        start_time = (int(start_min) * 60) + float(start_sec)
+        if (
+            int(start_min) >= 60
+            or float(start_sec) >= 60
+            or float(crop_duration) > 3
+            or float(crop_duration) <= 0
+            or start_time >= float(self.duration)
+        ):
+            # check out of bounds
+            return None, None, None
+        return start_min, start_sec, crop_duration
