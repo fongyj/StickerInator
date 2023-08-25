@@ -2,6 +2,7 @@ from moviepy.editor import VideoFileClip
 import os
 import subprocess
 import re
+from imageio_ffmpeg._utils import get_ffmpeg_exe
 
 
 class VideoProcessor:
@@ -9,7 +10,7 @@ class VideoProcessor:
         self.file = file
         os.makedirs("temp", exist_ok=True)
         self.video_path = f"temp/{os.path.basename(file.file_path)}"
-        self.ffmpeg_path = os.environ.get("FFMPEG_PATH")
+        self.ffmpeg_path = get_ffmpeg_exe()
 
     async def get_video(self):
         await self.file.download_to_drive(custom_path=self.video_path)
