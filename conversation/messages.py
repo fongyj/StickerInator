@@ -32,9 +32,9 @@ HELP_MESSAGE = (
 # add pack/sticker
 PACK_TYPE_MESSAGE = "Please select a sticker type:"
 
-IMAGE_STICKER_MESSAGE = "Please send image sticker"
+IMAGE_STICKER_MESSAGE = "Please send image sticker\n\nStickerInator can accept images of most file formats and other image stickers"
 
-VIDEO_STICKER_MESSAGE = "Please send video sticker"
+VIDEO_STICKER_MESSAGE = "Please send video sticker\n\nStickerInator can accept videos of most file formats, other video stickers and telegram video notes"
 
 VIDEO_CROP_MESSAGE = (
     "Video duration: <b>{} seconds</b> (Maximum duration: <b>3 seconds</b>)\n"
@@ -50,8 +50,8 @@ INVALID_VIDEO_DURATION_MESSAGE = "Invalid start timestamp or duration"
 
 STICKER_EMOJI_MESSAGE = "Please send a single emoji for the sticker"
 
-ADD_NEXT_STICKER_MESSAGE = (
-    "Please send another sticker OR reply with ```DONE``` when finished"
+NEXT_STICKER_MESSAGE = (
+    "Please send another sticker or reply with ```DONE``` to create sticker pack"
 )
 
 STICKER_FROM_SET_MESSAGE = "Please send a sticker from your sticker set"
@@ -65,8 +65,10 @@ VIDEO_TOO_LONG_MESSAGE = "Video duration is too long"
 VIDEO_PROCESSING_MESSAGE = "Please wait, video is processing... ⏰"
 
 PACK_LIMIT_REACHED_MESSAGE = (
-    "Sticker pack limit reached, reply with ```DONE``` when finished"
+    "Sticker pack limit reached, reply with ```DONE``` to create sticker pack"
 )
+
+EMPTY_PACK_MESSAGE = "There is currently 0 stickers added. Please add stickers before creating a sticker pack"
 
 SIZE_LIMIT_REACHED_MESSAGE = (
     "Sticker file size limit reached, please send a smaller sticker"
