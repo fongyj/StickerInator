@@ -8,7 +8,7 @@
   <h3 align="center">Sticker-Inator</h3>
 
   <p align="center">
-    An awesome telegram bot that helps you format and create stickers from <br> images, videos and voice notes (telegram bubbles)
+    An awesome telegram bot that helps you format and create stickers from <br> images, videos and video notes (telegram bubbles)
     <br />
     <a href="https://t.me/StickerinatorBot"><strong>Try out the bot »</strong></a>
     <br />
@@ -42,7 +42,7 @@
 <!-- ABOUT THE BOT -->
 ## About The Bot
 
-Sticker-Inator is a user-friendly Telegram bot designed to streamline the creation of stickers using images, videos, and voice notes. Unlike the conventional @Stickers bot on Telegram, we've simplified the process for you, eliminating the need to manually format your media files.
+Sticker-Inator is a user-friendly Telegram bot designed to streamline the creation of stickers using images, videos, and video notes. Unlike the conventional @Stickers bot on Telegram, we've simplified the process for you, eliminating the need to manually format your media files.
 
 ### Why Choose Sticker-Inator? 
 1. <b>Hassle-Free Sticker Creation</b>
@@ -52,10 +52,10 @@ With Sticker-Inator, you can say goodbye to the hassle of converting your files 
 Creating stickers has never been easier! Our bot condenses the task into just a few simple steps, saving you time and effort. Whether you're a seasoned sticker creator or a newcomer, you'll find our bot incredibly user-friendly. 
  
 3. <b>Versatile Media Support</b>  
-Sticker-Inator supports a wide range of media types, including images, videos, and voice notes. Whether you want to immortalize a funny moment from a video or add a personal touch to your voice messages, we've got you covered. Note: You can add stickers to our sticker packs as well, but animated stickers are currently not supported.
+Sticker-Inator supports a wide range of media types, including images, videos, and video notes. Note: Animated type stickers are currently not supported.
  
 4. <b>Seamless Integration with Telegram</b>
-Our bot seamlessly integrates with Telegram, making it easy to share your stickers with friends and family directly through the platform. No need to switch between apps or deal with complex external tools.
+Our bot seamlessly integrates with Telegram, making it easy to share your stickers with friends and family directly through the bot. No need to switch between apps or deal with complex external tools.
 
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
