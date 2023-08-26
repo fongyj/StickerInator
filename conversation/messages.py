@@ -32,9 +32,9 @@ HELP_MESSAGE = (
 # add pack/sticker
 PACK_TYPE_MESSAGE = "Please select a sticker type:"
 
-IMAGE_STICKER_MESSAGE = "Please send image sticker\n\nStickerInator can accept images of most file formats and other image stickers"
+IMAGE_STICKER_MESSAGE = "Please send image sticker\n\nStickerInator can accept images of most file formats and existing image stickers"
 
-VIDEO_STICKER_MESSAGE = "Please send video sticker\n\nStickerInator can accept videos of most file formats, other video stickers and telegram video notes"
+VIDEO_STICKER_MESSAGE = "Please send video sticker\n\nStickerInator can accept videos of most file formats, existing video stickers and telegram video notes"
 
 VIDEO_CROP_MESSAGE = (
     "Video duration: <b>{} seconds</b> (Maximum duration: <b>3 seconds</b>)\n"
