@@ -6,8 +6,9 @@ from imageio_ffmpeg._utils import get_ffmpeg_exe
 
 
 class VideoProcessor:
-    def __init__(self, file):
+    def __init__(self, file, remove_bg):
         self.file = file
+        self.remove_bg = remove_bg
         os.makedirs("temp", exist_ok=True)
         self.video_path = f"temp/{os.path.basename(file.file_path)}"
         self.ffmpeg_path = get_ffmpeg_exe()
@@ -31,10 +32,15 @@ class VideoProcessor:
             os.path.dirname(self.video_path),
             os.path.splitext(os.path.basename(self.video_path))[0] + "_processed.webm",
         )
-        if start_min:
-            command = f"{self.ffmpeg_path} -i {self.video_path} -c:v libvpx-vp9 -ss 00:{start_min}:{start_sec}00 -t 00:00:0{crop_duration}00 -crf 40 -an -vf scale={new_width}:{new_height} -v quiet -y {output_video_path}"
+        if self.remove_bg:
+            command = f"{self.ffmpeg_path} -i {self.video_path} -loop 1 -i processing/mask/mask.png -filter_complex [0:v][1:v]alphamerge[out];[out]scale={new_width}:{new_height} -c:v libvpx-vp9 -crf 40 -an -v quiet -y"
         else:
-            command = f"{self.ffmpeg_path} -i {self.video_path} -c:v libvpx-vp9 -crf 40 -an -vf scale={new_width}:{new_height} -v quiet -y {output_video_path}"
+            command = f"{self.ffmpeg_path} -i {self.video_path} -c:v libvpx-vp9 -crf 40 -an -vf scale={new_width}:{new_height} -v quiet -y"
+        # append cropping
+        if start_min:
+            command += f" -ss 00:{start_min}:{start_sec}00 -t 00:00:0{crop_duration}00"
+        # append output path
+        command += f" {output_video_path}"
         subprocess.call(command, shell=True)
         video_bytes = open(output_video_path, "rb").read()
         os.remove(output_video_path)

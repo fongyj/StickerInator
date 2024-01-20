@@ -187,6 +187,7 @@ async def select_image_sticker(update: Update, context: ContextTypes.DEFAULT_TYP
 
 async def select_video_sticker(update: Update, context: ContextTypes.DEFAULT_TYPE):
     sticker_count = context.user_data["sticker_count"]
+    remove_bg = False
     if sticker_count >= MAX_VIDEO_STICKER:
         # too many stickers
         await update.message.reply_text(
@@ -235,6 +236,7 @@ async def select_video_sticker(update: Update, context: ContextTypes.DEFAULT_TYP
     elif update.message.video_note:
         # user sent a tele bubble
         file = await update.message.video_note.get_file()
+        remove_bg = True
     else:
         # user did not send anything valid
         await update.message.reply_text(
@@ -255,7 +257,7 @@ async def select_video_sticker(update: Update, context: ContextTypes.DEFAULT_TYP
         )
         await update.message.reply_text(SIZE_LIMIT_REACHED_MESSAGE)
         return SELECTING_STICKER
-    processor = VideoProcessor(file)
+    processor = VideoProcessor(file, remove_bg=remove_bg)
     context.user_data["processor"] = processor
     await processor.get_video()
     await update.message.reply_text(
