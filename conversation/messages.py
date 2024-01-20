@@ -37,7 +37,7 @@ IMAGE_STICKER_MESSAGE = "Please send image sticker\n\nStickerInator can accept i
 VIDEO_STICKER_MESSAGE = "Please send video sticker\n\nStickerInator can accept videos of most file formats, existing video stickers and telegram video notes"
 
 VIDEO_CROP_MESSAGE = (
-    "Video duration: <b>{} seconds</b> (Maximum duration: <b>3 seconds</b>)\n"
+    "Video duration: <b>{} seconds</b>\nMaximum duration: <b>3 seconds</b>\n\n"
     "To crop the video, reply with the start time and duration in the format: "
     "<b>mm:ss.S s.S</b>\n"
     "(m for minutes, s for seconds, S for fraction of a second)\n\n"
