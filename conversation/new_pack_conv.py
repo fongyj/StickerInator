@@ -1,5 +1,4 @@
 from dotenv import load_dotenv
-import logging
 import os
 import emoji
 import requests
@@ -45,6 +44,7 @@ from conversation.messages import (
     DOWNLOAD_FAILED_IMAGE,
     DOWNLOAD_FAILED_VIDEO,
 )
+from conversation.utils import log_info
 
 (
     SELECTING_TYPE,
@@ -62,8 +62,8 @@ MAX_FILE_SIZE = 50000000  # 50mb
 
 
 async def new_pack(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    logging.info("{}: create pack".format(update.effective_user.name))
-
+    await log_info("{}: create pack".format(update.effective_user.name), update.get_bot())
+    
     async def final_state(update, context):
         await update.message.reply_text(PACK_TITLE_MESSAGE)
         return SELECTING_TITLE
@@ -164,17 +164,19 @@ async def select_image_sticker(update: Update, context: ContextTypes.DEFAULT_TYP
         )
         return SELECTING_STICKER
 
-    logging.info(
+    await log_info(
         "{}: uploaded image sticker {}".format(
-            update.effective_user.name, file.file_path
-        )
+            update.effective_user.name, file.file_id
+        ),
+        update.get_bot()
     )
 
     if file.file_size > MAX_FILE_SIZE:
-        logging.info(
+        await log_info(
             "{}: file size limit reached {}".format(
                 update.effective_user.name, file.file_size
-            )
+            ),
+            update.get_bot()
         )
         await update.message.reply_text(SIZE_LIMIT_REACHED_MESSAGE)
         return SELECTING_STICKER
@@ -244,16 +246,18 @@ async def select_video_sticker(update: Update, context: ContextTypes.DEFAULT_TYP
             parse_mode=ParseMode.MARKDOWN_V2,
         )
         return SELECTING_STICKER
-    logging.info(
+    await log_info(
         "{}: uploaded video sticker {}".format(
-            update.effective_user.name, file.file_path
-        )
+            update.effective_user.name, file.file_id
+        ),
+        update.get_bot()
     )
     if file.file_size > MAX_FILE_SIZE:
-        logging.info(
+        await log_info(
             "{}: file size limit reached {}".format(
                 update.effective_user.name, file.file_size
-            )
+            ),
+            update.get_bot()
         )
         await update.message.reply_text(SIZE_LIMIT_REACHED_MESSAGE)
         return SELECTING_STICKER
@@ -268,7 +272,7 @@ async def select_video_sticker(update: Update, context: ContextTypes.DEFAULT_TYP
 
 async def select_duration(update: Update, context: ContextTypes.DEFAULT_TYPE):
     crop = update.message.text
-    logging.info("{}: selected video crop {}".format(update.effective_user.name, crop))
+    await log_info("{}: selected video crop {}".format(update.effective_user.name, crop), update.get_bot())
     duration = context.user_data["processor"].duration
     bot = update.get_bot()
     if crop.lower() == "ok" and duration > 3:
@@ -303,8 +307,9 @@ async def select_emoji(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await update.message.reply_text(STICKER_EMOJI_MESSAGE)
         return SELECTING_EMOJI
     context.user_data["stickers"].append(InputSticker(sticker, [sticker_emoji]))
-    logging.info(
-        "{}: selected emoji {}".format(update.effective_user.name, sticker_emoji)
+    await log_info(
+        "{}: selected emoji {}".format(update.effective_user.name, sticker_emoji),
+        update.get_bot()
     )
     await update.message.reply_text(
         NEXT_STICKER_MESSAGE, parse_mode=ParseMode.MARKDOWN_V2
@@ -313,10 +318,11 @@ async def select_emoji(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 
 async def select_title(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    logging.info(
+    await log_info(
         "{}: selected {} as sticker pack title".format(
             update.effective_user.name, update.message.text
-        )
+        ),
+        update.get_bot()
     )
     context.user_data["title"] = update.message.text
     await update.message.reply_text(PACK_NAME_MESSAGE)
@@ -324,10 +330,11 @@ async def select_title(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 
 async def select_name(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    logging.info(
+    await log_info(
         "{}: selected {} as sticker pack name".format(
             update.effective_user.name, update.message.text
-        )
+        ),
+        update.get_bot()
     )
     context.user_data["name"] = update.message.text
     return await create_pack(update, context)
@@ -347,15 +354,17 @@ async def create_pack(update: Update, context: ContextTypes.DEFAULT_TYPE):
             sticker_format=context.user_data["type"],
         )
         await update.message.reply_text(CREATE_PACK_SUCCESS_MESSAGE.format(name))
-        logging.info(
-            "{}: created sticker pack {}".format(update.effective_user.name, name)
+        await log_info(
+            "{}: created sticker pack {}".format(update.effective_user.name, name),
+            update.get_bot()
         )
         return ConversationHandler.END
     except TelegramError as te:
         await update.message.reply_text(te.message)
         await update.message.reply_text(PACK_NAME_MESSAGE)
-        logging.info(
-            "{}: error creating pack {}".format(update.effective_user.name, te.message)
+        await log_info(
+            "{}: error creating pack {}".format(update.effective_user.name, te.message),
+            update.get_bot()
         )
         return SELECTING_NAME
 

@@ -1,5 +1,3 @@
-import logging
-
 from telegram import Update
 from telegram.ext import (
     CommandHandler,
@@ -26,13 +24,14 @@ from conversation.messages import (
     ADD_SUCCESS_MESSAGE,
     INVALID_SET_MESSAGE,
 )
+from conversation.utils import log_info
 from conversation.cancel_command import cancel
 
 SELECTING_PACK = map(chr, range(7, 8))
 
 
 async def new_sticker(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    logging.info("{}: add sticker".format(update.effective_user.name))
+    await log_info("{}: add sticker".format(update.effective_user.name), update.get_bot())
     context.user_data["final_state"] = lambda u, c: add_sticker(u, c)
     context.user_data["stickers"] = list()
     context.user_data["operation"] = "add sticker"
@@ -42,8 +41,9 @@ async def new_sticker(update: Update, context: ContextTypes.DEFAULT_TYPE) -> Non
 
 async def select_pack(update: Update, context: ContextTypes.DEFAULT_TYPE):
     set_name = update.message.sticker.set_name
-    logging.info(
-        "{}: selected sticker pack {}".format(update.effective_user.name, set_name)
+    await log_info(
+        "{}: selected sticker pack {}".format(update.effective_user.name, set_name),
+        update.get_bot()
     )
     if not set_name.endswith("_by_" + os.environ.get("BOT_NAME")):
         await update.message.reply_text(INVALID_SET_MESSAGE)
@@ -70,8 +70,9 @@ async def add_sticker(update: Update, context: ContextTypes.DEFAULT_TYPE):
         )
     sticker_count = len(context.user_data["stickers"])
     await update.message.reply_text(ADD_SUCCESS_MESSAGE.format(sticker_count))
-    logging.info(
-        "{}: added {} sticker(s)".format(update.effective_user.name, sticker_count)
+    await log_info(
+        "{}: added {} sticker(s)".format(update.effective_user.name, sticker_count),
+        update.get_bot()
     )
     return ConversationHandler.END
 

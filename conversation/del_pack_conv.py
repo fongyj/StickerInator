@@ -1,5 +1,4 @@
 from dotenv import load_dotenv
-import logging
 import os
 
 load_dotenv()
@@ -22,13 +21,14 @@ from conversation.messages import (
     SET_NOT_FOUND_MESSAGE,
     INVALID_SET_MESSAGE,
 )
+from conversation.utils import log_info
 from conversation.cancel_command import cancel
 
 SELECTING_PACK, CONFIRM_DELETE = map(chr, range(2))
 
 
 async def delete_pack(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    logging.info("{}: delete pack".format(update.effective_user.name))
+    await log_info("{}: delete pack".format(update.effective_user.name), update.get_bot())
     context.user_data["operation"] = "delete pack"
     await update.message.reply_text(STICKER_FROM_SET_MESSAGE)
     return SELECTING_PACK
@@ -37,8 +37,9 @@ async def delete_pack(update: Update, context: ContextTypes.DEFAULT_TYPE) -> Non
 async def select_pack(update: Update, context: ContextTypes.DEFAULT_TYPE):
     context.user_data["sticker"] = update.message.sticker
     sticker_set = context.user_data["sticker"].set_name
-    logging.info(
-        "{}: selected sticker pack {}".format(update.effective_user.name, sticker_set)
+    await log_info(
+        "{}: selected sticker pack {}".format(update.effective_user.name, sticker_set),
+        update.get_bot()
     )
     if not sticker_set.endswith("_by_" + os.environ.get("BOT_NAME")):
         await update.message.reply_text(INVALID_SET_MESSAGE)
@@ -57,8 +58,9 @@ async def confirm_delete(update: Update, context: ContextTypes.DEFAULT_TYPE):
             await update.message.reply_text(
                 DELETE_PACK_SUCCESS_MESSAGE.format(sticker_set)
             )
-            logging.info(
-                "{}: deleted pack {}".format(update.effective_user.name, sticker_set)
+            await log_info(
+                "{}: deleted pack {}".format(update.effective_user.name, sticker_set),
+                update.get_bot()
             )
         else:
             await update.message.reply_text(DELETE_PACK_CONFIRMATION_MESSAGE, parse_mode=ParseMode.MARKDOWN_V2)

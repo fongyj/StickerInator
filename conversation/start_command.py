@@ -1,13 +1,11 @@
-import logging
-
 from telegram import Update
 from telegram.ext import CommandHandler, ContextTypes
 
-from conversation.messages import send_message, HELP_MESSAGE
-
+from conversation.messages import HELP_MESSAGE
+from conversation.utils import send_message, log_info
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    logging.info("{}: start".format(update.effective_user.name))
+    await log_info("{}: start".format(update.effective_user.name), update.get_bot())
     await send_message(update, HELP_MESSAGE)
 
 
