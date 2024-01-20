@@ -6,7 +6,7 @@ async def send_message(update: Update, message):
     # sends message with markdown parse mode.
     bot = update.get_bot()
     await bot.send_message(
-        update.effective_chat.id, message, parse_mode=ParseMode.MARKDOWN_V2
+        update.effective_chat.id, message, parse_mode=ParseMode.MARKDOWN_V2, disable_web_page_preview=True
     )
 
 
@@ -26,7 +26,8 @@ HELP_MESSAGE = (
     + f"/delsticker \- {DEL_STICKER_HELP}\n"
     + f"/delpack \- {DEL_PACK_HELP}\n"
     + f"/help \- {HELP_HELP}\n"
-    + f"/cancel \- {CANCEL_HELP}"
+    + f"/cancel \- {CANCEL_HELP}\n\n"
+    + "Find the source code for StickerInator [here](https://github.com/fongyj/StickerInator)"
 )
 
 # add pack/sticker
