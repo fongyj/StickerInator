@@ -88,7 +88,7 @@ DOWNLOAD_FAILED_IMAGE = "Failed to download sticker. Please send another image s
 DOWNLOAD_FAILED_VIDEO = "Failed to download sticker. Please send another video sticker"
 
 # delete pack
-DELETE_PACK_CONFIRMATION_MESSAGE = "Reply with <b>DELETE PACK</b> to confirm"
+DELETE_PACK_CONFIRMATION_MESSAGE = "Reply with <code>DELETE PACK</code> to confirm"
 
 DELETE_PACK_SUCCESS_MESSAGE = "Sticker pack {} deleted"
 
@@ -97,9 +97,9 @@ PACK_NOT_FOUND_MESSAGE = "No such sticker/sticker pack. Cancelling operation"
 # delete sticker
 DELETE_STICKER_MESSAGE = "Please send the sticker you wish to delete"
 
-LAST_STICKER_MESSAGE = "❗❗❗ This is your last sticker ❗❗❗\nDeleting this sticker will delete the sticker pack\n\nReply with <b>DELETE STICKER</b> to confirm"
+LAST_STICKER_MESSAGE = "❗❗❗ This is your last sticker ❗❗❗\nDeleting this sticker will delete the sticker pack\n\nReply with <code>DELETE STICKER</code> to confirm"
 
-DELETE_STICKER_CONFIRMATION_MESSAGE = "Reply with <b>DELETE STICKER</b> to confirm"
+DELETE_STICKER_CONFIRMATION_MESSAGE = "Reply with <code>DELETE STICKER</code> to confirm"
 
 STICKER_NOT_FOUND_MESSAGE = "Sticker not found in the sticker pack"
 
