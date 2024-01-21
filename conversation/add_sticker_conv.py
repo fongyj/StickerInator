@@ -22,9 +22,9 @@ from conversation.new_pack_conv import (
 from conversation.messages import (
     IMAGE_STICKER_MESSAGE,
     VIDEO_STICKER_MESSAGE,
-    STICKER_FROM_SET_MESSAGE,
+    STICKER_FROM_PACK_MESSAGE,
     ADD_SUCCESS_MESSAGE,
-    INVALID_SET_MESSAGE,
+    INVALID_PACK_MESSAGE,
 )
 from conversation.utils import log_info
 from conversation.cancel_command import cancel
@@ -37,7 +37,7 @@ async def new_sticker(update: Update, context: ContextTypes.DEFAULT_TYPE) -> Non
     context.user_data["final_state"] = lambda u, c: add_sticker(u, c)
     context.user_data["stickers"] = list()
     context.user_data["operation"] = "add sticker"
-    await update.message.reply_text(STICKER_FROM_SET_MESSAGE)
+    await update.message.reply_text(STICKER_FROM_PACK_MESSAGE)
     return SELECTING_PACK
 
 
@@ -48,8 +48,8 @@ async def select_pack(update: Update, context: ContextTypes.DEFAULT_TYPE):
         update.get_bot()
     )
     if not set_name.endswith("_by_" + os.environ.get("BOT_NAME")):
-        await update.message.reply_text(INVALID_SET_MESSAGE)
-        await update.message.reply_text(STICKER_FROM_SET_MESSAGE)
+        await update.message.reply_text(INVALID_PACK_MESSAGE)
+        await update.message.reply_text(STICKER_FROM_PACK_MESSAGE)
         return SELECTING_PACK
     bot = update.get_bot()
     sticker_set = await bot.get_sticker_set(set_name)

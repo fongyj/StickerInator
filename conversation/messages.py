@@ -51,9 +51,9 @@ NEXT_STICKER_MESSAGE = (
     "Please send another sticker or select DONE to create sticker pack"
 )
 
-STICKER_FROM_SET_MESSAGE = "Please send a sticker from your sticker set"
+STICKER_FROM_PACK_MESSAGE = "Please send a sticker from the existing sticker pack"
 
-INVALID_SET_MESSAGE = "Sticker set selected must be created by StickerInatorBot"
+INVALID_PACK_MESSAGE = "Sticker pack selected must be created by StickerInatorBot"
 
 ADD_SUCCESS_MESSAGE = "Added {} sticker(s)"
 
@@ -92,7 +92,7 @@ DELETE_PACK_CONFIRMATION_MESSAGE = "Reply with <b>DELETE PACK</b> to confirm"
 
 DELETE_PACK_SUCCESS_MESSAGE = "Sticker pack {} deleted"
 
-SET_NOT_FOUND_MESSAGE = "No such sticker/stickerset. Cancelling operation"
+PACK_NOT_FOUND_MESSAGE = "No such sticker/sticker pack. Cancelling operation"
 
 # delete sticker
 DELETE_STICKER_MESSAGE = "Please send the sticker you wish to delete"
@@ -101,7 +101,7 @@ LAST_STICKER_MESSAGE = "❗❗❗ This is your last sticker ❗❗❗\nDeleting 
 
 DELETE_STICKER_CONFIRMATION_MESSAGE = "Reply with <b>DELETE STICKER</b> to confirm"
 
-STICKER_NOT_FOUND_MESSAGE = "Sticker not found in the sticker set"
+STICKER_NOT_FOUND_MESSAGE = "Sticker not found in the sticker pack"
 
 DELETE_STICKER_SUCCESS_MESSAGE = "Sticker deleted from {}"
 

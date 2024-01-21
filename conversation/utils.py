@@ -37,6 +37,6 @@ def no_crop_button():
     return InlineKeyboardMarkup([get_button_row("No Crop", "no crop")])
 
 def crop_button():
-    return InlineKeyboardMarkup([get_button_row("First 3 Seconds", "first"), 
-                                 get_button_row("Middle 3 Seconds", "middle"), 
-                                 get_button_row("Last 3 Seconds", "last")])
+    return InlineKeyboardMarkup([get_button_row("Crop First 3 Seconds", "first"), 
+                                 get_button_row("Crop Middle 3 Seconds", "middle"), 
+                                 get_button_row("Crop Last 3 Seconds", "last")])

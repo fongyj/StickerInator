@@ -19,10 +19,10 @@ from conversation.messages import (
     LAST_STICKER_MESSAGE,
     DELETE_STICKER_CONFIRMATION_MESSAGE,
     STICKER_NOT_FOUND_MESSAGE,
-    SET_NOT_FOUND_MESSAGE,
+    PACK_NOT_FOUND_MESSAGE,
     DELETE_PACK_SUCCESS_MESSAGE,
     DELETE_STICKER_SUCCESS_MESSAGE,
-    INVALID_SET_MESSAGE,
+    INVALID_PACK_MESSAGE,
 )
 from conversation.utils import log_info
 from conversation.cancel_command import cancel
@@ -49,7 +49,7 @@ async def select_pack(update: Update, context: ContextTypes.DEFAULT_TYPE):
             update.get_bot()
         )
         if not sticker_set.endswith("_by_" + os.environ.get("BOT_NAME")):
-            await update.message.reply_text(INVALID_SET_MESSAGE)
+            await update.message.reply_text(INVALID_PACK_MESSAGE)
             await update.message.reply_text(DELETE_STICKER_MESSAGE)
             return SELECTING_PACK
         sticker_set_info = await bot.get_sticker_set(sticker_set)
@@ -68,7 +68,7 @@ async def select_pack(update: Update, context: ContextTypes.DEFAULT_TYPE):
         # If the sticker wasn't found in the set
         await update.message.reply_text(STICKER_NOT_FOUND_MESSAGE)
     except BadRequest as e:
-        await update.message.reply_text(SET_NOT_FOUND_MESSAGE)
+        await update.message.reply_text(PACK_NOT_FOUND_MESSAGE)
     return ConversationHandler.END
 
 
@@ -98,7 +98,7 @@ async def confirm_delete(update: Update, context: ContextTypes.DEFAULT_TYPE):
             await update.message.reply_text(DELETE_STICKER_CONFIRMATION_MESSAGE, parse_mode=ParseMode.HTML)
             return CONFIRM_DELETE
     except BadRequest as e:
-        await update.message.reply_text(SET_NOT_FOUND_MESSAGE)
+        await update.message.reply_text(PACK_NOT_FOUND_MESSAGE)
     return ConversationHandler.END
 
 
