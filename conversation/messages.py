@@ -7,7 +7,7 @@ HELP_HELP = "Gets info on the bot"
 CANCEL_HELP = "Cancels current operation"
 
 HELP_MESSAGE = (
-    "*StickerInator* is made to help you with creating stickerpacks with images, videos and telegram bubbles\!\n\n"
+    "*StickerInator* is designed to help you create sticker packs with images, videos and telegram bubbles\!\n\n"
     + "Available commands:\n"
     + f"/newpack \- {NEW_PACK_HELP}\n"
     + f"/addsticker \- {ADD_STICKER_HELP}\n"
@@ -39,7 +39,7 @@ VIDEO_CROP_INFO_MESSAGE = (
     "To crop the video, reply with the start time and duration in the format: "
     "<b>mm:ss.S s.S</b>\n"
     "(m for minutes, s for seconds, S for fraction of a second)\n\n"
-    "For example, to crop the video starting at 5 minutes and 10.5 seconds, for a duration of 2.8 seconds, "
+    "For example, to crop the video starting at 5 minutes and 10.5 seconds, with a duration of 2.8 seconds, "
     "reply with: <b>05:10.5 2.8</b>"
 )
 
