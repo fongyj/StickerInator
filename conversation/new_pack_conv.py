@@ -311,7 +311,7 @@ async def select_duration(update: Update, context: ContextTypes.DEFAULT_TYPE):
 async def select_emoji(update: Update, context: ContextTypes.DEFAULT_TYPE):
     sticker = context.user_data["sticker"]
     sticker_emoji = update.message.text
-    if not emoji.is_emoji(sticker_emoji) or not len(sticker_emoji) == 1:
+    if not emoji.is_emoji(sticker_emoji):
         await update.message.reply_text(STICKER_EMOJI_MESSAGE)
         return SELECTING_EMOJI
     context.user_data["stickers"].append(InputSticker(sticker, [sticker_emoji]))
