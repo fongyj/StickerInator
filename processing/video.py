@@ -33,7 +33,7 @@ class VideoProcessor:
             os.path.splitext(os.path.basename(self.video_path))[0] + "_processed.webm",
         )
         if self.remove_bg:
-            command = f"{self.ffmpeg_path} -i {self.video_path} -loop 1 -i processing/mask/mask.png -filter_complex [0:v][1:v]alphamerge[out],[out]scale={new_width}:{new_height} -c:v libvpx-vp9 -crf 40 -an -v quiet -y"
+            command = f"{self.ffmpeg_path} -i {self.video_path} -loop 1 -i processing/mask/mask.png -filter_complex [0:v]scale={new_width}:{new_height}[resized],[resized][1:v]alphamerge -c:v libvpx-vp9 -crf 40 -an -v quiet -y"
         else:
             command = f"{self.ffmpeg_path} -i {self.video_path} -c:v libvpx-vp9 -crf 40 -an -vf scale={new_width}:{new_height} -v quiet -y"
         # append cropping

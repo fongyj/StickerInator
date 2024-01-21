@@ -17,4 +17,4 @@ def get_RGBA_mask(size):
     mask.save("mask_RGBA.png")
 
 if __name__ == "__main__":
-    get_mask(400)
+    get_mask(512)
