@@ -325,9 +325,7 @@ async def select_emoji(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 async def select_title(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await log_info(
-        "{}: selected {} as sticker pack title".format(
-            update.effective_user.name, update.message.text
-        ),
+        "{}: selected sticker pack title".format(update.effective_user.name),
         update.get_bot()
     )
     context.user_data["title"] = update.message.text
@@ -337,9 +335,7 @@ async def select_title(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 async def select_name(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await log_info(
-        "{}: selected {} as sticker pack name".format(
-            update.effective_user.name, update.message.text
-        ),
+        "{}: selected sticker pack name".format(update.effective_user.name),
         update.get_bot()
     )
     context.user_data["name"] = update.message.text
@@ -362,7 +358,7 @@ async def create_pack(update: Update, context: ContextTypes.DEFAULT_TYPE):
         )
         await update.message.reply_text(CREATE_PACK_SUCCESS_MESSAGE.format(name))
         await log_info(
-            "{}: created sticker pack {}".format(update.effective_user.name, name),
+            "{}: created sticker pack".format(update.effective_user.name),
             update.get_bot()
         )
         return ConversationHandler.END
