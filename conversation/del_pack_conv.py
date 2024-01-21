@@ -45,13 +45,13 @@ async def select_pack(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await update.message.reply_text(INVALID_SET_MESSAGE)
         await update.message.reply_text(STICKER_FROM_SET_MESSAGE)
         return SELECTING_PACK
-    await update.message.reply_text(DELETE_PACK_CONFIRMATION_MESSAGE, parse_mode=ParseMode.MARKDOWN_V2)
+    await update.message.reply_text(DELETE_PACK_CONFIRMATION_MESSAGE, parse_mode=ParseMode.HTML)
     return CONFIRM_DELETE
 
 
 async def confirm_delete(update: Update, context: ContextTypes.DEFAULT_TYPE):
     try:
-        if update.message.text.lower() == "yes":
+        if update.message.text.lower() == "delete pack":
             bot = update.get_bot()
             sticker_set = context.user_data["sticker"].set_name
             await bot.delete_sticker_set(sticker_set)
@@ -63,7 +63,7 @@ async def confirm_delete(update: Update, context: ContextTypes.DEFAULT_TYPE):
                 update.get_bot()
             )
         else:
-            await update.message.reply_text(DELETE_PACK_CONFIRMATION_MESSAGE, parse_mode=ParseMode.MARKDOWN_V2)
+            await update.message.reply_text(DELETE_PACK_CONFIRMATION_MESSAGE, parse_mode=ParseMode.HTML)
             return CONFIRM_DELETE
     except BadRequest as e:
         await update.message.reply_text(SET_NOT_FOUND_MESSAGE)

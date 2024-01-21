@@ -54,7 +54,7 @@ VIDEO_TOO_LONG_MESSAGE = "Video duration is too long"
 VIDEO_PROCESSING_MESSAGE = "Please wait, video is processing... ⏰"
 
 PACK_LIMIT_REACHED_MESSAGE = (
-    "Sticker pack limit reached, reply with ```DONE``` to create sticker pack"
+    "Sticker pack limit reached, you cannot add more stickers\nMaximum {} stickers allowed is {}"
 )
 
 EMPTY_PACK_MESSAGE = "There is currently 0 stickers added. Please add stickers before creating a sticker pack"
@@ -80,7 +80,7 @@ DOWNLOAD_FAILED_IMAGE = "Failed to download sticker. Please send another image s
 DOWNLOAD_FAILED_VIDEO = "Failed to download sticker. Please send another video sticker"
 
 # delete pack
-DELETE_PACK_CONFIRMATION_MESSAGE = "Confirm delete pack? Reply with ```YES```"
+DELETE_PACK_CONFIRMATION_MESSAGE = "Reply with <b>DELETE PACK</b> to confirm"
 
 DELETE_PACK_SUCCESS_MESSAGE = "Sticker pack {} deleted"
 
@@ -89,11 +89,11 @@ SET_NOT_FOUND_MESSAGE = "No such sticker/stickerset. Cancelling operation"
 # delete sticker
 DELETE_STICKER_MESSAGE = "Please send the sticker you wish to delete"
 
-LAST_STICKER_MESSAGE = "❗❗❗This is your last sticker\. Deleting this will delete the sticker pack\. Are you sure? Reply with ```YES```"
+LAST_STICKER_MESSAGE = "❗❗❗ This is your last sticker ❗❗❗\nDeleting this sticker will delete the sticker pack\n\nReply with <b>DELETE STICKER</b> to confirm"
 
-DELETE_STICKER_CONFIRMATION_MESSAGE = "Confirm delete sticker? Reply with ```YES```"
+DELETE_STICKER_CONFIRMATION_MESSAGE = "Reply with <b>DELETE STICKER</b> to confirm"
 
-STICKER_NOT_FOUND_MESSAGE = "Sticker not found in the sticker set."
+STICKER_NOT_FOUND_MESSAGE = "Sticker not found in the sticker set"
 
 DELETE_STICKER_SUCCESS_MESSAGE = "Sticker deleted from {}"
 

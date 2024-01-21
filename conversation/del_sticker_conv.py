@@ -59,10 +59,10 @@ async def select_pack(update: Update, context: ContextTypes.DEFAULT_TYPE):
             if context.user_data["sticker"].file_id == sticker_info.file_id:
                 if len(sticker_set_info.stickers) == 1:
                     context.user_data["last"] = True
-                    await update.message.reply_text(LAST_STICKER_MESSAGE, parse_mode=ParseMode.MARKDOWN_V2)
+                    await update.message.reply_text(LAST_STICKER_MESSAGE, parse_mode=ParseMode.HTML)
                 else:
                     context.user_data["last"] = False
-                    await update.message.reply_text(DELETE_STICKER_CONFIRMATION_MESSAGE, parse_mode=ParseMode.MARKDOWN_V2)
+                    await update.message.reply_text(DELETE_STICKER_CONFIRMATION_MESSAGE, parse_mode=ParseMode.HTML)
                 return CONFIRM_DELETE
 
         # If the sticker wasn't found in the set
@@ -74,7 +74,7 @@ async def select_pack(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 async def confirm_delete(update: Update, context: ContextTypes.DEFAULT_TYPE):
     try:
-        if update.message.text.lower() == "yes":
+        if update.message.text.lower() == "delete sticker":
             bot = update.get_bot()
             sticker_set = context.user_data["sticker"].set_name
             sticker = context.user_data["sticker"].file_id
@@ -95,7 +95,7 @@ async def confirm_delete(update: Update, context: ContextTypes.DEFAULT_TYPE):
                     update.get_bot()
                 )
         else:
-            await update.message.reply_text(DELETE_STICKER_CONFIRMATION_MESSAGE, parse_mode=ParseMode.MARKDOWN_V2)
+            await update.message.reply_text(DELETE_STICKER_CONFIRMATION_MESSAGE, parse_mode=ParseMode.HTML)
             return CONFIRM_DELETE
     except BadRequest as e:
         await update.message.reply_text(SET_NOT_FOUND_MESSAGE)

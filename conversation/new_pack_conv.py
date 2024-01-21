@@ -110,9 +110,8 @@ async def select_image_sticker(update: Update, context: ContextTypes.DEFAULT_TYP
     sticker_count = context.user_data["sticker_count"]
     if sticker_count >= MAX_STATIC_STICKER:
         # too many stickers
-        await update.message.reply_text(
-            PACK_LIMIT_REACHED_MESSAGE, parse_mode=ParseMode.MARKDOWN_V2
-        )
+        await update.message.reply_text(PACK_LIMIT_REACHED_MESSAGE.format("image", MAX_STATIC_STICKER))
+        await update.message.reply_text(NEXT_STICKER_MESSAGE, reply_markup=done_button())
         return SELECTING_STICKER
     elif update.message.sticker:
         # user sent a sticker
@@ -185,9 +184,8 @@ async def select_video_sticker(update: Update, context: ContextTypes.DEFAULT_TYP
     remove_bg = False
     if sticker_count >= MAX_VIDEO_STICKER:
         # too many stickers
-        await update.message.reply_text(
-            PACK_LIMIT_REACHED_MESSAGE, parse_mode=ParseMode.MARKDOWN_V2
-        )
+        await update.message.reply_text(PACK_LIMIT_REACHED_MESSAGE.format("video", MAX_VIDEO_STICKER))
+        await update.message.reply_text(NEXT_STICKER_MESSAGE, reply_markup=done_button())
         return SELECTING_STICKER
     elif update.message.sticker:
         # user sent a sticker
@@ -341,6 +339,7 @@ async def create_pack(update: Update, context: ContextTypes.DEFAULT_TYPE):
             context.user_data["title"],
             stickers=context.user_data["stickers"],
             sticker_format=context.user_data["type"],
+            write_timeout=None
         )
         await update.message.reply_text(CREATE_PACK_SUCCESS_MESSAGE.format(name))
         await log_info(
