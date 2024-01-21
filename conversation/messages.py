@@ -25,14 +25,22 @@ IMAGE_STICKER_MESSAGE = "Please send image sticker\n\nStickerInator can accept i
 
 VIDEO_STICKER_MESSAGE = "Please send video sticker\n\nStickerInator can accept videos of most file formats, existing video stickers and telegram video notes"
 
-VIDEO_CROP_MESSAGE = (
+VIDEO_CROP_NOT_NECESSARY_MESSAGE = (
     "Video duration: <b>{} seconds</b>\nMaximum duration: <b>3 seconds</b>\n\n"
+    "If no video cropping is needed, select <em>No Crop</em>"
+)
+
+VIDEO_CROP_NECESSARY_MESSAGE = (
+    "Video duration: <b>{} seconds</b>\nMaximum duration: <b>3 seconds</b>\n\n"
+    "Video exceeds maximum allowed duration, video cropping is required"
+)
+
+VIDEO_CROP_INFO_MESSAGE = (
     "To crop the video, reply with the start time and duration in the format: "
     "<b>mm:ss.S s.S</b>\n"
     "(m for minutes, s for seconds, S for fraction of a second)\n\n"
     "For example, to crop the video starting at 5 minutes and 10.5 seconds, for a duration of 2.8 seconds, "
-    "reply with: <b>05:10.5 2.8</b>\n\n"
-    "If no video cropping is needed, simply reply with <em>OK</em>"
+    "reply with: <b>05:10.5 2.8</b>"
 )
 
 INVALID_VIDEO_DURATION_MESSAGE = "Invalid start timestamp or duration"

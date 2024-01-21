@@ -29,10 +29,12 @@ from conversation.messages import (
     PACK_TITLE_MESSAGE,
     PACK_TYPE_MESSAGE,
     IMAGE_STICKER_MESSAGE,
+    VIDEO_CROP_INFO_MESSAGE,
+    VIDEO_CROP_NECESSARY_MESSAGE,
     VIDEO_STICKER_MESSAGE,
     STICKER_EMOJI_MESSAGE,
     VIDEO_TOO_LONG_MESSAGE,
-    VIDEO_CROP_MESSAGE,
+    VIDEO_CROP_NOT_NECESSARY_MESSAGE,
     INVALID_VIDEO_DURATION_MESSAGE,
     NEXT_STICKER_MESSAGE,
     CREATE_PACK_SUCCESS_MESSAGE,
@@ -44,7 +46,7 @@ from conversation.messages import (
     DOWNLOAD_FAILED_IMAGE,
     DOWNLOAD_FAILED_VIDEO,
 )
-from conversation.utils import done_button, log_info, type_button
+from conversation.utils import crop_button, done_button, log_info, no_crop_button, type_button
 
 (
     SELECTING_TYPE,
@@ -253,21 +255,32 @@ async def select_video_sticker(update: Update, context: ContextTypes.DEFAULT_TYP
     processor = VideoProcessor(file, remove_bg=remove_bg)
     context.user_data["processor"] = processor
     await processor.get_video()
-    await update.message.reply_text(
-        VIDEO_CROP_MESSAGE.format(processor.duration), parse_mode=ParseMode.HTML
-    )
+    if processor.duration > 3:
+        await update.message.reply_text(
+            VIDEO_CROP_NECESSARY_MESSAGE.format(processor.duration), parse_mode=ParseMode.HTML, reply_markup=crop_button()
+        )
+    else:
+        await update.message.reply_text(
+            VIDEO_CROP_NOT_NECESSARY_MESSAGE.format(processor.duration), parse_mode=ParseMode.HTML, reply_markup=no_crop_button()
+        )
+    await update.message.reply_text(VIDEO_CROP_INFO_MESSAGE, parse_mode=ParseMode.HTML)
     return SELECTING_DURATION
 
 
 async def select_duration(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    crop = update.message.text
-    await log_info("{}: selected video crop {}".format(update.effective_user.name, crop), update.get_bot())
     duration = context.user_data["processor"].duration
+    if update.message:
+        crop = update.message.text
+        response = update.message
+    else:
+        crop = update.callback_query.data
+        response = update.callback_query.message
     bot = update.get_bot()
-    if crop.lower() == "ok" and duration > 3:
-        await update.message.reply_text(VIDEO_TOO_LONG_MESSAGE)
+    await log_info("{}: selected video crop {}".format(update.effective_user.name, crop), bot)
+    if crop.lower() == "no crop" and duration > 3:
+        await response.reply_text(VIDEO_TOO_LONG_MESSAGE)
         return SELECTING_DURATION
-    elif crop.lower() == "ok":
+    elif crop.lower() == "no crop":
         await bot.send_message(update.effective_chat.id, VIDEO_PROCESSING_MESSAGE)
         context.user_data["sticker"] = context.user_data["processor"].process_video()
     else:
@@ -275,17 +288,23 @@ async def select_duration(update: Update, context: ContextTypes.DEFAULT_TYPE):
             crop
         )
         if start_min == None:
-            await update.message.reply_text(INVALID_VIDEO_DURATION_MESSAGE)
-            await update.message.reply_text(
-                VIDEO_CROP_MESSAGE.format(duration), parse_mode=ParseMode.HTML
-            )
+            await response.reply_text(INVALID_VIDEO_DURATION_MESSAGE)
+            if duration > 3:
+                await response.reply_text(
+                    VIDEO_CROP_NECESSARY_MESSAGE.format(duration), parse_mode=ParseMode.HTML, reply_markup=crop_button()
+                )
+            else:
+                await response.reply_text(
+                    VIDEO_CROP_NOT_NECESSARY_MESSAGE.format(duration), parse_mode=ParseMode.HTML, reply_markup=no_crop_button()
+                )
+            await response.reply_text(VIDEO_CROP_INFO_MESSAGE, parse_mode=ParseMode.HTML)
             return SELECTING_DURATION
         await bot.send_message(update.effective_chat.id, VIDEO_PROCESSING_MESSAGE)
         context.user_data["sticker"] = context.user_data["processor"].process_video(
             start_min, start_sec, crop_duration
         )
     context.user_data["sticker_count"] += 1
-    await update.message.reply_text(STICKER_EMOJI_MESSAGE)
+    await response.reply_text(STICKER_EMOJI_MESSAGE)
     return SELECTING_EMOJI
 
 
@@ -378,6 +397,7 @@ def get_new_pack_conv():
                 MessageHandler(filters.ALL & ~filters.COMMAND, select_sticker)
             ],
             SELECTING_DURATION: [
+                CallbackQueryHandler(select_duration),
                 MessageHandler(filters.TEXT & ~filters.COMMAND, select_duration)
             ],
             SELECTING_EMOJI: [

@@ -48,6 +48,16 @@ class VideoProcessor:
         return video_bytes
 
     def parse_crop(self, crop: str):
+        if crop == "first":
+            crop = "00:00.0 3.0"
+        elif crop == "middle":
+            start_min = int(((self.duration - 3) / 2) // 60)
+            start_sec = round(((self.duration - 3) / 2) % 60, 1)
+            crop = "{:02}:{:0>4.1f} 3.0".format(start_min, start_sec)
+        elif crop == "last":
+            start_min = int(((self.duration - 3)) // 60)
+            start_sec = round(((self.duration - 3)) % 60, 1)
+            crop = "{:02}:{:0>4.1f} 3.0".format(start_min, start_sec)
         pattern = r"\d{2}:\d{2}\.\d{1} \d{1}\.\d{1}"
         if not re.match(pattern, crop):
             return None, None, None
