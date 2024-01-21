@@ -7,7 +7,7 @@ from io import BytesIO
 load_dotenv()
 
 from warnings import filterwarnings
-from telegram import Update, InputSticker, InlineKeyboardButton, InlineKeyboardMarkup
+from telegram import Update, InputSticker
 from telegram.constants import ParseMode
 from telegram.error import TelegramError
 from telegram.ext import (
@@ -44,7 +44,7 @@ from conversation.messages import (
     DOWNLOAD_FAILED_IMAGE,
     DOWNLOAD_FAILED_VIDEO,
 )
-from conversation.utils import log_info
+from conversation.utils import done_button, log_info, type_button
 
 (
     SELECTING_TYPE,
@@ -65,25 +65,18 @@ async def new_pack(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     await log_info("{}: create pack".format(update.effective_user.name), update.get_bot())
     
     async def final_state(update, context):
-        await update.message.reply_text(PACK_TITLE_MESSAGE)
+        await update.callback_query.message.reply_text(PACK_TITLE_MESSAGE)
         return SELECTING_TITLE
 
     context.user_data["final_state"] = final_state
     context.user_data["stickers"] = list()
     context.user_data["operation"] = "create pack"
-    keyboard = [
-        [
-            InlineKeyboardButton("IMAGE", callback_data="image"),
-            InlineKeyboardButton("VIDEO", callback_data="video"),
-        ],
-    ]
-    reply_markup = InlineKeyboardMarkup(keyboard)
-    await update.message.reply_text(PACK_TYPE_MESSAGE, reply_markup=reply_markup)
+    await update.message.reply_text(PACK_TYPE_MESSAGE, reply_markup=type_button())
     context.user_data["sticker_count"] = 0
     return SELECTING_TYPE
 
 
-async def select_type_button(update: Update, context: CallbackContext):
+async def select_type(update: Update, context: CallbackContext):
     query = update.callback_query
     data = query.data
     if data == "image":
@@ -98,12 +91,14 @@ async def select_type_button(update: Update, context: CallbackContext):
 
 async def select_sticker(update: Update, context: ContextTypes.DEFAULT_TYPE):
     pack_type = context.user_data["type"]
-    text = update.message.text
+    query = update.callback_query
+    data = query.data if query else None
     sticker_count = context.user_data["sticker_count"]
-    if text and text.lower() == "done" and sticker_count > 0:
+
+    if data and data.lower() == "done" and sticker_count > 0:
         return await context.user_data["final_state"](update, context)
-    elif text and text.lower() == "done":
-        await update.message.reply_text(EMPTY_PACK_MESSAGE)
+    elif data and data.lower() == "done":
+        await query.message.reply_text(EMPTY_PACK_MESSAGE)
         return SELECTING_STICKER
     elif pack_type == StickerFormat.STATIC:
         return await select_image_sticker(update, context)
@@ -122,10 +117,10 @@ async def select_image_sticker(update: Update, context: ContextTypes.DEFAULT_TYP
     elif update.message.sticker:
         # user sent a sticker
         if update.message.sticker.is_animated or update.message.sticker.is_video:
-            await update.message.reply_text(
-                IMAGE_STICKER_MESSAGE if sticker_count == 0 else NEXT_STICKER_MESSAGE,
-                parse_mode=ParseMode.MARKDOWN_V2,
-            )
+            if sticker_count == 0:
+                await update.message.reply_text(IMAGE_STICKER_MESSAGE)
+            else:
+                await update.message.reply_text(NEXT_STICKER_MESSAGE, reply_markup=done_button())
             return SELECTING_STICKER
 
         bot = update.get_bot()
@@ -141,9 +136,7 @@ async def select_image_sticker(update: Update, context: ContextTypes.DEFAULT_TYP
                 InputSticker(sticker_file, [update.message.sticker.emoji])
             )
             context.user_data["sticker_count"] += 1
-            await update.message.reply_text(
-                NEXT_STICKER_MESSAGE, parse_mode=ParseMode.MARKDOWN_V2
-            )
+            await update.message.reply_text(NEXT_STICKER_MESSAGE, reply_markup=done_button())
             return SELECTING_STICKER
         else:
             await update.message.reply_text(DOWNLOAD_FAILED_IMAGE)
@@ -158,10 +151,10 @@ async def select_image_sticker(update: Update, context: ContextTypes.DEFAULT_TYP
         file = await update.message.document.get_file()
     else:
         # user did not send anything valid
-        await update.message.reply_text(
-            IMAGE_STICKER_MESSAGE if sticker_count == 0 else NEXT_STICKER_MESSAGE,
-            parse_mode=ParseMode.MARKDOWN_V2,
-        )
+        if sticker_count == 0:
+            await update.message.reply_text(IMAGE_STICKER_MESSAGE)
+        else:
+            await update.message.reply_text(NEXT_STICKER_MESSAGE, reply_markup=done_button())
         return SELECTING_STICKER
 
     await log_info(
@@ -202,10 +195,10 @@ async def select_video_sticker(update: Update, context: ContextTypes.DEFAULT_TYP
             await update.message.reply_text(STICKER_NOT_SUPPORTED)
             return SELECTING_STICKER
         if not update.message.sticker.is_video:
-            await update.message.reply_text(
-                VIDEO_STICKER_MESSAGE if sticker_count == 0 else NEXT_STICKER_MESSAGE,
-                parse_mode=ParseMode.MARKDOWN_V2,
-            )
+            if sticker_count == 0:
+                await update.message.reply_text(VIDEO_STICKER_MESSAGE)
+            else:
+                await update.message.reply_text(NEXT_STICKER_MESSAGE, reply_markup=done_button())
             return SELECTING_STICKER
         bot = update.get_bot()
         file = await bot.get_file(update.message.sticker.file_id)
@@ -220,9 +213,7 @@ async def select_video_sticker(update: Update, context: ContextTypes.DEFAULT_TYP
                 InputSticker(sticker_file, [update.message.sticker.emoji])
             )
             context.user_data["sticker_count"] += 1
-            await update.message.reply_text(
-                NEXT_STICKER_MESSAGE, parse_mode=ParseMode.MARKDOWN_V2
-            )
+            await update.message.reply_text(NEXT_STICKER_MESSAGE, reply_markup=done_button())
             return SELECTING_STICKER
         else:
             await update.message.reply_text(DOWNLOAD_FAILED_VIDEO)
@@ -241,10 +232,10 @@ async def select_video_sticker(update: Update, context: ContextTypes.DEFAULT_TYP
         remove_bg = True
     else:
         # user did not send anything valid
-        await update.message.reply_text(
-            VIDEO_STICKER_MESSAGE if sticker_count == 0 else NEXT_STICKER_MESSAGE,
-            parse_mode=ParseMode.MARKDOWN_V2,
-        )
+        if sticker_count == 0:
+            await update.message.reply_text(VIDEO_STICKER_MESSAGE)
+        else:
+            await update.message.reply_text(NEXT_STICKER_MESSAGE, reply_markup=done_button())
         return SELECTING_STICKER
     await log_info(
         "{}: uploaded video sticker {}".format(
@@ -311,9 +302,7 @@ async def select_emoji(update: Update, context: ContextTypes.DEFAULT_TYPE):
         "{}: selected emoji {}".format(update.effective_user.name, sticker_emoji),
         update.get_bot()
     )
-    await update.message.reply_text(
-        NEXT_STICKER_MESSAGE, parse_mode=ParseMode.MARKDOWN_V2
-    )
+    await update.message.reply_text(NEXT_STICKER_MESSAGE, reply_markup=done_button())
     return SELECTING_STICKER
 
 
@@ -383,9 +372,10 @@ def get_new_pack_conv():
                 MessageHandler(filters.TEXT & ~filters.COMMAND, select_title)
             ],
             SELECTING_TYPE: [
-                CallbackQueryHandler(select_type_button, pattern="^image$|^video$"),
+                CallbackQueryHandler(select_type, pattern="^image$|^video$"),
             ],
             SELECTING_STICKER: [
+                CallbackQueryHandler(select_sticker),
                 MessageHandler(filters.ALL & ~filters.COMMAND, select_sticker)
             ],
             SELECTING_DURATION: [

@@ -5,6 +5,7 @@ from telegram.ext import (
     MessageHandler,
     filters,
     ConversationHandler,
+    CallbackQueryHandler,
 )
 from telegram.constants import StickerFormat
 import os
@@ -69,7 +70,7 @@ async def add_sticker(update: Update, context: ContextTypes.DEFAULT_TYPE):
             update.effective_user.id, context.user_data["set_name"], sticker=sticker
         )
     sticker_count = len(context.user_data["stickers"])
-    await update.message.reply_text(ADD_SUCCESS_MESSAGE.format(sticker_count))
+    await update.callback_query.message.reply_text(ADD_SUCCESS_MESSAGE.format(sticker_count))
     await log_info(
         "{}: added {} sticker(s)".format(update.effective_user.name, sticker_count),
         update.get_bot()
@@ -85,6 +86,7 @@ def get_add_sticker_conv():
                 MessageHandler(filters.Sticker.ALL & ~filters.COMMAND, select_pack)
             ],
             SELECTING_STICKER: [
+                CallbackQueryHandler(select_sticker),
                 MessageHandler(filters.ALL & ~filters.COMMAND, select_sticker)
             ],
             SELECTING_DURATION: [

@@ -40,7 +40,7 @@ INVALID_VIDEO_DURATION_MESSAGE = "Invalid start timestamp or duration"
 STICKER_EMOJI_MESSAGE = "Please send a single emoji for the sticker"
 
 NEXT_STICKER_MESSAGE = (
-    "Please send another sticker or reply with ```DONE``` to create sticker pack"
+    "Please send another sticker or select DONE to create sticker pack"
 )
 
 STICKER_FROM_SET_MESSAGE = "Please send a sticker from your sticker set"
