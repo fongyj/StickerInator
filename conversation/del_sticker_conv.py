@@ -83,6 +83,10 @@ async def confirm_delete(update: Update, context: ContextTypes.DEFAULT_TYPE):
                 await update.message.reply_text(
                     DELETE_PACK_SUCCESS_MESSAGE.format(sticker_set)
                 )
+                await log_info(
+                    "{}: deleted pack {}".format(update.effective_user.name, sticker_set),
+                    update.get_bot()
+                )
             else:
                 await bot.delete_sticker_from_set(sticker)
                 await update.message.reply_text(
