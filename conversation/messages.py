@@ -19,7 +19,7 @@ HELP_MESSAGE = (
 )
 
 # add pack/sticker
-PACK_TYPE_MESSAGE = "Please select a sticker type:"
+PACK_TYPE_MESSAGE = "Please select a sticker type"
 
 IMAGE_STICKER_MESSAGE = "Please send image sticker\n\nStickerInator can accept images of most file formats and existing image stickers"
 
@@ -48,7 +48,7 @@ INVALID_VIDEO_DURATION_MESSAGE = "Invalid start timestamp or duration"
 STICKER_EMOJI_MESSAGE = "Please send a single emoji for the sticker"
 
 NEXT_STICKER_MESSAGE = (
-    "Please send another sticker or select DONE to create sticker pack"
+    "Please send another sticker or select <em>DONE</em> to create sticker pack"
 )
 
 STICKER_FROM_PACK_MESSAGE = "Please send a sticker from the existing sticker pack"
@@ -78,6 +78,8 @@ PACK_NAME_MESSAGE = (
     + "\n"
     + "Note: Sticker pack names must be unique"
 )
+
+INVALID_PACK_NAME_MESSAGE = "Sticker pack name is invalid\n\nIt might be too long or contain an invalid character, please try another name"
 
 CREATE_PACK_SUCCESS_MESSAGE = "Sticker pack created: https://t.me/addstickers/{}"
 

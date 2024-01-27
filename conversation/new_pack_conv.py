@@ -3,6 +3,7 @@ import os
 import emoji
 import requests
 from io import BytesIO
+import re
 
 load_dotenv()
 
@@ -25,6 +26,7 @@ from telegram.warnings import PTBUserWarning
 from processing.image import process_image
 from processing.video import VideoProcessor
 from conversation.messages import (
+    INVALID_PACK_NAME_MESSAGE,
     PACK_NAME_MESSAGE,
     PACK_TITLE_MESSAGE,
     PACK_TYPE_MESSAGE,
@@ -113,7 +115,7 @@ async def select_image_sticker(update: Update, context: ContextTypes.DEFAULT_TYP
     if sticker_count >= MAX_STATIC_STICKER:
         # too many stickers
         await update.message.reply_text(PACK_LIMIT_REACHED_MESSAGE.format("image", MAX_STATIC_STICKER))
-        await update.message.reply_text(NEXT_STICKER_MESSAGE, reply_markup=done_button())
+        await update.message.reply_text(NEXT_STICKER_MESSAGE, parse_mode=ParseMode.HTML, reply_markup=done_button())
         return SELECTING_STICKER
     elif update.message.sticker:
         # user sent a sticker
@@ -121,7 +123,7 @@ async def select_image_sticker(update: Update, context: ContextTypes.DEFAULT_TYP
             if sticker_count == 0:
                 await update.message.reply_text(IMAGE_STICKER_MESSAGE)
             else:
-                await update.message.reply_text(NEXT_STICKER_MESSAGE, reply_markup=done_button())
+                await update.message.reply_text(NEXT_STICKER_MESSAGE, parse_mode=ParseMode.HTML, reply_markup=done_button())
             return SELECTING_STICKER
 
         bot = update.get_bot()
@@ -137,7 +139,7 @@ async def select_image_sticker(update: Update, context: ContextTypes.DEFAULT_TYP
                 InputSticker(sticker_file, [update.message.sticker.emoji])
             )
             context.user_data["sticker_count"] += 1
-            await update.message.reply_text(NEXT_STICKER_MESSAGE, reply_markup=done_button())
+            await update.message.reply_text(NEXT_STICKER_MESSAGE, parse_mode=ParseMode.HTML, reply_markup=done_button())
             return SELECTING_STICKER
         else:
             await update.message.reply_text(DOWNLOAD_FAILED_IMAGE)
@@ -155,7 +157,7 @@ async def select_image_sticker(update: Update, context: ContextTypes.DEFAULT_TYP
         if sticker_count == 0:
             await update.message.reply_text(IMAGE_STICKER_MESSAGE)
         else:
-            await update.message.reply_text(NEXT_STICKER_MESSAGE, reply_markup=done_button())
+            await update.message.reply_text(NEXT_STICKER_MESSAGE, parse_mode=ParseMode.HTML, reply_markup=done_button())
         return SELECTING_STICKER
 
     await log_info(
@@ -187,7 +189,7 @@ async def select_video_sticker(update: Update, context: ContextTypes.DEFAULT_TYP
     if sticker_count >= MAX_VIDEO_STICKER:
         # too many stickers
         await update.message.reply_text(PACK_LIMIT_REACHED_MESSAGE.format("video", MAX_VIDEO_STICKER))
-        await update.message.reply_text(NEXT_STICKER_MESSAGE, reply_markup=done_button())
+        await update.message.reply_text(NEXT_STICKER_MESSAGE, parse_mode=ParseMode.HTML, reply_markup=done_button())
         return SELECTING_STICKER
     elif update.message.sticker:
         # user sent a sticker
@@ -198,7 +200,7 @@ async def select_video_sticker(update: Update, context: ContextTypes.DEFAULT_TYP
             if sticker_count == 0:
                 await update.message.reply_text(VIDEO_STICKER_MESSAGE)
             else:
-                await update.message.reply_text(NEXT_STICKER_MESSAGE, reply_markup=done_button())
+                await update.message.reply_text(NEXT_STICKER_MESSAGE, parse_mode=ParseMode.HTML, reply_markup=done_button())
             return SELECTING_STICKER
         bot = update.get_bot()
         file = await bot.get_file(update.message.sticker.file_id)
@@ -213,7 +215,7 @@ async def select_video_sticker(update: Update, context: ContextTypes.DEFAULT_TYP
                 InputSticker(sticker_file, [update.message.sticker.emoji])
             )
             context.user_data["sticker_count"] += 1
-            await update.message.reply_text(NEXT_STICKER_MESSAGE, reply_markup=done_button())
+            await update.message.reply_text(NEXT_STICKER_MESSAGE, parse_mode=ParseMode.HTML, reply_markup=done_button())
             return SELECTING_STICKER
         else:
             await update.message.reply_text(DOWNLOAD_FAILED_VIDEO)
@@ -235,7 +237,7 @@ async def select_video_sticker(update: Update, context: ContextTypes.DEFAULT_TYP
         if sticker_count == 0:
             await update.message.reply_text(VIDEO_STICKER_MESSAGE)
         else:
-            await update.message.reply_text(NEXT_STICKER_MESSAGE, reply_markup=done_button())
+            await update.message.reply_text(NEXT_STICKER_MESSAGE, parse_mode=ParseMode.HTML, reply_markup=done_button())
         return SELECTING_STICKER
     await log_info(
         "{}: uploaded video sticker {}".format(
@@ -324,7 +326,7 @@ async def select_emoji(update: Update, context: ContextTypes.DEFAULT_TYPE):
         "{}: selected emoji {}".format(update.effective_user.name, sticker_emoji),
         update.get_bot()
     )
-    await response.reply_text(NEXT_STICKER_MESSAGE, reply_markup=done_button())
+    await response.reply_text(NEXT_STICKER_MESSAGE, parse_mode=ParseMode.HTML, reply_markup=done_button())
     return SELECTING_STICKER
 
 
@@ -333,11 +335,11 @@ async def select_title(update: Update, context: ContextTypes.DEFAULT_TYPE):
         "{}: selected sticker pack title".format(update.effective_user.name),
         update.get_bot()
     )
-    title = update.message.text
-    context.user_data["title"] = title
-    await update.message.reply_text(PACK_NAME_MESSAGE, reply_markup=three_by_one_button(title, 
-                                                                                        title+"_"+update.effective_user.name[1:],
-                                                                                        update.effective_user.name[1:]+"_"+title))
+    context.user_data["title"] = update.message.text
+    cleaned_title = re.sub('[^0-9a-zA-Z]+', '_', update.message.text).rstrip("_").lstrip("_")
+    await update.message.reply_text(PACK_NAME_MESSAGE, reply_markup=three_by_one_button(cleaned_title, 
+                                                                                        cleaned_title+"_"+update.effective_user.name[1:],
+                                                                                        update.effective_user.name[1:]+"_"+cleaned_title))
     return SELECTING_NAME
 
 
@@ -371,7 +373,7 @@ async def select_name(update: Update, context: ContextTypes.DEFAULT_TYPE):
         )
         return ConversationHandler.END
     except TelegramError as te:
-        await response.reply_text(te.message)
+        await response.reply_text(INVALID_PACK_NAME_MESSAGE)
         await response.reply_text(PACK_NAME_MESSAGE)
         await log_info(
             "{}: error creating pack {}".format(update.effective_user.name, te.message),
