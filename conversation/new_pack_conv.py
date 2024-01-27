@@ -46,7 +46,7 @@ from conversation.messages import (
     DOWNLOAD_FAILED_IMAGE,
     DOWNLOAD_FAILED_VIDEO,
 )
-from conversation.utils import crop_button, done_button, log_info, no_crop_button, type_button
+from conversation.utils import crop_button, done_button, emoji_button, log_info, no_crop_button, type_button
 
 (
     SELECTING_TYPE,
@@ -177,7 +177,7 @@ async def select_image_sticker(update: Update, context: ContextTypes.DEFAULT_TYP
     processed_sticker = process_image(file.file_path)
     context.user_data["sticker"] = processed_sticker
     context.user_data["sticker_count"] += 1
-    await update.message.reply_text(STICKER_EMOJI_MESSAGE)
+    await update.message.reply_text(STICKER_EMOJI_MESSAGE, reply_markup=emoji_button())
     return SELECTING_EMOJI
 
 
@@ -304,22 +304,27 @@ async def select_duration(update: Update, context: ContextTypes.DEFAULT_TYPE):
             start_min, start_sec, crop_duration
         )
     context.user_data["sticker_count"] += 1
-    await response.reply_text(STICKER_EMOJI_MESSAGE)
+    await response.reply_text(STICKER_EMOJI_MESSAGE, reply_markup=emoji_button())
     return SELECTING_EMOJI
 
 
 async def select_emoji(update: Update, context: ContextTypes.DEFAULT_TYPE):
     sticker = context.user_data["sticker"]
-    sticker_emoji = update.message.text
+    if update.message:
+        sticker_emoji = update.message.text
+        response = update.message
+    else:
+        sticker_emoji = update.callback_query.data
+        response = update.callback_query.message
     if not emoji.is_emoji(sticker_emoji):
-        await update.message.reply_text(STICKER_EMOJI_MESSAGE)
+        await response.reply_text(STICKER_EMOJI_MESSAGE, reply_markup=emoji_button())
         return SELECTING_EMOJI
     context.user_data["stickers"].append(InputSticker(sticker, [sticker_emoji]))
     await log_info(
         "{}: selected emoji {}".format(update.effective_user.name, sticker_emoji),
         update.get_bot()
     )
-    await update.message.reply_text(NEXT_STICKER_MESSAGE, reply_markup=done_button())
+    await response.reply_text(NEXT_STICKER_MESSAGE, reply_markup=done_button())
     return SELECTING_STICKER
 
 
@@ -397,6 +402,7 @@ def get_new_pack_conv():
                 MessageHandler(filters.TEXT & ~filters.COMMAND, select_duration)
             ],
             SELECTING_EMOJI: [
+                CallbackQueryHandler(select_emoji),
                 MessageHandler(filters.ALL & ~filters.COMMAND, select_emoji)
             ],
         },

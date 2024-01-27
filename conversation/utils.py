@@ -40,3 +40,6 @@ def crop_button():
     return InlineKeyboardMarkup([get_button_row("Crop First 3 Seconds", "first"), 
                                  get_button_row("Crop Middle 3 Seconds", "middle"), 
                                  get_button_row("Crop Last 3 Seconds", "last")])
+
+def emoji_button():
+    return InlineKeyboardMarkup([get_button_row(["💬", "😊", "☠️","💩"], ["💬", "😊", "☠️","💩"])])
