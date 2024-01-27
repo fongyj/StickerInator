@@ -65,7 +65,7 @@ PACK_LIMIT_REACHED_MESSAGE = (
     "Sticker pack limit reached, you cannot add more stickers\nMaximum {} stickers allowed is {}"
 )
 
-EMPTY_PACK_MESSAGE = "There is currently 0 stickers added. Please add stickers before creating a sticker pack"
+EMPTY_PACK_MESSAGE = "There is currently 0 sticker added. Please add a sticker before creating a sticker pack"
 
 SIZE_LIMIT_REACHED_MESSAGE = (
     "Sticker file size limit reached, please send a smaller sticker"

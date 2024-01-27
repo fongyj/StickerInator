@@ -43,3 +43,8 @@ def crop_button():
 
 def emoji_button():
     return InlineKeyboardMarkup([get_button_row(["💬", "😊", "☠️","💩"], ["💬", "😊", "☠️","💩"])])
+
+def three_by_one_button(one, two, three):
+    return InlineKeyboardMarkup([get_button_row(one, one), 
+                                 get_button_row(two, two), 
+                                 get_button_row(three, three)])
