@@ -27,7 +27,7 @@ VIDEO_STICKER_MESSAGE = "Please send video sticker\n\nStickerInator can accept v
 
 VIDEO_CROP_NOT_NECESSARY_MESSAGE = (
     "Video duration: <b>{} seconds</b>\nMaximum duration: <b>3 seconds</b>\n\n"
-    "If no video cropping is needed, select <em>No Crop</em>"
+    "If no video cropping is needed, select <em>NO CROP</em>"
 )
 
 VIDEO_CROP_NECESSARY_MESSAGE = (
