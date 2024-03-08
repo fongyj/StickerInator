@@ -4,7 +4,7 @@ ADD_STICKER_HELP = "Adds a sticker"
 DEL_STICKER_HELP = "Deletes a sticker"
 DEL_PACK_HELP = "Deletes a stickerpack"
 HELP_HELP = "Gets info on the bot"
-CANCEL_HELP = "Cancels current operation (use this command if stuck)"
+CANCEL_HELP = "Cancels current operation \(use this command if stuck\)"
 
 HELP_MESSAGE = (
     "*StickerInator* is designed to help you create sticker packs with images, videos and telegram bubbles\!\n\n"
