@@ -105,4 +105,6 @@ STICKER_NOT_FOUND_MESSAGE = "Sticker not found in the sticker pack"
 DELETE_STICKER_SUCCESS_MESSAGE = "Sticker deleted from {}"
 
 # cancel
+UNHANDLED_ERROR_MESSAGE = "Sticker-inator encountered an error, please try again or cancel the current operation with the cancel command"
+
 CANCEL_MESSAGE = "Operation cancelled"
