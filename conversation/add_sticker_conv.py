@@ -104,6 +104,7 @@ def get_add_sticker_conv():
                 MessageHandler(filters.TEXT & ~filters.COMMAND, select_duration)
             ],
             SELECTING_EMOJI: [
+                CallbackQueryHandler(select_emoji),
                 MessageHandler(filters.ALL & ~filters.COMMAND, select_emoji)
             ],
         },

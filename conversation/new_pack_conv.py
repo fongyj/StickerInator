@@ -3,6 +3,7 @@ import os
 import emoji
 import requests
 from io import BytesIO
+import re
 
 load_dotenv()
 
@@ -47,7 +48,7 @@ from conversation.messages import (
     DOWNLOAD_FAILED_VIDEO,
     UNHANDLED_ERROR_MESSAGE,
 )
-from conversation.utils import crop_button, done_button, log_info, no_crop_button, type_button
+from conversation.utils import crop_button, done_button, emoji_button, log_info, no_crop_button, three_by_one_button, type_button
 
 (
     SELECTING_TYPE,
@@ -114,7 +115,7 @@ async def select_image_sticker(update: Update, context: ContextTypes.DEFAULT_TYP
     if sticker_count >= MAX_STATIC_STICKER:
         # too many stickers
         await update.message.reply_text(PACK_LIMIT_REACHED_MESSAGE.format("image", MAX_STATIC_STICKER))
-        await update.message.reply_text(NEXT_STICKER_MESSAGE, reply_markup=done_button())
+        await update.message.reply_text(NEXT_STICKER_MESSAGE, parse_mode=ParseMode.HTML, reply_markup=done_button())
         return SELECTING_STICKER
     elif update.message.sticker:
         # user sent a sticker
@@ -122,7 +123,7 @@ async def select_image_sticker(update: Update, context: ContextTypes.DEFAULT_TYP
             if sticker_count == 0:
                 await update.message.reply_text(IMAGE_STICKER_MESSAGE)
             else:
-                await update.message.reply_text(NEXT_STICKER_MESSAGE, reply_markup=done_button())
+                await update.message.reply_text(NEXT_STICKER_MESSAGE, parse_mode=ParseMode.HTML, reply_markup=done_button())
             return SELECTING_STICKER
 
         bot = update.get_bot()
@@ -138,7 +139,7 @@ async def select_image_sticker(update: Update, context: ContextTypes.DEFAULT_TYP
                 InputSticker(sticker_file, [update.message.sticker.emoji])
             )
             context.user_data["sticker_count"] += 1
-            await update.message.reply_text(NEXT_STICKER_MESSAGE, reply_markup=done_button())
+            await update.message.reply_text(NEXT_STICKER_MESSAGE, parse_mode=ParseMode.HTML, reply_markup=done_button())
             return SELECTING_STICKER
         else:
             await update.message.reply_text(DOWNLOAD_FAILED_IMAGE)
@@ -156,7 +157,7 @@ async def select_image_sticker(update: Update, context: ContextTypes.DEFAULT_TYP
         if sticker_count == 0:
             await update.message.reply_text(IMAGE_STICKER_MESSAGE)
         else:
-            await update.message.reply_text(NEXT_STICKER_MESSAGE, reply_markup=done_button())
+            await update.message.reply_text(NEXT_STICKER_MESSAGE, parse_mode=ParseMode.HTML, reply_markup=done_button())
         return SELECTING_STICKER
 
     await log_info(
@@ -178,7 +179,7 @@ async def select_image_sticker(update: Update, context: ContextTypes.DEFAULT_TYP
     processed_sticker = process_image(file.file_path)
     context.user_data["sticker"] = processed_sticker
     context.user_data["sticker_count"] += 1
-    await update.message.reply_text(STICKER_EMOJI_MESSAGE)
+    await update.message.reply_text(STICKER_EMOJI_MESSAGE, reply_markup=emoji_button())
     return SELECTING_EMOJI
 
 
@@ -188,7 +189,7 @@ async def select_video_sticker(update: Update, context: ContextTypes.DEFAULT_TYP
     if sticker_count >= MAX_VIDEO_STICKER:
         # too many stickers
         await update.message.reply_text(PACK_LIMIT_REACHED_MESSAGE.format("video", MAX_VIDEO_STICKER))
-        await update.message.reply_text(NEXT_STICKER_MESSAGE, reply_markup=done_button())
+        await update.message.reply_text(NEXT_STICKER_MESSAGE, parse_mode=ParseMode.HTML, reply_markup=done_button())
         return SELECTING_STICKER
     elif update.message.sticker:
         # user sent a sticker
@@ -199,7 +200,7 @@ async def select_video_sticker(update: Update, context: ContextTypes.DEFAULT_TYP
             if sticker_count == 0:
                 await update.message.reply_text(VIDEO_STICKER_MESSAGE)
             else:
-                await update.message.reply_text(NEXT_STICKER_MESSAGE, reply_markup=done_button())
+                await update.message.reply_text(NEXT_STICKER_MESSAGE, parse_mode=ParseMode.HTML, reply_markup=done_button())
             return SELECTING_STICKER
         bot = update.get_bot()
         file = await bot.get_file(update.message.sticker.file_id)
@@ -214,7 +215,7 @@ async def select_video_sticker(update: Update, context: ContextTypes.DEFAULT_TYP
                 InputSticker(sticker_file, [update.message.sticker.emoji])
             )
             context.user_data["sticker_count"] += 1
-            await update.message.reply_text(NEXT_STICKER_MESSAGE, reply_markup=done_button())
+            await update.message.reply_text(NEXT_STICKER_MESSAGE, parse_mode=ParseMode.HTML, reply_markup=done_button())
             return SELECTING_STICKER
         else:
             await update.message.reply_text(DOWNLOAD_FAILED_VIDEO)
@@ -236,7 +237,7 @@ async def select_video_sticker(update: Update, context: ContextTypes.DEFAULT_TYP
         if sticker_count == 0:
             await update.message.reply_text(VIDEO_STICKER_MESSAGE)
         else:
-            await update.message.reply_text(NEXT_STICKER_MESSAGE, reply_markup=done_button())
+            await update.message.reply_text(NEXT_STICKER_MESSAGE, parse_mode=ParseMode.HTML, reply_markup=done_button())
         return SELECTING_STICKER
     await log_info(
         "{}: uploaded video sticker {}".format(
@@ -305,22 +306,27 @@ async def select_duration(update: Update, context: ContextTypes.DEFAULT_TYPE):
             start_min, start_sec, crop_duration
         )
     context.user_data["sticker_count"] += 1
-    await response.reply_text(STICKER_EMOJI_MESSAGE)
+    await response.reply_text(STICKER_EMOJI_MESSAGE, reply_markup=emoji_button())
     return SELECTING_EMOJI
 
 
 async def select_emoji(update: Update, context: ContextTypes.DEFAULT_TYPE):
     sticker = context.user_data["sticker"]
-    sticker_emoji = update.message.text
+    if update.message:
+        sticker_emoji = update.message.text
+        response = update.message
+    else:
+        sticker_emoji = update.callback_query.data
+        response = update.callback_query.message
     if not emoji.is_emoji(sticker_emoji):
-        await update.message.reply_text(STICKER_EMOJI_MESSAGE)
+        await response.reply_text(STICKER_EMOJI_MESSAGE, reply_markup=emoji_button())
         return SELECTING_EMOJI
     context.user_data["stickers"].append(InputSticker(sticker, [sticker_emoji]))
     await log_info(
         "{}: selected emoji {}".format(update.effective_user.name, sticker_emoji),
         update.get_bot()
     )
-    await update.message.reply_text(NEXT_STICKER_MESSAGE, reply_markup=done_button())
+    await response.reply_text(NEXT_STICKER_MESSAGE, parse_mode=ParseMode.HTML, reply_markup=done_button())
     return SELECTING_STICKER
 
 
@@ -330,23 +336,26 @@ async def select_title(update: Update, context: ContextTypes.DEFAULT_TYPE):
         update.get_bot()
     )
     context.user_data["title"] = update.message.text
-    await update.message.reply_text(PACK_NAME_MESSAGE)
+    cleaned_title = re.sub('[^0-9a-zA-Z]+', '_', update.message.text).rstrip("_").lstrip("_")
+    await update.message.reply_text(PACK_NAME_MESSAGE, reply_markup=three_by_one_button(cleaned_title, 
+                                                                                        cleaned_title+"_"+update.effective_user.name[1:],
+                                                                                        update.effective_user.name[1:]+"_"+cleaned_title))
     return SELECTING_NAME
 
 
 async def select_name(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    if update.message:
+        pack_name = update.message.text
+        response = update.message
+    else:
+        pack_name = update.callback_query.data
+        response = update.callback_query.message
     await log_info(
         "{}: selected sticker pack name".format(update.effective_user.name),
         update.get_bot()
     )
-    context.user_data["name"] = update.message.text
-    return await create_pack(update, context)
-
-
-async def create_pack(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    name = (
-        context.user_data["name"] + "_by_" + os.environ.get("BOT_NAME")
-    )  # this is required in the name of a stickerpack created by a bot
+    # it is required to append the stickerbot name in a stickerpack created by a bot
+    name = pack_name + "_by_" + os.environ.get("BOT_NAME")
     bot = update.get_bot()
     try:
         await bot.create_new_sticker_set(
@@ -357,16 +366,16 @@ async def create_pack(update: Update, context: ContextTypes.DEFAULT_TYPE):
             sticker_format=context.user_data["type"],
             write_timeout=None
         )
-        await update.message.reply_text(CREATE_PACK_SUCCESS_MESSAGE.format(name))
+        await response.reply_text(CREATE_PACK_SUCCESS_MESSAGE.format(name))
         await log_info(
             "{}: created sticker pack".format(update.effective_user.name),
             update.get_bot()
         )
         return ConversationHandler.END
     except TelegramError as te:
-        await update.message.reply_text(te.message)
+        await update.callback_query.message.reply_text(te.message)
         await update.callback_query.message.reply_text(UNHANDLED_ERROR_MESSAGE)
-        await update.message.reply_text(PACK_NAME_MESSAGE)
+        await response.reply_text(PACK_NAME_MESSAGE)
         await log_info(
             "{}: error creating pack {}".format(update.effective_user.name, te.message),
             update.get_bot()
@@ -382,6 +391,7 @@ def get_new_pack_conv():
         entry_points=[CommandHandler("newpack", new_pack)],
         states={
             SELECTING_NAME: [
+                CallbackQueryHandler(select_name),
                 MessageHandler(filters.TEXT & ~filters.COMMAND, select_name)
             ],
             SELECTING_TITLE: [
@@ -399,6 +409,7 @@ def get_new_pack_conv():
                 MessageHandler(filters.TEXT & ~filters.COMMAND, select_duration)
             ],
             SELECTING_EMOJI: [
+                CallbackQueryHandler(select_emoji),
                 MessageHandler(filters.ALL & ~filters.COMMAND, select_emoji)
             ],
         },
