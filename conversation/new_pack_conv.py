@@ -47,6 +47,7 @@ from conversation.messages import (
     DOWNLOAD_FAILED_IMAGE,
     DOWNLOAD_FAILED_VIDEO,
     UNHANDLED_ERROR_MESSAGE,
+    ACTIVE_COMMAND_MESSAGE,
 )
 from conversation.utils import crop_button, done_button, emoji_button, log_info, no_crop_button, three_by_one_button, type_button
 
@@ -66,8 +67,11 @@ MAX_FILE_SIZE = 50000000  # 50mb
 
 
 async def new_pack(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    if 'operation' in context.user_data:
+        await update.message.reply_text(ACTIVE_COMMAND_MESSAGE.format(context.user_data['operation']))
+        return ConversationHandler.END
+
     await log_info("{}: create pack".format(update.effective_user.name), update.get_bot())
-    
     async def final_state(update, context):
         await update.callback_query.message.reply_text(PACK_TITLE_MESSAGE)
         return SELECTING_TITLE

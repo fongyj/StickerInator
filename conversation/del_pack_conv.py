@@ -20,6 +20,7 @@ from conversation.messages import (
     DELETE_PACK_SUCCESS_MESSAGE,
     PACK_NOT_FOUND_MESSAGE,
     INVALID_PACK_MESSAGE,
+    ACTIVE_COMMAND_MESSAGE,
 )
 from conversation.utils import log_info
 from conversation.cancel_command import cancel
@@ -28,6 +29,10 @@ SELECTING_PACK, CONFIRM_DELETE = map(chr, range(2))
 
 
 async def delete_pack(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    if 'operation' in context.user_data:
+        await update.message.reply_text(ACTIVE_COMMAND_MESSAGE.format(context.user_data['operation']))
+        return ConversationHandler.END
+
     await log_info("{}: delete pack".format(update.effective_user.name), update.get_bot())
     context.user_data["operation"] = "delete pack"
     await update.message.reply_text(STICKER_FROM_PACK_MESSAGE)

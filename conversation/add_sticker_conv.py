@@ -26,6 +26,7 @@ from conversation.messages import (
     ADD_SUCCESS_MESSAGE,
     INVALID_PACK_MESSAGE,
     UNHANDLED_ERROR_MESSAGE,
+    ACTIVE_COMMAND_MESSAGE,
 )
 from conversation.utils import log_info
 from conversation.cancel_command import cancel
@@ -34,6 +35,10 @@ SELECTING_PACK = map(chr, range(7, 8))
 
 
 async def new_sticker(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    if 'operation' in context.user_data:
+        await update.message.reply_text(ACTIVE_COMMAND_MESSAGE.format(context.user_data['operation']))
+        return ConversationHandler.END
+    
     await log_info("{}: add sticker".format(update.effective_user.name), update.get_bot())
     context.user_data["final_state"] = lambda u, c: add_sticker(u, c)
     context.user_data["stickers"] = list()

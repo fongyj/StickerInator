@@ -4,7 +4,7 @@ ADD_STICKER_HELP = "Adds a sticker"
 DEL_STICKER_HELP = "Deletes a sticker"
 DEL_PACK_HELP = "Deletes a stickerpack"
 HELP_HELP = "Gets info on the bot"
-CANCEL_HELP = "Cancels current operation \(use this command if stuck\)"
+CANCEL_HELP = "Cancels current operation"
 
 HELP_MESSAGE = (
     "*StickerInator* is designed to help you create sticker packs with images, videos and telegram bubbles\!\n\n"
@@ -105,6 +105,8 @@ STICKER_NOT_FOUND_MESSAGE = "Sticker not found in the sticker pack"
 DELETE_STICKER_SUCCESS_MESSAGE = "Sticker deleted from {}"
 
 # cancel
+ACTIVE_COMMAND_MESSAGE = "Command \"{}\" is currently active, please use /cancel before initiating another command"
+
 UNHANDLED_ERROR_MESSAGE = "Sticker-inator encountered an error, please try again or cancel the current operation with the cancel command"
 
-CANCEL_MESSAGE = "Operation cancelled"
+CANCEL_MESSAGE = "Command \"{}\" cancelled"
