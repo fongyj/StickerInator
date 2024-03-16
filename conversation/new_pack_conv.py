@@ -375,6 +375,7 @@ async def select_name(update: Update, context: ContextTypes.DEFAULT_TYPE):
             "{}: created sticker pack".format(update.effective_user.name),
             update.get_bot()
         )
+        context.user_data.pop("operation")
         return ConversationHandler.END
     except TelegramError as te:
         await update.callback_query.message.reply_text(te.message)

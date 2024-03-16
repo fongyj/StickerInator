@@ -74,6 +74,7 @@ async def select_pack(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await update.message.reply_text(STICKER_NOT_FOUND_MESSAGE)
     except BadRequest as e:
         await update.message.reply_text(PACK_NOT_FOUND_MESSAGE)
+    context.user_data.pop("operation")
     return ConversationHandler.END
 
 

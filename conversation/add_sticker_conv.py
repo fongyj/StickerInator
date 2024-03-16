@@ -90,6 +90,7 @@ async def add_sticker(update: Update, context: ContextTypes.DEFAULT_TYPE):
             "{}: error adding sticker(s) {}".format(update.effective_user.name, te.message),
             update.get_bot()
         )
+    context.user_data.pop("operation")
     return ConversationHandler.END
 
 
