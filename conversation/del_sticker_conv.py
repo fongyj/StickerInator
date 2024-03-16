@@ -109,6 +109,7 @@ async def confirm_delete(update: Update, context: ContextTypes.DEFAULT_TYPE):
             return CONFIRM_DELETE
     except BadRequest as e:
         await update.message.reply_text(PACK_NOT_FOUND_MESSAGE)
+    context.user_data.pop("operation")
     return ConversationHandler.END
 
 
