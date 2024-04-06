@@ -1,80 +1,36 @@
-<a name="readme-top"></a>
+### **Sticker-Inator is a telegram sticker bot that creates stickers  from images, videos and video notes**
 
-<!-- PROJECT LOGO -->
-<br />
-<div align="center">
-  <p align="center">
-    Sticker-Inator is a telegram sticker bot that creates stickers  from images, videos and video notes
-    <br />
-    <a href="https://t.me/StickerinatorBot"><strong>Try out the bot »</strong></a>
-    <br />
-  </p>
-</div>
+#### [Try out the bot »]("https://t.me/StickerinatorBot")
 
-
-
-<!-- TABLE OF CONTENTS -->
-<details>
-  <summary>Table of Contents</summary>
-  <ol>
-    <li>
-      <a href="#about-the-bot">About The Bot</a>
-      <ul>
-        <li><a href="#built-with">Built With</a></li>
-      </ul>
-    </li>
-    <li>
-      <a href="#getting-started">Getting Started</a>
-      <ul>
-        <li><a href="#installation">Installation</a></li>
-      </ul>
-    </li>
-    <li><a href="#features">Features</a></li>
-  </ol>
-</details>
-
-
-
-<!-- ABOUT THE BOT -->
-## About The Bot
+### About The Bot
 
 Sticker-Inator is a user-friendly Telegram bot designed to streamline the creation of stickers using images, videos, and video notes. Unlike the conventional @Stickers bot on Telegram, we've simplified the process for you, eliminating the need to manually format your media files.
 
-### Why Choose Sticker-Inator? 
-1. <b>Hassle-Free Sticker Creation</b>
-With Sticker-Inator, you can say goodbye to the hassle of converting your files into the right format every time you want to create a sticker. We take care of the technicalities for you, ensuring a smooth and efficient sticker creation process. 
- 
-2. <b>Quick and Easy</b> 
+#### Why Sticker-Inator? 
+
+1. <b>Quick and Easy</b> 
 Creating stickers has never been easier! Our bot condenses the task into just a few simple steps, saving you time and effort. Whether you're a seasoned sticker creator or a newcomer, you'll find our bot incredibly user-friendly. 
  
-3. <b>Versatile Media Support</b>  
+2. <b>Versatile Media Support</b>  
 Sticker-Inator supports a wide range of media types, including images, videos, and video notes. Note: Animated type stickers are currently not supported.
  
-4. <b>Seamless Integration with Telegram</b>
+3. <b>Seamless Integration with Telegram</b>
 Our bot seamlessly integrates with Telegram, making it easy to share your stickers with friends and family directly through the bot. No need to switch between apps or deal with complex external tools.
 
 
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
-
-
-
-### Built With
+#### Built With
 
 These are the tools we built Sticker-Inator with.
 
 * [![Telegram]][Tele-url]
 * [![Python]][Python-url]
 
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
 
-
-
-<!-- GETTING STARTED -->
-## Getting Started
+### Getting Started
 
 The following are steps you can take to run the telegram bot locally. 
 
-### Installation
+#### Installation
 
 1. Clone the repo
    ```sh
@@ -94,12 +50,7 @@ The following are steps you can take to run the telegram bot locally.
    python main.py
    ```
 
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
-
-
-
-<!-- Features EXAMPLES -->
-## Features
+### Features
 
 Here are the commands that Sticker-Inator has currently:
 
@@ -111,7 +62,6 @@ Here are the commands that Sticker-Inator has currently:
 /help - Gets info on the bot
 /cancel - Cancels current operation
 ```
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 <!-- MARKDOWN LINKS & IMAGES -->
 [Telegram]: https://img.shields.io/badge/Telegram-2CA5E0?style=for-the-badge&logo=telegram&logoColor=white
