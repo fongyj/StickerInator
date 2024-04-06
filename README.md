@@ -1,6 +1,6 @@
-### **Sticker-Inator is a telegram sticker bot that creates stickers  from images, videos and video notes**
+#### **Sticker-Inator is a telegram sticker bot that creates stickers from images, videos and video notes**
 
-#### [Try out the bot »]("https://t.me/StickerinatorBot")
+<p align="center"><a href="https://t.me/StickerinatorBot">Try out the bot »</a></p>
 
 ### About The Bot
 
