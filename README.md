@@ -3,12 +3,8 @@
 <!-- PROJECT LOGO -->
 <br />
 <div align="center">
-  <img src="src\stickerinator.jpg" alt="Logo" width="80" height="80">
-
-  <h3 align="center">Sticker-Inator</h3>
-
   <p align="center">
-    An awesome telegram bot that helps you format and create stickers from <br> images, videos and video notes (telegram bubbles)
+    Sticker-Inator is a telegram sticker bot that creates stickers  from images, videos and video notes
     <br />
     <a href="https://t.me/StickerinatorBot"><strong>Try out the bot »</strong></a>
     <br />
