@@ -11,6 +11,8 @@ import conversation.del_sticker_conv as delete_sticker
 import conversation.add_sticker_conv as add_sticker
 import conversation.start_command as start
 import conversation.help_command as help
+from conversation.utils import log_info
+from conversation.messages import UNHANDLED_STICKERINATOR_ERROR_MESSAGE
 
 try:
     from telegram import __version_info__
@@ -24,7 +26,7 @@ if __version_info__ < (20, 0, 0, "alpha", 1):
         f"visit https://docs.python-telegram-bot.org/en/v{TG_VER}/examples.html"
     )
 from telegram import Update, BotCommand
-from telegram.ext import Application
+from telegram.ext import Application, ContextTypes
 
 
 from conversation.messages import (
@@ -78,6 +80,17 @@ async def post_init(application: Application) -> None:
     await bot.set_my_commands(commands=command_info)
 
 
+async def error_handler(update: object, context: ContextTypes.DEFAULT_TYPE) -> None:
+    bot = update.get_bot()
+    error_info = "Sticker-inator encountered an unhandled exception:\n"
+    error_info += str(context.error) + "\n\n"
+    error_info += "User data:\n" + str(context.user_data) + "\n\n"
+    error_info += "Chat data:\n" + str(context.chat_data) + "\n\n"
+    error_info += "Update:\n" + str(update)
+    await log_info(error_info, bot)
+    await bot.send_message(update.effective_chat.id, UNHANDLED_STICKERINATOR_ERROR_MESSAGE)
+
+
 def main() -> None:
     """Start the bot."""
     # Create the Application and pass it your bot's token.
@@ -85,6 +98,7 @@ def main() -> None:
     application = Application.builder().token(token).post_init(post_init).build()
 
     application.add_handlers(handlers_list)
+    application.add_error_handler(error_handler)
 
     # Run the bot until the user presses Ctrl-C
     application.run_polling(allowed_updates=Update.ALL_TYPES)

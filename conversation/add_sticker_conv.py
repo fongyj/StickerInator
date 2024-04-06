@@ -25,7 +25,7 @@ from conversation.messages import (
     STICKER_FROM_PACK_MESSAGE,
     ADD_SUCCESS_MESSAGE,
     INVALID_PACK_MESSAGE,
-    UNHANDLED_ERROR_MESSAGE,
+    UNHANDLED_TELEGRAM_ERROR_MESSAGE,
     ACTIVE_COMMAND_MESSAGE,
 )
 from conversation.utils import log_info
@@ -85,7 +85,7 @@ async def add_sticker(update: Update, context: ContextTypes.DEFAULT_TYPE):
         )
     except TelegramError as te:
         await update.callback_query.message.reply_text(te.message)
-        await update.callback_query.message.reply_text(UNHANDLED_ERROR_MESSAGE)
+        await update.callback_query.message.reply_text(UNHANDLED_TELEGRAM_ERROR_MESSAGE)
         await log_info(
             "{}: error adding sticker(s) {}".format(update.effective_user.name, te.message),
             update.get_bot()

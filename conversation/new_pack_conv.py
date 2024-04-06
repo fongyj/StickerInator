@@ -46,7 +46,7 @@ from conversation.messages import (
     STICKER_NOT_SUPPORTED,
     DOWNLOAD_FAILED_IMAGE,
     DOWNLOAD_FAILED_VIDEO,
-    UNHANDLED_ERROR_MESSAGE,
+    UNHANDLED_TELEGRAM_ERROR_MESSAGE,
     ACTIVE_COMMAND_MESSAGE,
 )
 from conversation.utils import crop_button, done_button, emoji_button, log_info, no_crop_button, three_by_one_button, type_button
@@ -379,7 +379,7 @@ async def select_name(update: Update, context: ContextTypes.DEFAULT_TYPE):
         return ConversationHandler.END
     except TelegramError as te:
         await update.callback_query.message.reply_text(te.message)
-        await update.callback_query.message.reply_text(UNHANDLED_ERROR_MESSAGE)
+        await update.callback_query.message.reply_text(UNHANDLED_TELEGRAM_ERROR_MESSAGE)
         await response.reply_text(PACK_NAME_MESSAGE)
         await log_info(
             "{}: error creating pack {}".format(update.effective_user.name, te.message),

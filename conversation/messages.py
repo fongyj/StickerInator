@@ -107,6 +107,8 @@ DELETE_STICKER_SUCCESS_MESSAGE = "Sticker deleted from {}"
 # cancel
 ACTIVE_COMMAND_MESSAGE = "Command \"{}\" is currently active, please use /cancel before initiating another command"
 
-UNHANDLED_ERROR_MESSAGE = "Sticker-inator encountered an error, please try again or cancel the current operation with the cancel command"
+UNHANDLED_TELEGRAM_ERROR_MESSAGE = "Telegram encountered an error, please try again or cancel the current operation with the cancel command"
+
+UNHANDLED_STICKERINATOR_ERROR_MESSAGE = "Sticker-inator encountered an error, please try again or cancel the current operation with the cancel command"
 
 CANCEL_MESSAGE = "Command \"{}\" cancelled"
