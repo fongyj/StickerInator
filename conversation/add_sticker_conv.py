@@ -58,10 +58,10 @@ async def select_pack(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await update.message.reply_text(STICKER_FROM_PACK_MESSAGE)
         return SELECTING_PACK
     bot = update.get_bot()
-    sticker_set = await bot.get_sticker_set(set_name)
+    sticker_set = await bot.do_api_request("get_sticker_set", {"name": set_name})
     context.user_data["set_name"] = set_name
-    context.user_data["sticker_count"] = len(sticker_set.stickers)
-    if sticker_set.is_video:
+    context.user_data["sticker_count"] = len(sticker_set["stickers"])
+    if sticker_set["stickers"][0]["is_video"]:
         context.user_data["type"] = StickerFormat.VIDEO
         await update.message.reply_text(VIDEO_STICKER_MESSAGE)
     else:
