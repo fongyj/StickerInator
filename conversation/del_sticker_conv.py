@@ -57,12 +57,12 @@ async def select_pack(update: Update, context: ContextTypes.DEFAULT_TYPE):
             await update.message.reply_text(INVALID_PACK_MESSAGE)
             await update.message.reply_text(DELETE_STICKER_MESSAGE)
             return SELECTING_PACK
-        sticker_set_info = await bot.get_sticker_set(sticker_set)
+        sticker_set_info = await bot.do_api_request("get_sticker_set", {"name": sticker_set})
 
         # Iterate through the stickers in the sticker set
-        for sticker_info in sticker_set_info.stickers:
-            if context.user_data["sticker"].file_id == sticker_info.file_id:
-                if len(sticker_set_info.stickers) == 1:
+        for sticker_info in sticker_set_info["stickers"]:
+            if context.user_data["sticker"].file_id == sticker_info["file_id"]:
+                if len(sticker_set_info["stickers"]) == 1:
                     context.user_data["last"] = True
                     await update.message.reply_text(LAST_STICKER_MESSAGE, parse_mode=ParseMode.HTML)
                 else:
