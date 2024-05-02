@@ -37,6 +37,7 @@ class VideoProcessor:
         # speed up
         if speed:
             command += f" -itsscale {2.9 / self.duration}"
+            self.remove_bg = True # if speed up, remove bg too
         command += f" -i {self.video_path}"
         # remove background
         if self.remove_bg:
