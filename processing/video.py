@@ -23,7 +23,7 @@ class VideoProcessor:
         )
         video_file_clip.close()
 
-    def process_video(self, start_min=None, start_sec=None, crop_duration=None):
+    def process_video(self, start_min=None, start_sec=None, crop_duration=None, speed=False):
         scale = 512 / max(self.width, self.height)
         new_width, new_height = int(self.width * scale), int(self.height * scale)
 
@@ -32,11 +32,20 @@ class VideoProcessor:
             os.path.dirname(self.video_path),
             os.path.splitext(os.path.basename(self.video_path))[0] + "_processed.webm",
         )
+
+        command = f"{self.ffmpeg_path}"
+        # speed up
+        if speed:
+            command += f" -itsscale {2.9 / self.duration}"
+        command += f" -i {self.video_path}"
+        # remove background
         if self.remove_bg:
-            command = f"{self.ffmpeg_path} -i {self.video_path} -loop 1 -i processing/mask/mask.png -filter_complex [0:v]scale={new_width}:{new_height}[resized],[resized][1:v]alphamerge -c:v libvpx-vp9 -crf 40 -an -v quiet -y"
+            command += f" -loop 1 -i processing/mask/mask.png -filter_complex [0:v]scale={new_width}:{new_height}[resized],[resized][1:v]alphamerge"
         else:
-            command = f"{self.ffmpeg_path} -i {self.video_path} -c:v libvpx-vp9 -crf 40 -an -vf scale={new_width}:{new_height} -v quiet -y"
-        # append cropping
+            command += f" -vf scale={new_width}:{new_height}"
+        # set format, quality, remove audio
+        command += " -c:v libvpx-vp9 -crf 40 -an -y"
+        # cropping
         if start_min:
             command += f" -ss 00:{start_min}:{start_sec}00 -t 00:00:0{crop_duration}00"
         # append output path

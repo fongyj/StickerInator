@@ -289,6 +289,9 @@ async def select_duration(update: Update, context: ContextTypes.DEFAULT_TYPE):
     elif crop.lower() == "no crop":
         await bot.send_message(update.effective_chat.id, VIDEO_PROCESSING_MESSAGE)
         context.user_data["sticker"] = context.user_data["processor"].process_video()
+    elif crop.lower() == "speed":
+        await bot.send_message(update.effective_chat.id, VIDEO_PROCESSING_MESSAGE)
+        context.user_data["sticker"] = context.user_data["processor"].process_video(speed=True)
     else:
         start_min, start_sec, crop_duration = context.user_data["processor"].parse_crop(
             crop
