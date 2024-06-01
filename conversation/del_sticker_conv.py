@@ -1,5 +1,6 @@
-from dotenv import load_dotenv
 import os
+
+from dotenv import load_dotenv
 
 load_dotenv()
 
@@ -35,7 +36,7 @@ async def delete_sticker(update: Update, context: ContextTypes.DEFAULT_TYPE) -> 
     if 'operation' in context.user_data:
         await update.message.reply_text(ACTIVE_COMMAND_MESSAGE.format(context.user_data['operation']))
         return ConversationHandler.END
-    
+
     await log_info("{}: delete sticker".format(update.effective_user.name), update.get_bot())
     context.user_data["operation"] = "delete sticker"
     await update.message.reply_text(DELETE_STICKER_MESSAGE)

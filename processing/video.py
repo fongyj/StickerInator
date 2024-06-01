@@ -1,8 +1,9 @@
-from moviepy.editor import VideoFileClip
-import os
 import asyncio
+import os
 import re
+
 from imageio_ffmpeg._utils import get_ffmpeg_exe
+from moviepy.editor import VideoFileClip
 
 
 class VideoProcessor:
@@ -25,8 +26,9 @@ class VideoProcessor:
                 video_file_clip.duration,
             )
             video_file_clip.close()
+
         self.download_task = asyncio.create_task(download_video())
-    
+
     async def get_duration(self):
         if not self.downloaded:
             await self.download_task
@@ -73,6 +75,7 @@ class VideoProcessor:
             os.remove(output_video_path)
             os.remove(self.video_path)
             return video_bytes
+
         return asyncio.create_task(process())
 
     def parse_crop(self, crop: str):
@@ -94,11 +97,11 @@ class VideoProcessor:
         crop_duration = "2.9" if crop[8:] == "3.0" else crop[8:]
         start_time = (int(start_min) * 60) + float(start_sec)
         if (
-            int(start_min) >= 60
-            or float(start_sec) >= 60
-            or float(crop_duration) > 3
-            or float(crop_duration) <= 0
-            or start_time >= float(self.duration)
+                int(start_min) >= 60
+                or float(start_sec) >= 60
+                or float(crop_duration) > 3
+                or float(crop_duration) <= 0
+                or start_time >= float(self.duration)
         ):
             # check out of bounds
             return None, None, None

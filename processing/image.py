@@ -1,8 +1,10 @@
-import PIL.Image as Image
 import asyncio
 from io import BytesIO
 
+import PIL.Image as Image
+
 from conversation.utils import async_request
+
 
 def process_image(image_url: str):
     async def process():
@@ -15,4 +17,5 @@ def process_image(image_url: str):
         out = BytesIO()
         image.save(out, format="png")
         return out.getvalue()
+
     return asyncio.create_task(process())

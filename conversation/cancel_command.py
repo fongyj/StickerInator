@@ -7,6 +7,7 @@ from telegram.ext import (
 from conversation.messages import CANCEL_MESSAGE
 from conversation.utils import log_info
 
+
 async def cancel(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     """Cancels and ends the conversation."""
     operation = context.user_data.pop("operation")

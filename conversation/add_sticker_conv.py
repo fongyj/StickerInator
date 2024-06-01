@@ -1,4 +1,8 @@
+import asyncio
+import os
+
 from telegram import Update, InputSticker
+from telegram.constants import StickerFormat
 from telegram.error import TelegramError
 from telegram.ext import (
     CommandHandler,
@@ -8,18 +12,8 @@ from telegram.ext import (
     ConversationHandler,
     CallbackQueryHandler,
 )
-from telegram.constants import StickerFormat
-import os
-import asyncio
 
-from conversation.new_pack_conv import (
-    SELECTING_STICKER,
-    SELECTING_DURATION,
-    SELECTING_EMOJI,
-    select_sticker,
-    select_duration,
-    select_emoji,
-)
+from conversation.cancel_command import cancel
 from conversation.messages import (
     IMAGE_STICKER_MESSAGE,
     VIDEO_STICKER_MESSAGE,
@@ -29,8 +23,15 @@ from conversation.messages import (
     UNHANDLED_TELEGRAM_ERROR_MESSAGE,
     ACTIVE_COMMAND_MESSAGE,
 )
+from conversation.new_pack_conv import (
+    SELECTING_STICKER,
+    SELECTING_DURATION,
+    SELECTING_EMOJI,
+    select_sticker,
+    select_duration,
+    select_emoji,
+)
 from conversation.utils import log_info
-from conversation.cancel_command import cancel
 
 SELECTING_PACK = map(chr, range(7, 8))
 
@@ -39,7 +40,7 @@ async def new_sticker(update: Update, context: ContextTypes.DEFAULT_TYPE) -> Non
     if 'operation' in context.user_data:
         await update.message.reply_text(ACTIVE_COMMAND_MESSAGE.format(context.user_data['operation']))
         return ConversationHandler.END
-    
+
     await log_info("{}: add sticker".format(update.effective_user.name), update.get_bot())
     context.user_data["final_state"] = lambda u, c: add_sticker(u, c)
     context.user_data["stickers"] = list()

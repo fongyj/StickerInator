@@ -7,14 +7,14 @@ HELP_HELP = "Gets info on the bot"
 CANCEL_HELP = "Cancels current operation"
 
 HELP_MESSAGE = (
-    "*StickerInator* is designed to help you create sticker packs with images, videos and telegram bubbles\!\n\n"
-    + "Available commands:\n"
-    + f"/newpack \- {NEW_PACK_HELP}\n"
-    + f"/addsticker \- {ADD_STICKER_HELP}\n"
-    + f"/delsticker \- {DEL_STICKER_HELP}\n"
-    + f"/delpack \- {DEL_PACK_HELP}\n"
-    + f"/help \- {HELP_HELP}\n"
-    + f"/cancel \- {CANCEL_HELP}"
+        "*StickerInator* is designed to help you create sticker packs with images, videos and telegram bubbles\!\n\n"
+        + "Available commands:\n"
+        + f"/newpack \- {NEW_PACK_HELP}\n"
+        + f"/addsticker \- {ADD_STICKER_HELP}\n"
+        + f"/delsticker \- {DEL_STICKER_HELP}\n"
+        + f"/delpack \- {DEL_PACK_HELP}\n"
+        + f"/help \- {HELP_HELP}\n"
+        + f"/cancel \- {CANCEL_HELP}"
 )
 
 # add pack/sticker
@@ -71,9 +71,9 @@ SIZE_LIMIT_REACHED_MESSAGE = (
 PACK_TITLE_MESSAGE = "Please reply with sticker pack title"
 
 PACK_NAME_MESSAGE = (
-    "Please reply with sticker pack name"
-    + "\n"
-    + "Note: Sticker pack names must be unique"
+        "Please reply with sticker pack name"
+        + "\n"
+        + "Note: Sticker pack names must be unique"
 )
 
 CREATE_PACK_SUCCESS_MESSAGE = "Sticker pack created: https://t.me/addstickers/{}"

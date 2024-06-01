@@ -1,10 +1,9 @@
-from dotenv import load_dotenv
-import os
-import emoji
-import requests
-from io import BytesIO
-import re
 import asyncio
+import os
+import re
+
+import emoji
+from dotenv import load_dotenv
 
 load_dotenv()
 
@@ -48,7 +47,8 @@ from conversation.messages import (
     UNHANDLED_TELEGRAM_ERROR_MESSAGE,
     ACTIVE_COMMAND_MESSAGE,
 )
-from conversation.utils import crop_button, done_button, emoji_button, log_info, no_crop_button, three_by_one_button, type_button
+from conversation.utils import crop_button, done_button, emoji_button, log_info, no_crop_button, three_by_one_button, \
+    type_button
 
 (
     SELECTING_TYPE,
@@ -71,6 +71,7 @@ async def new_pack(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
         return ConversationHandler.END
 
     await log_info("{}: create pack".format(update.effective_user.name), update.get_bot())
+
     async def final_state(update, context):
         await update.callback_query.message.reply_text(PACK_TITLE_MESSAGE)
         return SELECTING_TITLE
@@ -126,14 +127,15 @@ async def select_image_sticker(update: Update, context: ContextTypes.DEFAULT_TYP
             if sticker_count == 0:
                 await update.message.reply_text(IMAGE_STICKER_MESSAGE)
             else:
-                await update.message.reply_text(NEXT_STICKER_MESSAGE, parse_mode=ParseMode.HTML, reply_markup=done_button())
+                await update.message.reply_text(NEXT_STICKER_MESSAGE, parse_mode=ParseMode.HTML,
+                                                reply_markup=done_button())
             return SELECTING_STICKER
 
         bot = update.get_bot()
         file = await bot.get_file(update.message.sticker.file_id)
 
         context.user_data["stickers"].append((async_request(file.file_path), [update.message.sticker.emoji])
-        )
+                                             )
         context.user_data["sticker_count"] += 1
         await update.message.reply_text(NEXT_STICKER_MESSAGE, parse_mode=ParseMode.HTML, reply_markup=done_button())
         return SELECTING_STICKER
@@ -141,7 +143,7 @@ async def select_image_sticker(update: Update, context: ContextTypes.DEFAULT_TYP
         # user sent a photo
         file = await update.message.photo[-1].get_file()
     elif update.message.document and update.message.document.mime_type.startswith(
-        "image"
+            "image"
     ):
         # user sent a file
         file = await update.message.document.get_file()
@@ -193,13 +195,13 @@ async def select_video_sticker(update: Update, context: ContextTypes.DEFAULT_TYP
             if sticker_count == 0:
                 await update.message.reply_text(VIDEO_STICKER_MESSAGE)
             else:
-                await update.message.reply_text(NEXT_STICKER_MESSAGE, parse_mode=ParseMode.HTML, reply_markup=done_button())
+                await update.message.reply_text(NEXT_STICKER_MESSAGE, parse_mode=ParseMode.HTML,
+                                                reply_markup=done_button())
             return SELECTING_STICKER
         bot = update.get_bot()
         file = await bot.get_file(update.message.sticker.file_id)
 
-        context.user_data["stickers"].append((async_request(file.file_path), [update.message.sticker.emoji])
-        )
+        context.user_data["stickers"].append((async_request(file.file_path), [update.message.sticker.emoji]))
         context.user_data["sticker_count"] += 1
         await update.message.reply_text(NEXT_STICKER_MESSAGE, parse_mode=ParseMode.HTML, reply_markup=done_button())
         return SELECTING_STICKER
@@ -208,7 +210,7 @@ async def select_video_sticker(update: Update, context: ContextTypes.DEFAULT_TYP
         file = await update.message.video.get_file()
         duration = update.message.video.duration
     elif update.message.document and update.message.document.mime_type.startswith(
-        "video"
+            "video"
     ):
         # user sent a file
         file = await update.message.document.get_file()
@@ -288,7 +290,8 @@ async def select_duration(update: Update, context: ContextTypes.DEFAULT_TYPE):
                 )
             else:
                 await response.reply_text(
-                    VIDEO_CROP_NOT_NECESSARY_MESSAGE.format(duration), parse_mode=ParseMode.HTML, reply_markup=no_crop_button()
+                    VIDEO_CROP_NOT_NECESSARY_MESSAGE.format(duration), parse_mode=ParseMode.HTML,
+                    reply_markup=no_crop_button()
                 )
             await response.reply_text(VIDEO_CROP_INFO_MESSAGE, parse_mode=ParseMode.HTML)
             return SELECTING_DURATION
