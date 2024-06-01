@@ -288,10 +288,10 @@ async def select_duration(update: Update, context: ContextTypes.DEFAULT_TYPE):
         return SELECTING_DURATION
     elif crop.lower() == "no crop":
         await bot.send_message(update.effective_chat.id, VIDEO_PROCESSING_MESSAGE)
-        context.user_data["sticker"] = context.user_data["processor"].process_video()
+        context.user_data["sticker"] = await context.user_data["processor"].process_video()
     elif crop.lower() == "speed":
         await bot.send_message(update.effective_chat.id, VIDEO_PROCESSING_MESSAGE)
-        context.user_data["sticker"] = context.user_data["processor"].process_video(speed=True)
+        context.user_data["sticker"] = await context.user_data["processor"].process_video(speed=True)
     else:
         start_min, start_sec, crop_duration = context.user_data["processor"].parse_crop(
             crop
@@ -309,7 +309,7 @@ async def select_duration(update: Update, context: ContextTypes.DEFAULT_TYPE):
             await response.reply_text(VIDEO_CROP_INFO_MESSAGE, parse_mode=ParseMode.HTML)
             return SELECTING_DURATION
         await bot.send_message(update.effective_chat.id, VIDEO_PROCESSING_MESSAGE)
-        context.user_data["sticker"] = context.user_data["processor"].process_video(
+        context.user_data["sticker"] = await context.user_data["processor"].process_video(
             start_min, start_sec, crop_duration
         )
     context.user_data["sticker_count"] += 1
