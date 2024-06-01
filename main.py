@@ -96,12 +96,15 @@ async def error_handler(update: object, context: ContextTypes.DEFAULT_TYPE) -> N
         "</pre>\n\n"
         f"<pre>context.chat_data = {html.escape(str(context.chat_data))}</pre>\n\n"
         f"<pre>context.user_data = {html.escape(str(context.user_data))}</pre>\n\n"
+    )
+    stack = (
         f"<pre>{html.escape(tb_string)}</pre>"
     )
 
     bot = update.get_bot()
     logging.error(tb_string)
     await bot.send_message(os.environ.get("LOG_ID"), message, parse_mode=ParseMode.HTML)
+    await bot.send_message(os.environ.get("LOG_ID"), stack, parse_mode=ParseMode.HTML)
     await bot.send_message(update.effective_chat.id, UNHANDLED_STICKERINATOR_ERROR_MESSAGE)
 
 
