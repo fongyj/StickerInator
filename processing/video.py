@@ -23,7 +23,7 @@ class VideoProcessor:
         )
         video_file_clip.close()
 
-    async def process_video(self, start_min=None, start_sec=None, crop_duration=None, speed=False):
+    def process_video(self, start_min=None, start_sec=None, crop_duration=None, speed=False):
         scale = 512 / max(self.width, self.height)
         new_width, new_height = int(self.width * scale), int(self.height * scale)
 
@@ -51,13 +51,15 @@ class VideoProcessor:
         # append output path
         args += f"{output_video_path}"
         args = args.split(" ")
-        process = await asyncio.create_subprocess_exec(self.ffmpeg_path, *args)
-        await process.wait()
-        
-        video_bytes = open(output_video_path, "rb").read()
-        os.remove(output_video_path)
-        os.remove(self.video_path)
-        return video_bytes
+
+        async def process():
+            process = await asyncio.create_subprocess_exec(self.ffmpeg_path, *args)
+            await process.wait()
+            video_bytes = open(output_video_path, "rb").read()
+            os.remove(output_video_path)
+            os.remove(self.video_path)
+            return video_bytes
+        return process()
 
     def parse_crop(self, crop: str):
         if crop == "first":

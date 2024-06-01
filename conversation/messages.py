@@ -58,8 +58,6 @@ ADD_SUCCESS_MESSAGE = "Added {} sticker(s)"
 
 VIDEO_TOO_LONG_MESSAGE = "Video duration is too long"
 
-VIDEO_PROCESSING_MESSAGE = "Please wait, video is processing... ⏰"
-
 PACK_LIMIT_REACHED_MESSAGE = (
     "Sticker pack limit reached, you cannot add more stickers\nMaximum {} stickers allowed is {}"
 )

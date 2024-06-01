@@ -1,4 +1,4 @@
-from telegram import Update
+from telegram import Update, InputSticker
 from telegram.error import TelegramError
 from telegram.ext import (
     CommandHandler,
@@ -10,6 +10,7 @@ from telegram.ext import (
 )
 from telegram.constants import StickerFormat
 import os
+import asyncio
 
 from conversation.new_pack_conv import (
     SELECTING_STICKER,
@@ -73,9 +74,11 @@ async def select_pack(update: Update, context: ContextTypes.DEFAULT_TYPE):
 async def add_sticker(update: Update, context: ContextTypes.DEFAULT_TYPE):
     bot = update.get_bot()
     try:
-        for sticker in context.user_data["stickers"]:
+        for sticker, emoji in context.user_data["stickers"]:
+            if isinstance(sticker, asyncio.Task):
+                sticker = await sticker
             await bot.add_sticker_to_set(
-                update.effective_user.id, context.user_data["set_name"], sticker=sticker
+                update.effective_user.id, context.user_data["set_name"], sticker=InputSticker(sticker, emoji)
             )
         sticker_count = len(context.user_data["stickers"])
         await update.callback_query.message.reply_text(ADD_SUCCESS_MESSAGE.format(sticker_count))

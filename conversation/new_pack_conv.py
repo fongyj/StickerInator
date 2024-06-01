@@ -4,6 +4,7 @@ import emoji
 import requests
 from io import BytesIO
 import re
+import asyncio
 
 load_dotenv()
 
@@ -39,7 +40,6 @@ from conversation.messages import (
     INVALID_VIDEO_DURATION_MESSAGE,
     NEXT_STICKER_MESSAGE,
     CREATE_PACK_SUCCESS_MESSAGE,
-    VIDEO_PROCESSING_MESSAGE,
     EMPTY_PACK_MESSAGE,
     PACK_LIMIT_REACHED_MESSAGE,
     SIZE_LIMIT_REACHED_MESSAGE,
@@ -139,8 +139,7 @@ async def select_image_sticker(update: Update, context: ContextTypes.DEFAULT_TYP
         if response.status_code == 200:
             sticker_file = BytesIO(response.content)
 
-            context.user_data["stickers"].append(
-                InputSticker(sticker_file, [update.message.sticker.emoji])
+            context.user_data["stickers"].append((sticker_file, [update.message.sticker.emoji])
             )
             context.user_data["sticker_count"] += 1
             await update.message.reply_text(NEXT_STICKER_MESSAGE, parse_mode=ParseMode.HTML, reply_markup=done_button())
@@ -215,8 +214,7 @@ async def select_video_sticker(update: Update, context: ContextTypes.DEFAULT_TYP
         if response.status_code == 200:
             sticker_file = BytesIO(response.content)
 
-            context.user_data["stickers"].append(
-                InputSticker(sticker_file, [update.message.sticker.emoji])
+            context.user_data["stickers"].append((sticker_file, [update.message.sticker.emoji])
             )
             context.user_data["sticker_count"] += 1
             await update.message.reply_text(NEXT_STICKER_MESSAGE, parse_mode=ParseMode.HTML, reply_markup=done_button())
@@ -287,11 +285,9 @@ async def select_duration(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await response.reply_text(VIDEO_TOO_LONG_MESSAGE)
         return SELECTING_DURATION
     elif crop.lower() == "no crop":
-        await bot.send_message(update.effective_chat.id, VIDEO_PROCESSING_MESSAGE)
-        context.user_data["sticker"] = await context.user_data["processor"].process_video()
+        context.user_data["sticker"] = asyncio.create_task(context.user_data["processor"].process_video())
     elif crop.lower() == "speed":
-        await bot.send_message(update.effective_chat.id, VIDEO_PROCESSING_MESSAGE)
-        context.user_data["sticker"] = await context.user_data["processor"].process_video(speed=True)
+        context.user_data["sticker"] = asyncio.create_task(context.user_data["processor"].process_video(speed=True))
     else:
         start_min, start_sec, crop_duration = context.user_data["processor"].parse_crop(
             crop
@@ -308,17 +304,13 @@ async def select_duration(update: Update, context: ContextTypes.DEFAULT_TYPE):
                 )
             await response.reply_text(VIDEO_CROP_INFO_MESSAGE, parse_mode=ParseMode.HTML)
             return SELECTING_DURATION
-        await bot.send_message(update.effective_chat.id, VIDEO_PROCESSING_MESSAGE)
-        context.user_data["sticker"] = await context.user_data["processor"].process_video(
-            start_min, start_sec, crop_duration
-        )
+        context.user_data["sticker"] = asyncio.create_task(context.user_data["processor"].process_video(start_min, start_sec, crop_duration))
     context.user_data["sticker_count"] += 1
     await response.reply_text(STICKER_EMOJI_MESSAGE, reply_markup=emoji_button())
     return SELECTING_EMOJI
 
 
 async def select_emoji(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    sticker = context.user_data["sticker"]
     if update.message:
         sticker_emoji = update.message.text
         response = update.message
@@ -328,7 +320,7 @@ async def select_emoji(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if not emoji.is_emoji(sticker_emoji):
         await response.reply_text(STICKER_EMOJI_MESSAGE, reply_markup=emoji_button())
         return SELECTING_EMOJI
-    context.user_data["stickers"].append(InputSticker(sticker, [sticker_emoji]))
+    context.user_data["stickers"].append((context.user_data["sticker"], [sticker_emoji]))
     await log_info(
         "{}: selected emoji {}".format(update.effective_user.name, sticker_emoji),
         update.get_bot()
@@ -365,11 +357,19 @@ async def select_name(update: Update, context: ContextTypes.DEFAULT_TYPE):
     name = pack_name + "_by_" + os.environ.get("BOT_NAME")
     bot = update.get_bot()
     try:
+        stickers = list()
+        for i in range(len(context.user_data["stickers"])):
+            sticker = context.user_data["stickers"][i]
+            if isinstance(sticker[0], asyncio.Task):
+                stickers.append(InputSticker(await sticker[0], sticker[1]))
+            else:
+                stickers.append(InputSticker(*sticker))
+
         await bot.create_new_sticker_set(
             update.effective_user.id,
             name,
             context.user_data["title"],
-            stickers=context.user_data["stickers"],
+            stickers=stickers,
             sticker_format=context.user_data["type"],
             write_timeout=None
         )
