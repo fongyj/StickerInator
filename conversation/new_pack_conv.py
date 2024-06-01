@@ -188,6 +188,7 @@ async def select_image_sticker(update: Update, context: ContextTypes.DEFAULT_TYP
 async def select_video_sticker(update: Update, context: ContextTypes.DEFAULT_TYPE):
     sticker_count = context.user_data["sticker_count"]
     remove_bg = False
+    duration = None
     if sticker_count >= MAX_VIDEO_STICKER:
         # too many stickers
         await update.message.reply_text(PACK_LIMIT_REACHED_MESSAGE.format("video", MAX_VIDEO_STICKER))
@@ -224,6 +225,7 @@ async def select_video_sticker(update: Update, context: ContextTypes.DEFAULT_TYP
     elif update.message.video:
         # user sent a video
         file = await update.message.video.get_file()
+        duration = update.message.video.duration
     elif update.message.document and update.message.document.mime_type.startswith(
         "video"
     ):
@@ -232,6 +234,7 @@ async def select_video_sticker(update: Update, context: ContextTypes.DEFAULT_TYP
     elif update.message.video_note:
         # user sent a tele bubble
         file = await update.message.video_note.get_file()
+        duration = update.message.video_note.duration
         remove_bg = True
     else:
         # user did not send anything valid
@@ -257,21 +260,26 @@ async def select_video_sticker(update: Update, context: ContextTypes.DEFAULT_TYP
         return SELECTING_STICKER
     processor = VideoProcessor(file, remove_bg=remove_bg)
     context.user_data["processor"] = processor
-    await processor.get_video()
-    if processor.duration > 3:
+    processor.get_video()
+
+    if duration == None:
+        duration = processor.get_duration()
+    context.user_data["duration"] = duration
+    processor.duration = duration
+    if duration > 3:
         await update.message.reply_text(
-            VIDEO_CROP_NECESSARY_MESSAGE.format(processor.duration), parse_mode=ParseMode.HTML, reply_markup=crop_button()
+            VIDEO_CROP_NECESSARY_MESSAGE.format(duration), parse_mode=ParseMode.HTML, reply_markup=crop_button()
         )
     else:
         await update.message.reply_text(
-            VIDEO_CROP_NOT_NECESSARY_MESSAGE.format(processor.duration), parse_mode=ParseMode.HTML, reply_markup=no_crop_button()
+            VIDEO_CROP_NOT_NECESSARY_MESSAGE.format(duration), parse_mode=ParseMode.HTML, reply_markup=no_crop_button()
         )
     await update.message.reply_text(VIDEO_CROP_INFO_MESSAGE, parse_mode=ParseMode.HTML)
     return SELECTING_DURATION
 
 
 async def select_duration(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    duration = context.user_data["processor"].duration
+    duration = context.user_data["duration"]
     if update.message:
         crop = update.message.text
         response = update.message
@@ -284,9 +292,9 @@ async def select_duration(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await response.reply_text(VIDEO_TOO_LONG_MESSAGE)
         return SELECTING_DURATION
     elif crop.lower() == "no crop":
-        context.user_data["sticker"] = asyncio.create_task(context.user_data["processor"].process_video())
+        context.user_data["sticker"] = context.user_data["processor"].process_video()
     elif crop.lower() == "speed":
-        context.user_data["sticker"] = asyncio.create_task(context.user_data["processor"].process_video(speed=True))
+        context.user_data["sticker"] = context.user_data["processor"].process_video(speed=True)
     else:
         start_min, start_sec, crop_duration = context.user_data["processor"].parse_crop(
             crop
@@ -303,7 +311,7 @@ async def select_duration(update: Update, context: ContextTypes.DEFAULT_TYPE):
                 )
             await response.reply_text(VIDEO_CROP_INFO_MESSAGE, parse_mode=ParseMode.HTML)
             return SELECTING_DURATION
-        context.user_data["sticker"] = asyncio.create_task(context.user_data["processor"].process_video(start_min, start_sec, crop_duration))
+        context.user_data["sticker"] = context.user_data["processor"].process_video(start_min, start_sec, crop_duration)
     context.user_data["sticker_count"] += 1
     await response.reply_text(STICKER_EMOJI_MESSAGE, reply_markup=emoji_button())
     return SELECTING_EMOJI

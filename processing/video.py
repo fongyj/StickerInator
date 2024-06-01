@@ -12,54 +12,68 @@ class VideoProcessor:
         os.makedirs("temp", exist_ok=True)
         self.video_path = f"temp/{os.path.basename(file.file_path)}"
         self.ffmpeg_path = get_ffmpeg_exe()
+        self.download_task = None
+        self.downloaded = False
 
-    async def get_video(self):
-        await self.file.download_to_drive(custom_path=self.video_path)
-        video_file_clip = VideoFileClip(self.video_path)
-        self.width, self.height, self.duration = (
-            video_file_clip.w,
-            video_file_clip.h,
-            video_file_clip.duration,
-        )
-        video_file_clip.close()
+    def get_video(self):
+        async def download_video():
+            await self.file.download_to_drive(custom_path=self.video_path)
+            video_file_clip = VideoFileClip(self.video_path)
+            self.width, self.height, self.duration = (
+                video_file_clip.w,
+                video_file_clip.h,
+                video_file_clip.duration,
+            )
+            video_file_clip.close()
+        self.download_task = asyncio.create_task(download_video())
+    
+    async def get_duration(self):
+        if not self.downloaded:
+            await self.download_task
+        self.downloaded = True
+        return self.duration
 
     def process_video(self, start_min=None, start_sec=None, crop_duration=None, speed=False):
-        scale = 512 / max(self.width, self.height)
-        new_width, new_height = int(self.width * scale), int(self.height * scale)
-
-        # write temp video
-        output_video_path = os.path.join(
-            os.path.dirname(self.video_path),
-            os.path.splitext(os.path.basename(self.video_path))[0] + "_processed.webm",
-        )
-
-        args = ""
-        # speed up
-        if speed:
-            args += f"-itsscale {2.9 / self.duration} "
-        args += f"-i {self.video_path} "
-        # remove background
-        if self.remove_bg:
-            args += f"-loop 1 -i processing/mask/mask.png -filter_complex [0:v]scale={new_width}:{new_height}[resized],[resized][1:v]alphamerge "
-        else:
-            args += f"-vf scale={new_width}:{new_height} "
-        # set format, quality, remove audio
-        args += "-c:v libvpx-vp9 -crf 40 -an -y "
-        # cropping
-        if start_min:
-            args += f"-ss 00:{start_min}:{start_sec}00 -t 00:00:0{crop_duration}00 "
-        # append output path
-        args += f"{output_video_path}"
-        args = args.split(" ")
-
         async def process():
+            if not self.downloaded:
+                await self.download_task
+            self.downloaded = True
+
+            scale = 512 / max(self.width, self.height)
+            new_width, new_height = int(self.width * scale), int(self.height * scale)
+
+            # write temp video
+            output_video_path = os.path.join(
+                os.path.dirname(self.video_path),
+                os.path.splitext(os.path.basename(self.video_path))[0] + "_processed.webm",
+            )
+
+            args = ""
+            # speed up
+            if speed:
+                args += f"-itsscale {2.9 / self.duration} "
+            args += f"-i {self.video_path} "
+            # remove background
+            if self.remove_bg:
+                args += f"-loop 1 -i processing/mask/mask.png -filter_complex [0:v]scale={new_width}:{new_height}[resized],[resized][1:v]alphamerge "
+            else:
+                args += f"-vf scale={new_width}:{new_height} "
+            # set format, quality, remove audio
+            args += "-c:v libvpx-vp9 -crf 40 -an -y "
+            # cropping
+            if start_min:
+                args += f"-ss 00:{start_min}:{start_sec}00 -t 00:00:0{crop_duration}00 "
+            # append output path
+            args += f"{output_video_path}"
+            args = args.split(" ")
+
             process = await asyncio.create_subprocess_exec(self.ffmpeg_path, *args)
             await process.wait()
             video_bytes = open(output_video_path, "rb").read()
             os.remove(output_video_path)
             os.remove(self.video_path)
             return video_bytes
-        return process()
+        return asyncio.create_task(process())
 
     def parse_crop(self, crop: str):
         if crop == "first":
