@@ -1,10 +1,15 @@
 from dotenv import load_dotenv
 import logging
 import os
+import html
+import json
+import traceback
 
 load_dotenv()
 
 from telegram import __version__ as TG_VER
+from telegram.constants import ParseMode
+
 import conversation.new_pack_conv as new_pack
 import conversation.del_pack_conv as delete_pack
 import conversation.del_sticker_conv as delete_sticker
@@ -81,13 +86,22 @@ async def post_init(application: Application) -> None:
 
 
 async def error_handler(update: object, context: ContextTypes.DEFAULT_TYPE) -> None:
+    tb_list = traceback.format_exception(None, context.error, context.error.__traceback__)
+    tb_string = "".join(tb_list)
+
+    update_str = update.to_dict() if isinstance(update, Update) else str(update)
+    message = (
+        "Sticker-inator encountered an unhandled exception\n"
+        f"<pre>update = {html.escape(json.dumps(update_str, indent=2, ensure_ascii=False))}"
+        "</pre>\n\n"
+        f"<pre>context.chat_data = {html.escape(str(context.chat_data))}</pre>\n\n"
+        f"<pre>context.user_data = {html.escape(str(context.user_data))}</pre>\n\n"
+        f"<pre>{html.escape(tb_string)}</pre>"
+    )
+
     bot = update.get_bot()
-    error_info = "Sticker-inator encountered an unhandled exception:\n"
-    error_info += str(context.error) + "\n\n"
-    error_info += "User data:\n" + str(context.user_data) + "\n\n"
-    error_info += "Chat data:\n" + str(context.chat_data) + "\n\n"
-    error_info += "Update:\n" + str(update)
-    await log_info(error_info, bot)
+    logging.error(tb_string)
+    await bot.send_message(os.environ.get("LOG_ID"), message, parse_mode=ParseMode.HTML)
     await bot.send_message(update.effective_chat.id, UNHANDLED_STICKERINATOR_ERROR_MESSAGE)
 
 
