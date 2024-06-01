@@ -179,8 +179,7 @@ async def select_image_sticker(update: Update, context: ContextTypes.DEFAULT_TYP
         )
         await update.message.reply_text(SIZE_LIMIT_REACHED_MESSAGE)
         return SELECTING_STICKER
-    processed_sticker = process_image(file.file_path)
-    context.user_data["sticker"] = processed_sticker
+    context.user_data["sticker"] = asyncio.create_task(process_image(file.file_path))
     context.user_data["sticker_count"] += 1
     await update.message.reply_text(STICKER_EMOJI_MESSAGE, reply_markup=emoji_button())
     return SELECTING_EMOJI
