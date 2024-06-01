@@ -90,7 +90,7 @@ PACK_NOT_FOUND_MESSAGE = "No such sticker/sticker pack. Cancelling operation"
 # delete sticker
 DELETE_STICKER_MESSAGE = "Please send the sticker you wish to delete"
 
-LAST_STICKER_MESSAGE = "❗❗❗ This is your last sticker ❗❗❗\nDeleting this sticker will delete the sticker pack\n\nReply with <code>DELETE STICKER</code> to confirm"
+LAST_STICKER_MESSAGE = "This is your last sticker!\nDeleting this sticker will delete the sticker pack\n\nReply with <code>DELETE STICKER</code> to confirm"
 
 DELETE_STICKER_CONFIRMATION_MESSAGE = "Reply with <code>DELETE STICKER</code> to confirm"
 
