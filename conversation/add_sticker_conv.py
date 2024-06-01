@@ -63,6 +63,8 @@ async def select_pack(update: Update, context: ContextTypes.DEFAULT_TYPE):
         sticker_set = await bot.do_api_request("get_sticker_set", {"name": set_name})
     except TelegramError as e:
         await update.message.reply_text(e.message)
+        await update.message.reply_text(STICKER_FROM_PACK_MESSAGE)
+        return SELECTING_PACK
     context.user_data["set_name"] = set_name
     context.user_data["sticker_count"] = len(sticker_set["stickers"])
     if sticker_set["stickers"][0]["is_video"]:
