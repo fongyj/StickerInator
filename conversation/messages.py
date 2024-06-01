@@ -80,10 +80,6 @@ CREATE_PACK_SUCCESS_MESSAGE = "Sticker pack created: https://t.me/addstickers/{}
 
 STICKER_NOT_SUPPORTED = "Sticker is animated and is currently not supported. Please send another video sticker"
 
-DOWNLOAD_FAILED_IMAGE = "Failed to download sticker. Please send another image sticker"
-
-DOWNLOAD_FAILED_VIDEO = "Failed to download sticker. Please send another video sticker"
-
 # delete pack
 DELETE_PACK_CONFIRMATION_MESSAGE = "Reply with <code>DELETE PACK</code> to confirm"
 

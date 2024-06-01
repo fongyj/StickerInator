@@ -1,6 +1,9 @@
 import logging
 from dotenv import load_dotenv
+import aiohttp
+import asyncio
 import os
+from io import BytesIO
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup, Update
 from telegram.constants import ParseMode
 
@@ -19,6 +22,17 @@ async def log_info(info, bot):
         await bot.send_message(os.environ.get("LOG_ID"), info)
     except Exception as e:
         logging.error(e)
+
+def async_request(url):
+    async def request():
+        async with aiohttp.ClientSession() as session:
+            async with session.get(url) as response:
+                if response.status != 200:
+                    logging.error(f"Failed to fetch {url}")
+                    raise Exception("Failed to fetch sticker")
+                content = await response.read()
+                return BytesIO(content)
+    return asyncio.create_task(request())
 
 def get_button_row(labels, data):
     if type(labels) is not list:

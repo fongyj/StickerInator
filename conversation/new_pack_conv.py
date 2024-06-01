@@ -26,6 +26,7 @@ from telegram.warnings import PTBUserWarning
 
 from processing.image import process_image
 from processing.video import VideoProcessor
+from conversation.utils import async_request
 from conversation.messages import (
     PACK_NAME_MESSAGE,
     PACK_TITLE_MESSAGE,
@@ -44,8 +45,6 @@ from conversation.messages import (
     PACK_LIMIT_REACHED_MESSAGE,
     SIZE_LIMIT_REACHED_MESSAGE,
     STICKER_NOT_SUPPORTED,
-    DOWNLOAD_FAILED_IMAGE,
-    DOWNLOAD_FAILED_VIDEO,
     UNHANDLED_TELEGRAM_ERROR_MESSAGE,
     ACTIVE_COMMAND_MESSAGE,
 )
@@ -132,21 +131,12 @@ async def select_image_sticker(update: Update, context: ContextTypes.DEFAULT_TYP
 
         bot = update.get_bot()
         file = await bot.get_file(update.message.sticker.file_id)
-        file_path = file.file_path
 
-        response = requests.get(file_path)
-
-        if response.status_code == 200:
-            sticker_file = BytesIO(response.content)
-
-            context.user_data["stickers"].append((sticker_file, [update.message.sticker.emoji])
-            )
-            context.user_data["sticker_count"] += 1
-            await update.message.reply_text(NEXT_STICKER_MESSAGE, parse_mode=ParseMode.HTML, reply_markup=done_button())
-            return SELECTING_STICKER
-        else:
-            await update.message.reply_text(DOWNLOAD_FAILED_IMAGE)
-
+        context.user_data["stickers"].append((async_request(file.file_path), [update.message.sticker.emoji])
+        )
+        context.user_data["sticker_count"] += 1
+        await update.message.reply_text(NEXT_STICKER_MESSAGE, parse_mode=ParseMode.HTML, reply_markup=done_button())
+        return SELECTING_STICKER
     elif update.message.photo:
         # user sent a photo
         file = await update.message.photo[-1].get_file()
@@ -179,7 +169,7 @@ async def select_image_sticker(update: Update, context: ContextTypes.DEFAULT_TYP
         )
         await update.message.reply_text(SIZE_LIMIT_REACHED_MESSAGE)
         return SELECTING_STICKER
-    context.user_data["sticker"] = asyncio.create_task(process_image(file.file_path))
+    context.user_data["sticker"] = process_image(file.file_path)
     context.user_data["sticker_count"] += 1
     await update.message.reply_text(STICKER_EMOJI_MESSAGE, reply_markup=emoji_button())
     return SELECTING_EMOJI
@@ -207,21 +197,12 @@ async def select_video_sticker(update: Update, context: ContextTypes.DEFAULT_TYP
             return SELECTING_STICKER
         bot = update.get_bot()
         file = await bot.get_file(update.message.sticker.file_id)
-        file_path = file.file_path
 
-        response = requests.get(file_path)
-
-        if response.status_code == 200:
-            sticker_file = BytesIO(response.content)
-
-            context.user_data["stickers"].append((sticker_file, [update.message.sticker.emoji])
-            )
-            context.user_data["sticker_count"] += 1
-            await update.message.reply_text(NEXT_STICKER_MESSAGE, parse_mode=ParseMode.HTML, reply_markup=done_button())
-            return SELECTING_STICKER
-        else:
-            await update.message.reply_text(DOWNLOAD_FAILED_VIDEO)
-            return SELECTING_STICKER
+        context.user_data["stickers"].append((async_request(file.file_path), [update.message.sticker.emoji])
+        )
+        context.user_data["sticker_count"] += 1
+        await update.message.reply_text(NEXT_STICKER_MESSAGE, parse_mode=ParseMode.HTML, reply_markup=done_button())
+        return SELECTING_STICKER
     elif update.message.video:
         # user sent a video
         file = await update.message.video.get_file()
