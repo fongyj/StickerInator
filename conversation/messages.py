@@ -106,3 +106,5 @@ UNHANDLED_TELEGRAM_ERROR_MESSAGE = "Telegram encountered an error, please try ag
 UNHANDLED_STICKERINATOR_ERROR_MESSAGE = "Sticker-inator encountered an error, please try again or cancel the current operation with the cancel command"
 
 CANCEL_MESSAGE = "Command \"{}\" cancelled"
+
+NO_COMMAND_TO_CANCEL_MESSAGE = "No active command to cancel"

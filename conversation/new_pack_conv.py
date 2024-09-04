@@ -387,7 +387,7 @@ def get_new_pack_conv():
         action="ignore", message=r".*CallbackQueryHandler", category=PTBUserWarning
     )
     return ConversationHandler(
-        entry_points=[CommandHandler("newpack", new_pack)],
+        entry_points=[CommandHandler("newpack", new_pack), CommandHandler("cancel", cancel)],
         states={
             SELECTING_NAME: [
                 CallbackQueryHandler(select_name),
