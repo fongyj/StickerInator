@@ -99,7 +99,7 @@ STICKER_NOT_FOUND_MESSAGE = "Sticker not found in the sticker pack"
 DELETE_STICKER_SUCCESS_MESSAGE = "Sticker deleted from {}"
 
 # cancel
-ACTIVE_COMMAND_MESSAGE = "Command \"{}\" is currently active, please use /cancel before initiating another command"
+ACTIVE_COMMAND_MESSAGE = "Command \"{}\" is currently active in this chat or in another chat, please use /cancel before initiating another command"
 
 UNHANDLED_TELEGRAM_ERROR_MESSAGE = "Telegram encountered an error, please try again or cancel the current operation with the cancel command"
 
