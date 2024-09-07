@@ -50,11 +50,8 @@ async def new_sticker(update: Update, context: ContextTypes.DEFAULT_TYPE) -> Non
 
 
 async def select_pack(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    await log_info("{}: selected sticker pack".format(update.effective_user.name), update.get_bot())
     set_name = update.message.sticker.set_name
-    await log_info(
-        "{}: selected sticker pack".format(update.effective_user.name),
-        update.get_bot()
-    )
     if not set_name.endswith("_by_" + os.environ.get("BOT_NAME")):
         await update.message.reply_text(INVALID_PACK_MESSAGE)
         await update.message.reply_text(STICKER_FROM_PACK_MESSAGE)

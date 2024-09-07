@@ -156,12 +156,7 @@ async def select_image_sticker(update: Update, context: ContextTypes.DEFAULT_TYP
             await update.message.reply_text(NEXT_STICKER_MESSAGE, parse_mode=ParseMode.HTML, reply_markup=done_button())
         return SELECTING_STICKER
 
-    await log_info(
-        "{}: uploaded image sticker {}".format(
-            update.effective_user.name, file.file_id
-        ),
-        update.get_bot()
-    )
+    await log_info("{}: uploaded image sticker {}".format(update.effective_user.name, file.file_id), update.get_bot())
 
     if file.file_size > MAX_FILE_SIZE:
         await log_info(
