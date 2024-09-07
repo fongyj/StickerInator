@@ -246,7 +246,7 @@ async def select_video_sticker(update: Update, context: ContextTypes.DEFAULT_TYP
     processor.get_video()
 
     if duration == None:
-        duration = processor.get_duration()
+        duration = await processor.get_duration()
     context.user_data["duration"] = duration
     processor.duration = duration
     if duration > 3:
