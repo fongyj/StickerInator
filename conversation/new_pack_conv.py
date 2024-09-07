@@ -79,6 +79,7 @@ async def new_pack(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     context.user_data["final_state"] = final_state
     context.user_data["stickers"] = list()
     context.user_data["operation"] = "create pack"
+    context.user_data["conversation_key"] = (update._effective_chat.id, update._effective_user.id)
     await update.message.reply_text(PACK_TYPE_MESSAGE, reply_markup=type_button())
     context.user_data["sticker_count"] = 0
     return SELECTING_TYPE

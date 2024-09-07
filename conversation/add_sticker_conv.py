@@ -45,6 +45,7 @@ async def new_sticker(update: Update, context: ContextTypes.DEFAULT_TYPE) -> Non
     context.user_data["final_state"] = lambda u, c: add_sticker(u, c)
     context.user_data["stickers"] = list()
     context.user_data["operation"] = "add sticker"
+    context.user_data["conversation_key"] = (update._effective_chat.id, update._effective_user.id)
     await update.message.reply_text(STICKER_FROM_PACK_MESSAGE)
     return SELECTING_PACK
 

@@ -36,6 +36,7 @@ async def delete_pack(update: Update, context: ContextTypes.DEFAULT_TYPE) -> Non
 
     await log_info("{}: delete pack".format(update.effective_user.name), update.get_bot())
     context.user_data["operation"] = "delete pack"
+    context.user_data["conversation_key"] = (update._effective_chat.id, update._effective_user.id)
     await update.message.reply_text(STICKER_FROM_PACK_MESSAGE)
     return SELECTING_PACK
 
