@@ -127,8 +127,7 @@ async def select_image_sticker(update: Update, context: ContextTypes.DEFAULT_TYP
             if sticker_count == 0:
                 await update.message.reply_text(IMAGE_STICKER_MESSAGE)
             else:
-                await update.message.reply_text(NEXT_STICKER_MESSAGE, parse_mode=ParseMode.HTML,
-                                                reply_markup=done_button())
+                await update.message.reply_text(NEXT_STICKER_MESSAGE, parse_mode=ParseMode.HTML, reply_markup=done_button())
             return SELECTING_STICKER
 
         bot = update.get_bot()
@@ -179,14 +178,14 @@ async def select_image_sticker(update: Update, context: ContextTypes.DEFAULT_TYP
 
 async def select_video_sticker(update: Update, context: ContextTypes.DEFAULT_TYPE):
     sticker_count = context.user_data["sticker_count"]
-    remove_bg = False
-    duration = None
+    
     if sticker_count >= MAX_VIDEO_STICKER:
         # too many stickers
         await update.message.reply_text(PACK_LIMIT_REACHED_MESSAGE.format("video", MAX_VIDEO_STICKER))
         await update.message.reply_text(NEXT_STICKER_MESSAGE, parse_mode=ParseMode.HTML, reply_markup=done_button())
         return SELECTING_STICKER
-    elif update.message.sticker:
+    
+    if update.message.sticker:
         # user sent a sticker
         if update.message.sticker.is_animated:
             await update.message.reply_text(STICKER_NOT_SUPPORTED)
@@ -195,8 +194,7 @@ async def select_video_sticker(update: Update, context: ContextTypes.DEFAULT_TYP
             if sticker_count == 0:
                 await update.message.reply_text(VIDEO_STICKER_MESSAGE)
             else:
-                await update.message.reply_text(NEXT_STICKER_MESSAGE, parse_mode=ParseMode.HTML,
-                                                reply_markup=done_button())
+                await update.message.reply_text(NEXT_STICKER_MESSAGE, parse_mode=ParseMode.HTML, reply_markup=done_button())
             return SELECTING_STICKER
         bot = update.get_bot()
         file = await bot.get_file(update.message.sticker.file_id)
@@ -205,15 +203,17 @@ async def select_video_sticker(update: Update, context: ContextTypes.DEFAULT_TYP
         context.user_data["sticker_count"] += 1
         await update.message.reply_text(NEXT_STICKER_MESSAGE, parse_mode=ParseMode.HTML, reply_markup=done_button())
         return SELECTING_STICKER
-    elif update.message.video:
+
+    if update.message.video:
         # user sent a video
         file = await update.message.video.get_file()
         duration = update.message.video.duration
-    elif update.message.document and update.message.document.mime_type.startswith(
-            "video"
-    ):
+        remove_bg = False
+    elif update.message.document and update.message.document.mime_type.startswith("video"):
         # user sent a file
         file = await update.message.document.get_file()
+        duration = None
+        remove_bg = False
     elif update.message.video_note:
         # user sent a tele bubble
         file = await update.message.video_note.get_file()
@@ -226,37 +226,24 @@ async def select_video_sticker(update: Update, context: ContextTypes.DEFAULT_TYP
         else:
             await update.message.reply_text(NEXT_STICKER_MESSAGE, parse_mode=ParseMode.HTML, reply_markup=done_button())
         return SELECTING_STICKER
-    await log_info(
-        "{}: uploaded video sticker {}".format(
-            update.effective_user.name, file.file_id
-        ),
-        update.get_bot()
-    )
+    await log_info("{}: uploaded video sticker {}".format(update.effective_user.name, file.file_id), update.get_bot())
+    
     if file.file_size > MAX_FILE_SIZE:
-        await log_info(
-            "{}: file size limit reached {}".format(
-                update.effective_user.name, file.file_size
-            ),
-            update.get_bot()
-        )
+        await log_info("{}: file size limit reached {}".format(update.effective_user.name, file.file_size), update.get_bot())
         await update.message.reply_text(SIZE_LIMIT_REACHED_MESSAGE)
         return SELECTING_STICKER
+    
     processor = VideoProcessor(file, remove_bg=remove_bg)
     context.user_data["processor"] = processor
     processor.get_video()
-
     if duration == None:
         duration = await processor.get_duration()
     context.user_data["duration"] = duration
     processor.duration = duration
     if duration > 3:
-        await update.message.reply_text(
-            VIDEO_CROP_NECESSARY_MESSAGE.format(duration), parse_mode=ParseMode.HTML, reply_markup=crop_button()
-        )
+        await update.message.reply_text(VIDEO_CROP_NECESSARY_MESSAGE.format(duration), parse_mode=ParseMode.HTML, reply_markup=crop_button())
     else:
-        await update.message.reply_text(
-            VIDEO_CROP_NOT_NECESSARY_MESSAGE.format(duration), parse_mode=ParseMode.HTML, reply_markup=no_crop_button()
-        )
+        await update.message.reply_text(VIDEO_CROP_NOT_NECESSARY_MESSAGE.format(duration), parse_mode=ParseMode.HTML, reply_markup=no_crop_button())
     await update.message.reply_text(VIDEO_CROP_INFO_MESSAGE, parse_mode=ParseMode.HTML)
     return SELECTING_DURATION
 
@@ -279,20 +266,13 @@ async def select_duration(update: Update, context: ContextTypes.DEFAULT_TYPE):
     elif crop.lower() == "speed":
         context.user_data["sticker"] = context.user_data["processor"].process_video(speed=True)
     else:
-        start_min, start_sec, crop_duration = context.user_data["processor"].parse_crop(
-            crop
-        )
+        start_min, start_sec, crop_duration = context.user_data["processor"].parse_crop(crop)
         if start_min == None:
             await response.reply_text(INVALID_VIDEO_DURATION_MESSAGE)
             if duration > 3:
-                await response.reply_text(
-                    VIDEO_CROP_NECESSARY_MESSAGE.format(duration), parse_mode=ParseMode.HTML, reply_markup=crop_button()
-                )
+                await response.reply_text(VIDEO_CROP_NECESSARY_MESSAGE.format(duration), parse_mode=ParseMode.HTML, reply_markup=crop_button())
             else:
-                await response.reply_text(
-                    VIDEO_CROP_NOT_NECESSARY_MESSAGE.format(duration), parse_mode=ParseMode.HTML,
-                    reply_markup=no_crop_button()
-                )
+                await response.reply_text(VIDEO_CROP_NOT_NECESSARY_MESSAGE.format(duration), parse_mode=ParseMode.HTML, reply_markup=no_crop_button())
             await response.reply_text(VIDEO_CROP_INFO_MESSAGE, parse_mode=ParseMode.HTML)
             return SELECTING_DURATION
         context.user_data["sticker"] = context.user_data["processor"].process_video(start_min, start_sec, crop_duration)

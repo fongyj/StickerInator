@@ -28,16 +28,17 @@ async def log_info(info, bot):
 
 
 def async_request(url):
-    async def request():
-        async with aiohttp.ClientSession() as session:
-            async with session.get(url) as response:
-                if response.status != 200:
-                    logging.error(f"Failed to fetch {url}")
-                    raise Exception("Failed to fetch sticker")
-                content = await response.read()
-                return BytesIO(content)
+    return asyncio.create_task(request(url))
 
-    return asyncio.create_task(request())
+
+async def request(url):
+    async with aiohttp.ClientSession() as session:
+        async with session.get(url) as response:
+            if response.status != 200:
+                logging.error(f"Failed to fetch {url}")
+                raise Exception("Failed to fetch sticker")
+            content = await response.read()
+            return BytesIO(content)
 
 
 def get_button_row(labels, data):
