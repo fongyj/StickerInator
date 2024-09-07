@@ -90,10 +90,12 @@ async def select_type(update: Update, context: CallbackContext):
     if data == "image":
         context.user_data["type"] = StickerFormat.STATIC
         await query.message.reply_text(IMAGE_STICKER_MESSAGE)
+        await log_info("{}: selected image pack".format(update.effective_user.name), update.get_bot())
         return SELECTING_STICKER
     elif data == "video":
         context.user_data["type"] = StickerFormat.VIDEO
         await query.message.reply_text(VIDEO_STICKER_MESSAGE)
+        await log_info("{}: selected video pack".format(update.effective_user.name), update.get_bot())
         return SELECTING_STICKER
 
 
