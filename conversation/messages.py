@@ -5,6 +5,7 @@ DEL_STICKER_HELP = "Deletes a sticker"
 DEL_PACK_HELP = "Deletes a stickerpack"
 HELP_HELP = "Gets info on the bot"
 CANCEL_HELP = "Cancels current operation"
+RESET_HELP = "Resets StickerInator"
 
 HELP_MESSAGE = (
         "*StickerInator* is designed to help you create sticker packs with images, videos and telegram bubbles\!\n\n"
@@ -99,12 +100,12 @@ STICKER_NOT_FOUND_MESSAGE = "Sticker not found in the sticker pack"
 DELETE_STICKER_SUCCESS_MESSAGE = "Sticker deleted from {}"
 
 # cancel
-ACTIVE_COMMAND_MESSAGE = "Command \"{}\" is currently active in this chat or in another chat, please use /cancel before initiating another command"
+ACTIVE_COMMAND_MESSAGE = "Command \"{}\" is currently active in this chat or in another chat, please use /cancel or /reset before initiating another command"
 
 UNHANDLED_TELEGRAM_ERROR_MESSAGE = "Telegram encountered an error, please try again or cancel the current operation with the cancel command"
 
-UNHANDLED_STICKERINATOR_ERROR_MESSAGE = "Sticker-inator encountered an error, please try again or cancel the current operation with the cancel command"
+UNHANDLED_STICKERINATOR_ERROR_MESSAGE = "StickerInator encountered an error, please try again or cancel the current operation with the cancel command"
 
 CANCEL_MESSAGE = "Command \"{}\" cancelled"
 
-NO_COMMAND_TO_CANCEL_MESSAGE = "No active command to cancel"
+RESET_MESSAGE = "StickerInator reset complete"

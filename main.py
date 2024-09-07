@@ -16,6 +16,7 @@ import conversation.del_sticker_conv as delete_sticker
 import conversation.add_sticker_conv as add_sticker
 import conversation.start_command as start
 import conversation.help_command as help
+import conversation.reset_command as reset
 from conversation.utils import log_info
 from conversation.messages import UNHANDLED_STICKERINATOR_ERROR_MESSAGE
 
@@ -41,6 +42,7 @@ from conversation.messages import (
     DEL_PACK_HELP,
     HELP_HELP,
     CANCEL_HELP,
+    RESET_HELP
 )
 
 # Enable logging
@@ -60,15 +62,23 @@ logging.getLogger("httpx").setLevel(logging.WARNING)
 
 logger = logging.getLogger(__name__)
 
-handlers_list = [
-    start.get_start_command(),
-    new_pack.get_new_pack_conv(),
-    add_sticker.get_add_sticker_conv(),
-    delete_pack.delete_pack_conv(),
-    delete_sticker.delete_sticker_conv(),
-    help.get_help_command(),
-]
+start_command = start.get_start_command()
+new_pack_command = new_pack.get_new_pack_conv()
+add_sticker_command = add_sticker.get_add_sticker_conv()
+delete_pack_command = delete_pack.delete_pack_conv()
+delete_sticker_command = delete_sticker.delete_sticker_conv()
+help_command = help.get_help_command()
+reset_command = reset.get_reset_command([new_pack_command, add_sticker_command, delete_pack_command, delete_sticker_command])
 
+handlers_list = [
+    start_command,
+    new_pack_command,
+    add_sticker_command,
+    delete_pack_command,
+    delete_sticker_command,
+    help_command,
+    reset_command
+]
 
 command_info = [
     BotCommand("newpack", NEW_PACK_HELP),
@@ -77,6 +87,7 @@ command_info = [
     BotCommand("delpack", DEL_PACK_HELP),
     BotCommand("help", HELP_HELP),
     BotCommand("cancel", CANCEL_HELP),
+    BotCommand("reset", RESET_HELP)
 ]
 
 
