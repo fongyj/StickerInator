@@ -81,9 +81,7 @@ async def add_sticker(update: Update, context: ContextTypes.DEFAULT_TYPE):
         for sticker, emoji in context.user_data["stickers"]:
             if isinstance(sticker, asyncio.Task):
                 sticker = await sticker
-            await bot.add_sticker_to_set(
-                update.effective_user.id, context.user_data["set_name"], sticker=InputSticker(sticker, emoji)
-            )
+            await bot.add_sticker_to_set(update.effective_user.id, context.user_data["set_name"], sticker=InputSticker(sticker, emoji))
         sticker_count = len(context.user_data["stickers"])
         await update.callback_query.message.reply_text(ADD_SUCCESS_MESSAGE.format(sticker_count))
         await log_info(
@@ -93,10 +91,7 @@ async def add_sticker(update: Update, context: ContextTypes.DEFAULT_TYPE):
     except TelegramError as te:
         await update.callback_query.message.reply_text(te.message)
         await update.callback_query.message.reply_text(UNHANDLED_TELEGRAM_ERROR_MESSAGE)
-        await log_info(
-            "{}: error adding sticker(s) {}".format(update.effective_user.name, te.message),
-            update.get_bot()
-        )
+        await log_info("{}: error adding sticker(s) {}".format(update.effective_user.name, te.message), update.get_bot())
     context.user_data.pop("operation")
     return ConversationHandler.END
 

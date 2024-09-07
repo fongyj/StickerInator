@@ -49,12 +49,7 @@ async def select_pack(update: Update, context: ContextTypes.DEFAULT_TYPE):
         bot = update.get_bot()
         context.user_data["sticker"] = update.message.sticker
         sticker_set = context.user_data["sticker"].set_name
-        await log_info(
-            "{}: selected sticker pack {}".format(
-                update.effective_user.name, sticker_set
-            ),
-            update.get_bot()
-        )
+        await log_info("{}: selected sticker pack {}".format(update.effective_user.name, sticker_set), update.get_bot())
         if not sticker_set.endswith("_by_" + os.environ.get("BOT_NAME")):
             await update.message.reply_text(INVALID_PACK_MESSAGE)
             await update.message.reply_text(DELETE_STICKER_MESSAGE)
@@ -88,24 +83,12 @@ async def confirm_delete(update: Update, context: ContextTypes.DEFAULT_TYPE):
             sticker = context.user_data["sticker"].file_id
             if context.user_data["last"]:
                 await bot.delete_sticker_set(sticker_set)
-                await update.message.reply_text(
-                    DELETE_PACK_SUCCESS_MESSAGE.format(sticker_set)
-                )
-                await log_info(
-                    "{}: deleted pack {}".format(update.effective_user.name, sticker_set),
-                    update.get_bot()
-                )
+                await update.message.reply_text(DELETE_PACK_SUCCESS_MESSAGE.format(sticker_set))
+                await log_info("{}: deleted pack {}".format(update.effective_user.name, sticker_set), update.get_bot())
             else:
                 await bot.delete_sticker_from_set(sticker)
-                await update.message.reply_text(
-                    DELETE_STICKER_SUCCESS_MESSAGE.format(sticker_set)
-                )
-                await log_info(
-                    "{}: deleted sticker from {}".format(
-                        update.effective_user.name, sticker_set
-                    ),
-                    update.get_bot()
-                )
+                await update.message.reply_text(DELETE_STICKER_SUCCESS_MESSAGE.format(sticker_set))
+                await log_info("{}: deleted sticker from {}".format(update.effective_user.name, sticker_set), update.get_bot())
         else:
             await update.message.reply_text(DELETE_STICKER_CONFIRMATION_MESSAGE, parse_mode=ParseMode.HTML)
             return CONFIRM_DELETE

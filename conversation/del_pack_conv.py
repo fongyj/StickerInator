@@ -44,10 +44,7 @@ async def delete_pack(update: Update, context: ContextTypes.DEFAULT_TYPE) -> Non
 async def select_pack(update: Update, context: ContextTypes.DEFAULT_TYPE):
     context.user_data["sticker"] = update.message.sticker
     sticker_set = context.user_data["sticker"].set_name
-    await log_info(
-        "{}: selected sticker pack {}".format(update.effective_user.name, sticker_set),
-        update.get_bot()
-    )
+    await log_info("{}: selected sticker pack {}".format(update.effective_user.name, sticker_set), update.get_bot())
     if not sticker_set.endswith("_by_" + os.environ.get("BOT_NAME")):
         await update.message.reply_text(INVALID_PACK_MESSAGE)
         await update.message.reply_text(STICKER_FROM_PACK_MESSAGE)
@@ -65,10 +62,7 @@ async def confirm_delete(update: Update, context: ContextTypes.DEFAULT_TYPE):
             await update.message.reply_text(
                 DELETE_PACK_SUCCESS_MESSAGE.format(sticker_set)
             )
-            await log_info(
-                "{}: deleted pack {}".format(update.effective_user.name, sticker_set),
-                update.get_bot()
-            )
+            await log_info("{}: deleted pack {}".format(update.effective_user.name, sticker_set), update.get_bot())
         else:
             await update.message.reply_text(DELETE_PACK_CONFIRMATION_MESSAGE, parse_mode=ParseMode.HTML)
             return CONFIRM_DELETE
