@@ -122,7 +122,7 @@ async def error_handler(update: object, context: ContextTypes.DEFAULT_TYPE) -> N
 def main() -> None:
     """Start the bot."""
     # Create the Application and pass it your bot's token.
-    token = os.environ.get("BOT_TOKEN")
+    token = os.environ.get("BOT_TOKEN_STICKERINATOR")
     application = Application.builder().token(token).post_init(post_init).build()
 
     application.add_handlers(handlers_list)

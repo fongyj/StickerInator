@@ -42,7 +42,7 @@ The following are steps you can take to run the telegram bot locally.
    ```
 3. Prepare a <i>.env</i> file with the following configuration. The field BOT_NAME will be appended to your sticker packs created.
    ```js
-   BOT_TOKEN="YOUR_BOT_TOKEN"
+   BOT_TOKEN_STICKERINATOR="YOUR_BOT_TOKEN"
    BOT_NAME="YOUR_BOT_NAME"
    ```
 4. Run the following command to get the bot up locally
