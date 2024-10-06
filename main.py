@@ -51,11 +51,11 @@ logging.basicConfig(
     level=logging.INFO,
 )
 os.makedirs("logs", exist_ok=True)
-file_handler = logging.FileHandler("logs/stickerinator.log", encoding="utf-8")
-file_handler.setFormatter(
-    logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
-)
-logging.getLogger().addHandler(file_handler)
+# file_handler = logging.FileHandler("logs/stickerinator.log", encoding="utf-8")
+# file_handler.setFormatter(
+#     logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
+# )
+# logging.getLogger().addHandler(file_handler)
 # set higher logging level for httpx to avoid all GET and POST requests being logged
 logging.getLogger("httpx").setLevel(logging.WARNING)
 
