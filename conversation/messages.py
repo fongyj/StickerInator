@@ -15,7 +15,8 @@ HELP_MESSAGE = (
         + f"/delsticker \- {DEL_STICKER_HELP}\n"
         + f"/delpack \- {DEL_PACK_HELP}\n"
         + f"/help \- {HELP_HELP}\n"
-        + f"/cancel \- {CANCEL_HELP}"
+        + f"/cancel \- {CANCEL_HELP}\n"
+        + f"/reset \- {RESET_HELP}"
 )
 
 # add pack/sticker
