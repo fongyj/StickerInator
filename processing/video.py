@@ -10,8 +10,8 @@ class VideoProcessor:
     def __init__(self, file, remove_bg):
         self.file = file
         self.remove_bg = remove_bg
-        os.makedirs("stickerinator/temp", exist_ok=True)
-        self.video_path = f"stickerinator/temp/{os.path.basename(file.file_path)}"
+        os.makedirs("StickerInator/temp", exist_ok=True)
+        self.video_path = f"StickerInator/temp/{os.path.basename(file.file_path)}"
         self.ffmpeg_path = get_ffmpeg_exe()
         self.download_task = None
         self.downloaded = False
@@ -88,7 +88,7 @@ class VideoProcessor:
         args += f"-i {self.video_path} "
         # remove background
         if self.remove_bg:
-            args += f"-loop 1 -i stickerinator/processing/mask/mask.png -filter_complex [0:v]scale={new_width}:{new_height}[resized],[resized][1:v]alphamerge "
+            args += f"-loop 1 -i StickerInator/processing/mask/mask.png -filter_complex [0:v]scale={new_width}:{new_height}[resized],[resized][1:v]alphamerge "
         else:
             args += f"-vf scale={new_width}:{new_height} "
         # set format, quality, remove audio
