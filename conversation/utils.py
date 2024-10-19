@@ -22,7 +22,7 @@ async def send_message(update: Update, message):
 async def log_info(info, bot):
     logging.info(info)
     try:
-        await bot.send_message(os.environ.get("LOG_ID"), "*\[StickerInator\]* " + info, parse_mode=ParseMode.MARKDOWN_V2)
+        await bot.send_message(os.environ.get("LOG_ID"), "<b>[StickerInator]</b> " + info, parse_mode=ParseMode.HTML)
     except Exception as e:
         logging.error(e)
 
