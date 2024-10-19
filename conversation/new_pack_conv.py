@@ -350,8 +350,8 @@ async def select_name(update: Update, context: ContextTypes.DEFAULT_TYPE):
         context.user_data.pop("operation")
         return ConversationHandler.END
     except TelegramError as te:
-        await update.callback_query.message.reply_text(te.message)
-        await update.callback_query.message.reply_text(UNHANDLED_TELEGRAM_ERROR_MESSAGE)
+        await response.reply_text(te.message)
+        await response.reply_text(UNHANDLED_TELEGRAM_ERROR_MESSAGE)
         await response.reply_text(PACK_NAME_MESSAGE)
         await log_info(
             "{}: error creating pack {}".format(update.effective_user.name, te.message),
