@@ -124,6 +124,8 @@ async def select_image_sticker(update: Update, context: ContextTypes.DEFAULT_TYP
         await update.message.reply_text(PACK_LIMIT_REACHED_MESSAGE.format("image", MAX_STATIC_STICKER))
         await update.message.reply_text(NEXT_STICKER_MESSAGE, parse_mode=ParseMode.HTML, reply_markup=done_button())
         return SELECTING_STICKER
+    elif not update.message:
+        return SELECTING_STICKER
     elif update.message.sticker:
         # user sent a sticker
         if update.message.sticker.is_animated or update.message.sticker.is_video:
@@ -182,8 +184,9 @@ async def select_video_sticker(update: Update, context: ContextTypes.DEFAULT_TYP
         await update.message.reply_text(PACK_LIMIT_REACHED_MESSAGE.format("video", MAX_VIDEO_STICKER))
         await update.message.reply_text(NEXT_STICKER_MESSAGE, parse_mode=ParseMode.HTML, reply_markup=done_button())
         return SELECTING_STICKER
-    
-    if update.message.sticker:
+    elif not update.message:
+        return SELECTING_STICKER
+    elif update.message.sticker:
         # user sent a sticker
         if update.message.sticker.is_animated:
             await update.message.reply_text(STICKER_NOT_SUPPORTED)
@@ -287,8 +290,8 @@ async def select_emoji(update: Update, context: ContextTypes.DEFAULT_TYPE):
         sticker_emoji = update.callback_query.data
         response = update.callback_query.message
     if not emoji.is_emoji(sticker_emoji):
-        await response.reply_text(STICKER_EMOJI_MESSAGE, reply_markup=emoji_button())
         return SELECTING_EMOJI
+    
     context.user_data["stickers"].append((context.user_data["sticker"], [sticker_emoji]))
     await log_info(
         "{}: selected emoji {}".format(update.effective_user.name, sticker_emoji),
